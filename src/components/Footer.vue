@@ -121,16 +121,46 @@
       <div>
         <h3 class="text-xl mb-4">Hizmetlerimiz</h3>
         <ul class="space-y-2 text-slate-300">
-          <li><a href="#" class="hover:text-white">Aile Hukuku</a></li>
-          <li><a href="#" class="hover:text-white">Boşanma Davaları</a></li>
-          <li><a href="#" class="hover:text-white">Ceza Hukuku</a></li>
-          <li><a href="#" class="hover:text-white">İcra Hukuku</a></li>
-          <li><a href="#" class="hover:text-white">İş Hukuku</a></li>
-          <li><a href="#" class="hover:text-white">Sağlık Hukuku</a></li>
           <li>
-            <a href="#" class="hover:text-white">Tanıma ve Tenfiz Davaları</a>
+            <router-link :to="'/services/' + 'service'" class="hover:text-white"
+              >Aile Hukuku</router-link
+            >
           </li>
-          <li><a href="#" class="hover:text-white">Vekalet Bilgileri</a></li>
+          <li>
+            <router-link :to="'/services/' + 'service'" class="hover:text-white"
+              >Boşanma Davaları</router-link
+            >
+          </li>
+          <li>
+            <router-link :to="'/services/' + 'service'" class="hover:text-white"
+              >Ceza Hukuku</router-link
+            >
+          </li>
+          <li>
+            <router-link :to="'/services/' + 'service'" class="hover:text-white"
+              >İcra Hukuku</router-link
+            >
+          </li>
+          <li>
+            <router-link :to="'/services/' + 'service'" class="hover:text-white"
+              >İş Hukuku</router-link
+            >
+          </li>
+          <li>
+            <router-link :to="'/services/' + 'service'" class="hover:text-white"
+              >Sağlık Hukuku</router-link
+            >
+          </li>
+          <li>
+            <router-link :to="'/services/' + 'service'" class="hover:text-white"
+              >Tanıma ve Tenfiz Davaları</router-link
+            >
+          </li>
+          <li>
+            <router-link :to="'/services/' + 'service'" class="hover:text-white"
+              >Vekalet Bilgileri</router-link
+            >
+          </li>
         </ul>
       </div>
 
@@ -143,11 +173,7 @@
           İstediğiniz avukatımızdan, dilediğiniz saatleri seçin ve online
           görüşme randevunuzu oluşturun.
         </p>
-        <button
-          class="bg-quaternary flex items-center mt-4 border-2 border-quaternary text-white py-[0.5rem] px-4 hover:bg-white hover:text-primary hover:border-white hover:-translate-y-1 hover:translate-x-0.5 transition duration-300">
-          <i class="ri-live-line pr-2 text-xl"></i>
-          <span>Online Danışmanlık Al</span>
-        </button>
+        <GetAppointmentButton />
       </div>
     </div>
     <div class="mt-12 text-center text-gray-500 text-sm">
@@ -160,5 +186,6 @@
 </template>
 
 <script setup>
-// No additional script is needed for this static footer
+import GetAppointmentButton from "../components/GetAppointmentButton.vue";
+
 </script>

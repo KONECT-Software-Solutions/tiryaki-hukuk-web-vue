@@ -1,0 +1,33 @@
+<template>
+  <button
+    @click="goToHomeAndScroll('attorneys-section')"
+    class="bg-quaternary flex items-center mt-4 border-2 border-quaternary text-white py-[0.5rem] px-4 hover:bg-white hover:text-primary hover:border-white hover:-translate-y-1 hover:translate-x-0.5 transition duration-300">
+    <i class="ri-live-line pr-2 text-xl"></i>
+    <span>Online Danışmanlık Al</span>
+  </button>
+</template>
+
+<script setup>
+import { useRouter } from "vue-router";
+import { useRoute } from "vue-router";
+
+const router = useRouter();
+const route = useRoute();
+
+const scrollToSection = (sectionId) => {
+  const section = document.getElementById(sectionId);
+  if (section) {
+    console.log("scrolling to section", sectionId);
+    section.scrollIntoView({ behavior: "smooth" });
+  }
+};
+
+const goToHomeAndScroll = (sectionId) => {
+  if (route.path === "/") {
+    // If already on the home page, directly scroll
+    scrollToSection(sectionId);
+  } else {
+    router.push({ path: "/", query: { section: sectionId } });
+  }
+};
+</script>

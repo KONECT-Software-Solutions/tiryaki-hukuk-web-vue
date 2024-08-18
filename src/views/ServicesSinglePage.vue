@@ -122,16 +122,12 @@
               <p class="ql-align-justify"><br /></p>
               <p><br /></p>
             </div>
-            <div class="flex items-center justify-start mb-10">
+            <div class="flex flex-col md:flex-row space-y-4 md:space-y-0 items-center justify-start mb-10">
               <h1 class="text-2xl md:mr-4">Bu alanda çalışan avukatlarımız</h1>
-              <button
-                class="bg-quaternary flex items-center border-2 border-quaternary text-white py-[0.5rem] px-4 hover:bg-white hover:text-primary hover:border-white hover:-translate-y-1 hover:translate-x-0.5 transition duration-300">
-                <i class="ri-live-line pr-2 text-xl"></i>
-                <span>Online Danışmanlık Al</span>
-              </button>
+             <GetAppointmentButton />
             </div>
             <div
-              class="flex flex-col md:flex-row items-center justify-start space-y-4 md:space-y-0 md:space-x-4">
+              class="flex flex-col md:flex-row items-center justify-start space-y-8 md:space-y-0 md:space-x-8">
               <AttorneyProfileCardSingle :attorneyData="attorneyData1" />
               <AttorneyProfileCardSingle :attorneyData="attorneyData2" />
             </div>
@@ -241,6 +237,7 @@
 <script setup>
 import { ref, computed, onMounted, onUpdated } from "vue";
 import AttorneyProfileCardSingle from "../components/AttorneyProfileCardSingle.vue";
+import GetAppointmentButton from "../components/GetAppointmentButton.vue";
 const tags = ref(["Tag 1", "Tag 2", "Tag 3", "Tag 4", "Tag 5"]);
 const categories = ref([
   "Aile Hukuku",

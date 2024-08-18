@@ -1,0 +1,16 @@
+{
+  "projects": {
+    "default": "tiryaki-hukuk-admin-pane-9a3f2"
+  },
+  "targets": {
+    "tiryaki-hukuk-admin-pane-9a3f2": {
+      "hosting": {
+        "webapp": [
+          "tiryaki-hukuk-web"
+        ]
+      }
+    }
+  },
+  "etags": {},
+  "dataconnectEmulatorConfig": {}
+}

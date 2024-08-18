@@ -123,7 +123,7 @@
               <p><br /></p>
             </div>
             <div class="flex items-center justify-start mb-10">
-              <h1 class="text-2xl md:mr-4">Bu alanda çalışan avukatlarımızdan</h1>
+              <h1 class="text-2xl md:mr-4">Bu alanda çalışan avukatlarımız</h1>
               <button
                 class="bg-quaternary flex items-center border-2 border-quaternary text-white py-[0.5rem] px-4 hover:bg-white hover:text-primary hover:border-white hover:-translate-y-1 hover:translate-x-0.5 transition duration-300">
                 <i class="ri-live-line pr-2 text-xl"></i>

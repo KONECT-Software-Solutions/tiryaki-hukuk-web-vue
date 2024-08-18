@@ -265,6 +265,7 @@ const createUser = async () => {
     isCreatingUser.value = false;
     showConfirm.value = false;
     showAfterConfirm.value = true;
+    emits("signedIn");
   }, 2000);
   } catch (error) {
     if (error.code === "auth/email-already-in-use") {
@@ -300,6 +301,7 @@ const sendVerificationEmail = async (emailRegistiration, verificationCode) => {
 };
 
 const handleRegister = async () => {
+  window.scrollTo(0, 0)
   isLoading.value = true; // show loading spinner
   registerErrorMessage.value = ""; // Reset error message
   const phoneRegex = /^\d{3}-\d{3}-\d{2}-\d{2}$/;

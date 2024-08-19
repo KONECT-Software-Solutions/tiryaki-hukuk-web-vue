@@ -238,7 +238,7 @@ const emailRegistiration = ref("");
 const confirmEmail = ref("");
 const passwordRegistiration = ref("");
 const verificationCode = ref("");
-const verificationCodetoSend = Math.floor(100000 + Math.random() * 900000);
+const verificationCodetoSend = Math.floor(100000 + Math.random() * 900000).toString();
 
 const emailSingIn = ref("");
 const passwordSignIn = ref("");
@@ -292,6 +292,11 @@ const sendVerificationEmail = async (emailRegistiration, verificationCode) => {
       {
         email: emailRegistiration,
         verification_code: verificationCode,
+      },
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
       }
     );
     console.log(response.data);

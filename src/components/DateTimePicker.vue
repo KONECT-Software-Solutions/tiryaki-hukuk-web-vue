@@ -4,11 +4,11 @@
       <div class="flex justify-center space-x-2 items-center mb-4">
         <div class="flex flex-col items-center">
           <h2
-            class="text-lg text-slate-800 font-medium text-center w-96 bg-gray-100 rounded-xl py-1 mb-4">
+            class="text-lg text-slate-800 font-medium text-center w-72 lg:w-96 bg-gray-100 rounded-xl py-1 mb-4">
             {{ currentMonth }}
           </h2>
 
-          <div class="flex justify-center items-center space-x-0 lg:space-x-2">
+          <div class="flex justify-center items-center space-x-1 lg:space-x-2">
             <button
               @click="prevWeek"
               class="px-2 py-1 rounded-md bg-gray-200 hover:bg-gray-300">
@@ -17,7 +17,7 @@
             <div
               v-for="(day, index) in currentWeek"
               :key="index"
-              class="flex flex-col border p-1 w-10 rounded-lg items-center">
+              class="flex flex-col border p-1 w-8 lg:w-10 rounded-lg items-center">
               <div class="text-sm text-slate-800">{{ day.format("ddd") }}</div>
               <div
                 :class="{

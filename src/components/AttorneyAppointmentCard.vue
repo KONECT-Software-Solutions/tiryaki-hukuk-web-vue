@@ -5,7 +5,7 @@
         v-for="(attorneyData, index) in filteredAttorneys"
         :key="attorneyData.id">
         <div
-          class="pt-4 md:px-4 my-4 bg-white border border-gray-200 hover:shadow-lg hover:border-gray-300 flex items-center justify-center lg:justify-between space-x-6">
+          class="pt-4 p-2 md:px-4 my-4 bg-white border border-gray-200 hover:shadow-lg hover:border-gray-300 flex items-center justify-center lg:justify-between space-x-6">
           <div
             v-if="showDateTimePicker !== index"
             class="flex flex-col space-y-4">

@@ -136,6 +136,7 @@ onMounted(() => {
   typeWriterEffect();
   if (route.query.section) {
     nextTick(() => {
+      
       setTimeout(() => {
         scrollToSection(route.query.section);
       }, 500);

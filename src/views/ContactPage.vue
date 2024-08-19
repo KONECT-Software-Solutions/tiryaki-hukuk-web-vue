@@ -97,6 +97,6 @@
 
 <style scoped>
 .hero-bg {
-  background-image: url("../assets/images/contact-page-bg.jpg");
+  background-image: url("../assets/images/contact-page-bg.webp");
 }
 </style>

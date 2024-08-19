@@ -32,7 +32,7 @@ import ServicesGrid from '../components/ServicesGrid.vue';
 
 <style scoped>
 .hero-bg {
-  background-image: url("../assets/images/services-page-bg.jpg");
+  background-image: url("../assets/images/services-page-bg.webp");
 }
 
 

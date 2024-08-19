@@ -129,7 +129,7 @@
         <div class="mb-4 flex items-center">
           <input type="checkbox" id="terms" class="mr-2" required />
           <label for="terms" class="text-sm">
-            Tiryaki Hukuk ve Danışmanlık'ın
+            Tiryaki Hukuk ve Arabuluculuk'un
             <a href="#" class="text-blue-500">Kullanım Koşulları</a> ve
             <a href="#" class="text-blue-500">Gizlilik Politikasını</a>
             kabul ediyorum.

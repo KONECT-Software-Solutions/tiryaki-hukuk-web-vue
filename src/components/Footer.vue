@@ -6,7 +6,7 @@
       <div>
         <div class="text-white font-bold text-nowrap leading-6 pb-8">
           <h1 class="text-[34px]">TIRYAKI</h1>
-          <p class="text-[16px]">HUKUK & DANIŞMANLIK</p>
+          <p class="text-[16px]">HUKUK & ARABULUCULUK</p>
         </div>
         <div>
           <p class="mb-2 text-slate-300 flex items-start hover:text-white">

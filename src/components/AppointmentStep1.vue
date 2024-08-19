@@ -93,7 +93,7 @@
       <div class="flex flex-col md:flex-row items-center justify-between">
         <div class="flex items-center">
           <i class="ri-calendar-line mr-2 text-2xl"></i>
-          <div class="px-1 flex items-center">
+          <div class="px-1 flex text-sm md:text-base items-center">
             {{ dateForDisplay }} <span class="ml-2">{{ day }}</span>
             <span
               class="flex ml-2 items-center text-nowrap bg-yellow-100 rounded-xl px-2 text-sm">

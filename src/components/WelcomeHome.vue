@@ -11,10 +11,10 @@
       <div class="flex flex-col mt-8 md:mt-0 md:w-2/5 md:h-[42rem]">
         <div>
           <h2 class="text-4xl font-semibold text-center md:text-left leading-normal mb-6">
-            Tiryaki Hukuk & Danışmanlığa Hoş Geldiniz!
+            Tiryaki Hukuk & Arabuluculuk'a Hoş Geldiniz!
           </h2>
           <p class="text-lg md:text-xl text-gray-600 leading-relaxed mb-6">
-            Bursa'da Avukatlık ve Hukuki Danışmanlık hizmeti sunan firmamız,
+            Bursa'da Avukatlık, Arabuluculuk ve Hukuki Danışmanlık hizmeti sunan firmamız,
             bireylerin haklarını arama özgürlüğünü ve onun ayrılmaz bir parçası
             olan kendini savunma özgürlüğünü hedeflemektedir.
           </p>

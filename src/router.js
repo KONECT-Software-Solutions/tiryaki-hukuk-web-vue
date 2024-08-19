@@ -10,6 +10,7 @@ import AppointmentPage from "./views/AppointmentPage.vue";
 import ProfilePage from "./views/ProfilePage.vue";
 import PaymentPage from "./views/PaymentPage.vue";
 import ServicesSinglePage from "./views/ServicesSinglePage.vue";
+import NotFound from "./views/NotFound.vue";
 
 const routes = [
   { path: "/", name: "Home", component: HomePage },
@@ -43,6 +44,11 @@ const routes = [
     name: "Payment",
     component: PaymentPage,
     meta: { requiresAuth: true },
+  },
+  {
+    path: '/:pathMatch(.*)*', // Catch-all route
+    name: 'NotFound',
+    component: NotFound
   },
 ];
 

@@ -8,7 +8,7 @@
     <div class="mx-auto flex items-center justify-between">
       <router-link :to="'/'" class=" font-bold text-nowrap leading-4">
         <h1 class="text-[23px]">TIRYAKI</h1>
-        <p class="text-[13px]">HUKUK & DANIŞMANLIK</p>
+        <p class="text-[13px]">HUKUK & ARABULUCULUK</p>
       </router-link>
       <ul
         class="hidden items-center text-nowrap md:text-[15px] font-normal md:flex md:space-x-4 lg:space-x-8 ">
@@ -68,7 +68,7 @@
       ]">
        <router-link :to="'/'" class=" font-bold absolute top-5 left-4 text-nowrap leading-4">
         <h1 class="text-[23px]">TIRYAKI</h1>
-        <p class="text-[13px]">HUKUK & DANIŞMANLIK</p>
+        <p class="text-[13px]">HUKUK & ARABULUCULUK</p>
       </router-link>
       <button @click="toggleMenu" class="text-white absolute top-4 right-4">
         <svg

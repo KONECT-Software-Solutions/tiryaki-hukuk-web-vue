@@ -6,7 +6,7 @@
       <div
         class="relative px-8 md:px-20 lg:px-32 2xl:px-60 py-12 flex flex-col items-start justify-center h-full">
         <h2 class="text-white text-lg font-bold mb-2">
-          TIRYAKI HUKUKA HOŞ GELDİNİZ
+          TIRYAKI HUKUK & ARABULUCULUK'A HOŞ GELDİNİZ
         </h2>
         <h1 class="text-white text-4xl lg:text-5xl font-bold mb-4">
           Bizim için önemli olan:
@@ -136,7 +136,7 @@ onMounted(() => {
   typeWriterEffect();
   if (route.query.section) {
     nextTick(() => {
-      
+
       setTimeout(() => {
         scrollToSection(route.query.section);
       }, 500);

@@ -8,7 +8,7 @@
       <div
         class="relative container px-4 md:px-20 lg:px-32 2xl:px-60 py-2 flex flex-col items-start justify-end h-full">
         <h2 class="text-white text-lg font-bold mb-2">
-          TIRYAKI HUKUK & DANIŞMANLIK BÜROSU
+          TIRYAKI HUKUK & ARABULUCULUK BÜROSU
         </h2>
         <h1 class="text-white text-4xl lg:text-5xl font-bold mb-4">
           Çalışma Alanımız: <span class="text-quaternary">Aile Hukuku </span>
@@ -251,14 +251,14 @@ const attorneyData1 = {
   name: "Av. Ezgi",
   id: "UCjKRboUFzbXGOYC6BjrVxnx1cE2",
   title: "Aile Hukuku Uzmanı",
-  bio: "Av. Ayşe Tiryaki, aile hukuku alanında uzmanlaşmış bir avukat olup, Tiryaki Hukuk & Danışmanlık Bürosu'nda çalışmaktadır. Özellikle aile hukuku, iş hukuku, ticaret hukuku ve miras hukuku alanlarında uzmanlaşmıştır. Kariyeri boyunca birçok karmaşık davada başarılı sonuçlar elde etmiş ve müvekkillerine hukuki danışmanlık hizmetleri sunmuştur. Profesyonel yaşamında etik kurallara bağlı kalarak müvekkillerinin haklarını en iyi şekilde savunmayı ilke edinmiştir. Hukuk eğitimi ve geniş deneyimi sayesinde, müvekkillerine kapsamlı ve etkili çözümler sunmaktadır.",
+  bio: "Av. Ayşe Tiryaki, aile hukuku alanında uzmanlaşmış bir avukat olup, Tiryaki Hukuk & Arabuluculuk Bürosu'nda çalışmaktadır. Özellikle aile hukuku, iş hukuku, ticaret hukuku ve miras hukuku alanlarında uzmanlaşmıştır. Kariyeri boyunca birçok karmaşık davada başarılı sonuçlar elde etmiş ve müvekkillerine hukuki Arabuluculuk hizmetleri sunmuştur. Profesyonel yaşamında etik kurallara bağlı kalarak müvekkillerinin haklarını en iyi şekilde savunmayı ilke edinmiştir. Hukuk eğitimi ve geniş deneyimi sayesinde, müvekkillerine kapsamlı ve etkili çözümler sunmaktadır.",
 };
 
 const attorneyData2 = {
   name: "Av. Hande",
   id: "LFG3jBdG4qYmtJay4ucqOFxxVKW2",
   title: "Aile Hukuku Uzmanı",
-  bio: "Av. Ayşe Tiryaki, aile hukuku alanında uzmanlaşmış bir avukat olup, Tiryaki Hukuk & Danışmanlık Bürosu'nda çalışmaktadır. Özellikle aile hukuku, iş hukuku, ticaret hukuku ve miras hukuku alanlarında uzmanlaşmıştır. Kariyeri boyunca birçok karmaşık davada başarılı sonuçlar elde etmiş ve müvekkillerine hukuki danışmanlık hizmetleri sunmuştur. Profesyonel yaşamında etik kurallara bağlı kalarak müvekkillerinin haklarını en iyi şekilde savunmayı ilke edinmiştir. Hukuk eğitimi ve geniş deneyimi sayesinde, müvekkillerine kapsamlı ve etkili çözümler sunmaktadır.",
+  bio: "Av. Ayşe Tiryaki, aile hukuku alanında uzmanlaşmış bir avukat olup, Tiryaki Hukuk & Arabuluculuk Bürosu'nda çalışmaktadır. Özellikle aile hukuku, iş hukuku, ticaret hukuku ve miras hukuku alanlarında uzmanlaşmıştır. Kariyeri boyunca birçok karmaşık davada başarılı sonuçlar elde etmiş ve müvekkillerine hukuki Arabuluculuk hizmetleri sunmuştur. Profesyonel yaşamında etik kurallara bağlı kalarak müvekkillerinin haklarını en iyi şekilde savunmayı ilke edinmiştir. Hukuk eğitimi ve geniş deneyimi sayesinde, müvekkillerine kapsamlı ve etkili çözümler sunmaktadır.",
 };
 </script>
 

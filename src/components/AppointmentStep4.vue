@@ -75,6 +75,7 @@ import { useStore } from "vuex";
 import LoadingSpinner from "./LoadingSpinner.vue";
 import { doc, getDoc, addDoc, collection, updateDoc } from "firebase/firestore";
 import { db } from "../firebase"; // Adjust the path as necessary
+import axios from "axios";
 
 const store = useStore();
 const userData = computed(() => store.getters.getUser);
@@ -133,6 +134,30 @@ const uploadFilesToFireStore = () => {
   return "firebase url";
 };
 
+const sendAppointmentRecievedMail = async (meetingData) => {
+  try {
+    const response = await axios.post(
+      "https://obscure-oasis-12313-0014f39ac81c.herokuapp.com/send-appointment-recieved-email",
+      {
+        customer_name: meetingData.customer_name,
+        attorney_name: meetingData.attorney_name,
+        date_for_display: meetingData.date_for_display,
+        day: meetingData.day,
+        slot: meetingData.slot,
+        end_time: meetingData.end_time,
+        customer_email: meetingData.customer_email,
+      },
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    console.log(response.data);
+  } catch (error) {
+    console.error("Error sending meeting accepted email:", error);
+  }
+};
 // api key for google meet AIzaSyCl6q_iRFcgsH2CosKjx9MjVmExK6jNXeU
 
 const saveMeeting = async (meetingData) => {
@@ -140,7 +165,7 @@ const saveMeeting = async (meetingData) => {
     console.log("saving meeting data...");
     // Save the meeting data to the firebase database
     const meetingDocRef = await addDoc(collection(db, "meetings"), meetingData);
-    console.log("meeting data saved" , meetingData);
+    console.log("meeting data saved", meetingData);
     // id of the saved document
 
     // Take meetingData, take user uid, go to user's document and add meetings array with meetingData as first element
@@ -153,8 +178,8 @@ const saveMeeting = async (meetingData) => {
       meetings.push(meetingDocRef.id);
       await updateDoc(userDocRef, { meetings });
       await store.dispatch("fetchMeetingsData", {
-      meetingIds: meetings,
-    });
+        meetingIds: meetings,
+      });
     }
   } catch (error) {
     console.error("Error saving meeting data:", error);
@@ -208,11 +233,14 @@ const createMeeting = async () => {
     status: "0",
   };
   saveMeeting(meetingData);
+
+  // Send an email to the customer
+  sendAppointmentRecievedMail(meetingData);
 };
 
 onMounted(async () => {
   console.log("AppointmentStep4 component mounted");
-  console.log("userdata" , userData.value);
+  console.log("userdata", userData.value);
 
   if (props) {
     // wait 1 second before creating the meeting

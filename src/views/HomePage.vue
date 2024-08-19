@@ -80,6 +80,7 @@
 
 <script setup>
 import { ref, onMounted } from "vue";
+import { nextTick } from "vue";
 
 import AttorneyAppointmentCard from "../components/AttorneyAppointmentCard.vue";
 import BlogsGallery from "../components/BlogsGallery.vue";
@@ -89,13 +90,18 @@ import ServicesHome from "../components/ServicesHome.vue";
 import WelcomeHome from "../components/WelcomeHome.vue";
 
 import { useRouter } from "vue-router";
+import { useRoute } from "vue-router";
 
 const router = useRouter();
+const route = useRoute();
 
 const scrollToSection = (sectionId) => {
   const section = document.getElementById(sectionId);
   if (section) {
+    console.log("scrolling to section id", sectionId);
     section.scrollIntoView({ behavior: "smooth" });
+  } else {
+    console.log("section not found", sectionId);
   }
 };
 
@@ -124,9 +130,17 @@ const typeWriterEffect = async () => {
     }
   }
 };
+// Watch for route changes to trigger scrolling
 
 onMounted(() => {
   typeWriterEffect();
+  if (route.query.section) {
+    nextTick(() => {
+      setTimeout(() => {
+        scrollToSection(route.query.section);
+      }, 500);
+    });
+  }
 });
 </script>
 

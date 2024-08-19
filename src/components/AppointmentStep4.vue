@@ -2,7 +2,7 @@
   <div
     class="mx-auto max-w-lg bg-white border border-gray-300 p-4 mb-4 space-y-3 relative">
     <div
-      v-if="isCreatingMeeting"
+      v-if="isCreatingMeeting && userData"
       class="absolute inset-0 flex items-center justify-center bg-white bg-opacity-95">
       <LoadingSpinner />
       <div class="ml-2 text-gray-800">Randevu Oluşturuluyor</div>
@@ -13,7 +13,7 @@
       <div class="flex flex-col items-center text-center space-y-2">
         <i class="ri-calendar-check-fill text-8xl text-tertiary"></i>
         <p class="text-lg font-medium">
-          Sayın <span class="font-semibold">{{ userData.displayName }}</span
+          Sayın <span class="font-semibold">{{ userData.name }}</span
           >, randevunuz başarı ile alınmıştır.
         </p>
         <div class="w-full border-b border-gray-300 p-2 text-lg">
@@ -140,7 +140,7 @@ const saveMeeting = async (meetingData) => {
     console.log("saving meeting data...");
     // Save the meeting data to the firebase database
     const meetingDocRef = await addDoc(collection(db, "meetings"), meetingData);
-    console.log("meeting data saved");
+    console.log("meeting data saved" , meetingData);
     // id of the saved document
 
     // Take meetingData, take user uid, go to user's document and add meetings array with meetingData as first element
@@ -212,6 +212,7 @@ const createMeeting = async () => {
 
 onMounted(async () => {
   console.log("AppointmentStep4 component mounted");
+  console.log("userdata" , userData.value);
 
   if (props) {
     // wait 1 second before creating the meeting

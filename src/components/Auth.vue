@@ -238,7 +238,7 @@ const emailRegistiration = ref("");
 const confirmEmail = ref("");
 const passwordRegistiration = ref("");
 const verificationCode = ref("");
-const verificationCodetoSend = Math.floor(100000 + Math.random() * 900000);
+const verificationCodetoSend = Math.floor(100000 + Math.random() * 900000).toString();
 
 const emailSingIn = ref("");
 const passwordSignIn = ref("");
@@ -265,6 +265,7 @@ const createUser = async () => {
     isCreatingUser.value = false;
     showConfirm.value = false;
     showAfterConfirm.value = true;
+    emits("signedIn");
   }, 2000);
   } catch (error) {
     if (error.code === "auth/email-already-in-use") {
@@ -291,6 +292,11 @@ const sendVerificationEmail = async (emailRegistiration, verificationCode) => {
       {
         email: emailRegistiration,
         verification_code: verificationCode,
+      },
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
       }
     );
     console.log(response.data);
@@ -300,6 +306,7 @@ const sendVerificationEmail = async (emailRegistiration, verificationCode) => {
 };
 
 const handleRegister = async () => {
+  window.scrollTo(0, 0)
   isLoading.value = true; // show loading spinner
   registerErrorMessage.value = ""; // Reset error message
   const phoneRegex = /^\d{3}-\d{3}-\d{2}-\d{2}$/;

@@ -4,7 +4,7 @@
       class="flex flex-col md:flex-row items-center justify-center md:space-x-8 lg:space-x-16">
       <div class="bg-gray-100 border-gray-300 md:w-3/5 md:h-[42rem]">
         <img
-          src="../assets/images/welcome-image.jpg"
+          src="../assets/images/welcome-image.webp"
           alt="Main Page Image"
           class="w-full h-96 md:h-full object-cover object-center" />
       </div>

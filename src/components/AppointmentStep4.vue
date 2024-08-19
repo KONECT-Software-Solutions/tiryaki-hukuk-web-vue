@@ -140,7 +140,7 @@ const saveMeeting = async (meetingData) => {
     console.log("saving meeting data...");
     // Save the meeting data to the firebase database
     const meetingDocRef = await addDoc(collection(db, "meetings"), meetingData);
-    console.log("meeting data saved");
+    console.log("meeting data saved" , meetingData);
     // id of the saved document
 
     // Take meetingData, take user uid, go to user's document and add meetings array with meetingData as first element

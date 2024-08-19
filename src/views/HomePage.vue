@@ -146,6 +146,6 @@ onMounted(() => {
 
 <style scoped>
 .hero-bg {
-  background-image: url("../assets/images/main-page-bg.jpg");
+  background-image: url("../assets/images/main-page-bg.webp");
 }
 </style>

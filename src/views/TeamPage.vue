@@ -27,6 +27,6 @@ import AttorneyProfileCard from "../components/AttorneyProfileCard.vue";
 
 <style scoped>
 .hero-bg {
-  background-image: url("../assets/images/team-page-bg.jpg");
+  background-image: url("../assets/images/team-page-bg.webp");
 }
 </style>

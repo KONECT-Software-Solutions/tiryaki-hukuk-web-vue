@@ -10,7 +10,7 @@
         <div class="bg-white">
           <div class="flex p-4 items-center justify-between">
             <span class="font-medium text-lg"
-              >Randevuyu iptal etmek istediğinize emin misiniz?</span
+              >Randevuyu iptal et.</span
             >
             <button
               type="button"
@@ -31,7 +31,14 @@
               <span class="sr-only">Close modal</span>
             </button>
           </div>
+          <div>
+            <p class="p-4 text-slate-900">
+              Randevuyu iptal etmek istediğinizden emin misiniz? Bu işlem
+              geri alınamaz.
+            </p>
+          </div>
           <div class="flex items-center py-4 justify-center space-x-3">
+            
             <button
               @click="cancel(meetingId)"
               class="px-4 py-1 border bg-slate-100 text-slate-700 hover:bg-slate-700 hover:text-slate-100 transition duration-300">

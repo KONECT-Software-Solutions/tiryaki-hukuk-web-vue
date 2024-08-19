@@ -232,7 +232,7 @@ onMounted(async () => {
 
 <style scoped>
 .hero-bg {
-  background-image: url("../assets/images/blog-page-bg.jpg");
+  background-image: url("../assets/images/blog-page-bg.webp");
 }
 
 .cursor-pointer {

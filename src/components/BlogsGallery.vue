@@ -1,22 +1,6 @@
 <template>
   <div class="w-full">
-    <div
-      v-if="filteredBlogs.length > 0"
-      key="blogs"
-      :class="gridClass"
-      class="relative">
-      <!--- Test to see if this line deployed-->
-      <!-- I will try this later <div class="absolute h-2/5 w-full bottom-0 bg-gradient-to-t from-white to-transparent z-50"></div>-->
-      <div
-        v-for="(columnBlogs, index) in splitBlogs(visibleBlogs, columnCount)"
-        :key="index"
-        class="flex flex-col gap-4">
-        <div v-for="blog in columnBlogs" :key="blog.id">
-          <BlogCard :blog="blog" />
-        </div>
-      </div>
-    </div>
-    <div v-else>
+    <div v-if="filteredBlogs.length == 0">
       <div key="blogs" class="">
         <div
           v-for="(columnBlogs, index) in [
@@ -33,12 +17,29 @@
       </div>
     </div>
     <div
+      v-else
+      key="blogs"
+      :class="gridClass"
+      class="relative">
+      <!--- Test to see if this line deployed-->
+      <!-- I will try this later <div class="absolute h-2/5 w-full bottom-0 bg-gradient-to-t from-white to-transparent z-50"></div>-->
+      <div
+        v-for="(columnBlogs, index) in splitBlogs(visibleBlogs, columnCount)"
+        :key="index"
+        class="flex flex-col gap-4">
+        <div v-for="blog in columnBlogs" :key="blog.id">
+          <BlogCard :blog="blog" />
+        </div>
+      </div>
+    </div>
+
+    <div
       v-if="filteredBlogs.length > visibleCount && showMoreButton"
       class="text-center mt-4">
       <button
         @click="visibleCount += 3"
         class="bg-tertiary text-white px-4 py-2 self-start">
-        Daha Fazla Blog Göster Test 2
+        Daha Fazla Blog Göster
       </button>
     </div>
   </div>

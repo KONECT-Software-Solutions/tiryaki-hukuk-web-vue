@@ -3,7 +3,7 @@
     <!-- HERO SECTION START -->
     <!-- :style="{ backgroundImage: `url(${blog.image})` }" -->
     <section
-      class="relative hero-bg bg-secondary bg-cover bg-center h-[60vh] md:h-[60vh]">
+      class="relative hero-bg bg-secondary bg-cover bg-center h-[60vh] md:h-[60vh]" style="background-attachment: fixed;">
       <div class="absolute inset-0 bg-black opacity-65"></div>
       <div
         class="relative container px-4 md:px-20 lg:px-32 2xl:px-60 py-2 flex flex-col items-start justify-end h-full">
@@ -265,6 +265,9 @@ const attorneyData2 = {
 <style scoped>
 .hero-bg {
   background-image: url("../assets/images/blog-page-bg.webp");
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed; 
 }
 
 .cursor-pointer {

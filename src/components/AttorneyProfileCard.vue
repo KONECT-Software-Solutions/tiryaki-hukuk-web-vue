@@ -20,7 +20,7 @@
               </div>
             </div>
             <img
-              :src="`assets/images/${attorneyData.id}.jpg`"
+              :src="`assets/images/${attorneyData.id}.webp`"
               alt="Profile Image"
               class="h-96 object-cover" />
             <div

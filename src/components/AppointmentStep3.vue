@@ -6,7 +6,7 @@
         <div class="flex my-2">
           <div>
             <img
-            :src="`/assets/images/${attorneyData.id}.jpg`"
+            :src="`/assets/images/${attorneyData.id}.webp`"
             alt="Profile Image"
               class="md:w-44 object-cover" />
             <button

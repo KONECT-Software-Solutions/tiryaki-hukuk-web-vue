@@ -1,13 +1,12 @@
 <template>
   <div>
     <!-- HERO SECTION START -->
-    <!-- :style="{ backgroundImage: `url(${blog.image})` }" -->
     <section
-      class="relative hero-bg bg-secondary bg-cover bg-center h-[60vh] md:h-[60vh]">
+      class="relative hero-bg bg-secondary bg-cover bg-center flex pt-20 items-end min-h-[60vh]" style="background-attachment: fixed;">
       <div class="absolute inset-0 bg-black opacity-65"></div>
       <div
         v-if="!loading"
-        class="relative container px-4 md:px-20 lg:px-32 2xl:px-60 py-2 flex flex-col items-start justify-end h-full">
+        class="relative container px-4 md:px-20 lg:px-32 2xl:px-60 py-2 flex flex-col items-start h-full">
         <div
           class="flex items-center bg-tertiary text-white px-4 py-2 text-center h-14 mb-3">
           <div
@@ -32,7 +31,7 @@
     <!-- MAIN CONTENT START -->
     <div>
       <div v-if="loading">
-        <div class="animate-pulse px-4 md:px-20 lg:px-32 2xl:px-60 py-10">
+        <div class="animate-pulse px-4 md:px-20 lg:px-32 2xl:px-60 py-10 md:py-16 lg:py-24 ">
           <div class="h-10 bg-gray-200 rounded mb-4"></div>
           <div class="h-64 bg-gray-200 rounded mb-4"></div>
           <div class="h-6 bg-gray-200 rounded mb-2"></div>
@@ -141,7 +140,7 @@
                 </li>
               </ul>
             </div>
-
+          
             <!-- Tags -->
             <div class="mb-6">
               <h4 class="text-lg font-semibold mb-3">Etiketler</h4>
@@ -177,11 +176,7 @@
                   </div>
                 </a>
               </div>
-            </div>
-            <!-- Randevu Al -->
-            <div class="mb-6">
-              <GetAppointmentButton />
-            </div>
+            </div>           
           </div>
         </div>
       </div>
@@ -248,6 +243,9 @@ onMounted(async () => {
 <style scoped>
 .hero-bg {
   background-image: url("../assets/images/blog-page-bg.webp");
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed; 
 }
 
 .cursor-pointer {

@@ -53,7 +53,7 @@
             <div
               v-if="!timeSlots.length"
               class="w-full text-center text-gray-500">
-              Uygun saat bulunamadı.
+              Bu tarihte uygun saat bulunamadı. Lütfen başka bir tarih seçiniz.
             </div>
           </div>
           <div v-else>fetching</div>

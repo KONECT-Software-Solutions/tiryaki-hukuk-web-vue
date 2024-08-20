@@ -12,7 +12,7 @@
             <div class="flex space-x-4">
               <div>
                 <img
-                  :src="`assets/images/${attorneyData.id}.jpg`"
+                  :src="`assets/images/${attorneyData.id}.webp`"
                   alt="Profile Image"
                   class="h-56 min-w-36 object-cover" />
               </div>

@@ -1,7 +1,7 @@
 <template>
   <div>
     <!-- HERO SECTION START -->
-    <section class="relative hero-bg bg-cover bg-center h-[30vh] md:h-[50vh]">
+    <section class="relative hero-bg bg-cover bg-center h-[30vh] md:h-[50vh]" style="background-attachment: fixed;">
       <div class="absolute inset-0 bg-black opacity-30"></div>
       <div
         class="relative container mx-auto md:px-16 px-8 py-12 flex flex-col items-center justify-end h-full">
@@ -143,5 +143,8 @@ onMounted(() => {
 <style scoped>
 .hero-bg {
   background-image: url("../assets/images/contact-page-bg.webp");
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed; 
 }
 </style>

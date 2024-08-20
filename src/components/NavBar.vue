@@ -3,15 +3,17 @@
   <nav
     :class="[
       'nav-bar w-full top-0 left-0 z-30 px-4 md:px-20 lg:px-32 2xl:px-60',
-      shouldAnimateNavBar ? 'move-in-top border-b bg-white text-gray-800 py-5' : 'text-white md:py-8 py-6 ',
+      shouldAnimateNavBar
+        ? 'move-in-top border-b bg-white text-gray-800 py-5'
+        : 'text-white md:py-8 py-6 ',
     ]">
     <div class="mx-auto flex items-center justify-between">
-      <router-link :to="'/'" class=" font-bold text-nowrap leading-4">
+      <router-link :to="'/'" class="font-bold text-nowrap leading-4">
         <h1 class="text-[23px]">TIRYAKI</h1>
         <p class="text-[13px]">HUKUK & ARABULUCULUK</p>
       </router-link>
       <ul
-        class="hidden items-center text-nowrap md:text-[15px] font-normal md:flex md:space-x-4 lg:space-x-8 ">
+        class="hidden items-center text-nowrap md:text-[15px] font-normal md:flex md:space-x-4 lg:space-x-8">
         <li v-for="menu in menus" :key="menu.title">
           <router-link
             :to="menu.link"
@@ -40,9 +42,7 @@
           </button>
         </li>
       </ul>
-      <button
-        @click="toggleMenu"
-        class="md:hidden focus:outline-none">
+      <button @click="toggleMenu" class="md:hidden focus:outline-none">
         <svg
           class="w-8 h-8"
           fill="none"
@@ -66,7 +66,9 @@
         'side-nav-bar fixed top-0 right-0 h-full w-52 bg-black bg-opacity-30 text-white transition-transform transform z-30',
         isMenuOpen ? 'translate-x-0' : 'translate-x-full',
       ]">
-       <router-link :to="'/'" class=" font-bold absolute top-5 left-4 text-nowrap leading-4">
+      <router-link
+        :to="'/'"
+        class="font-bold absolute top-5 left-4 text-nowrap leading-4">
         <h1 class="text-[23px]">TIRYAKI</h1>
         <p class="text-[13px]">HUKUK & ARABULUCULUK</p>
       </router-link>
@@ -96,25 +98,32 @@
         </li>
         <li v-if="!isAuthenticated">
           <button
-            @click="showSignInModal = true, toggleMenu"
+            @click="(showSignInModal = true), toggleMenu"
             class="bg-primary w-full text-start text-white py-4 px-4">
-            <i class="ri-login-box-line pr-2 text-xl"></i>
-            Giriş Yap
+            <div class="flex items-center">
+              <i class="ri-login-box-line text-xl pr-2"></i> <span>Giriş Yap</span>
+            </div>
           </button>
         </li>
-        <li v-else class="">
+        <li v-else>
           <router-link
             :to="'/profile'"
             @click="toggleMenu"
             class="bg-primary flex items-start border-b border-gray-400 text-white py-4 px-4">
-            <i class="ri-user-line text-xl pr-2"></i> Hesabım
+            <div class="flex justify-center items-center">
+              <i class="ri-user-line text-xl pr-2"></i> <span>Hesabım</span>
+            </div>
           </router-link>
           <button
             @click="signOut(), toggleMenu()"
-            class="bg-primary w-full text-start text-white  py-4  px-4">
-            <i class="ri-logout-box-line text-xl"></i>
-            Çıkış Yap
+            class="bg-primary w-full text-start text-white py-4 px-4">
+            <div class="flex items-center">
+              <i class="ri-logout-box-line text-xl pr-2"></i> <span>Çıkış Yap</span>
+            </div>
           </button>
+        </li>
+        <li>
+          <GetAppointmentButton @click="toggleMenu()"/>
         </li>
       </ul>
     </div>
@@ -127,6 +136,7 @@ import AuthModal from "./AuthModal.vue";
 import { computed } from "vue";
 import { useStore } from "vuex";
 import { useRouter } from "vue-router";
+import GetAppointmentButton from "./GetAppointmentButton.vue";
 
 const store = useStore();
 const router = useRouter();
@@ -145,7 +155,7 @@ const menus = [
   { title: "Ana Sayfa", link: "/" },
   { title: "Ekibimiz", link: "/team" },
   { title: "Hizmetlerimiz", link: "/services" },
-  { title: "Blog", link: "/blog"},
+  { title: "Blog", link: "/blog" },
   { title: "İletişim", link: "/contact" },
 ];
 
@@ -170,9 +180,7 @@ onUnmounted(() => {
   window.removeEventListener("scroll", handleScroll);
 });
 
-onUpdated(() => {
-
-});
+onUpdated(() => {});
 </script>
 
 <style scoped>
@@ -180,14 +188,12 @@ onUpdated(() => {
   transition: transform 0.3s ease-in-out;
 }
 
-.nav-bar{
+.nav-bar {
   position: absolute; /* Ensure navbar does not affect the document flow */
 }
 .nav-bar.move-in-top {
-  
   animation: moveInTop 0.6s ease-in-out;
   position: fixed; /* Ensure navbar does not affect the document flow */
-
 }
 
 @keyframes moveInTop {

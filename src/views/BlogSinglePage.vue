@@ -32,7 +32,7 @@
     <!-- MAIN CONTENT START -->
     <div>
       <div v-if="loading">
-        <div class="animate-pulse">
+        <div class="animate-pulse px-4 md:px-20 lg:px-32 2xl:px-60 py-10">
           <div class="h-10 bg-gray-200 rounded mb-4"></div>
           <div class="h-64 bg-gray-200 rounded mb-4"></div>
           <div class="h-6 bg-gray-200 rounded mb-2"></div>
@@ -178,6 +178,10 @@
                 </a>
               </div>
             </div>
+            <!-- Randevu Al -->
+            <div class="mb-6">
+              <GetAppointmentButton />
+            </div>
           </div>
         </div>
       </div>
@@ -202,7 +206,10 @@
 <script setup>
 import { ref, computed, onMounted, onUpdated } from "vue";
 import { useRoute } from "vue-router";
+import { useRouter } from "vue-router";
 import { useStore } from "vuex";
+import router from "../router";
+import GetAppointmentButton from "../components/GetAppointmentButton.vue";
 
 const route = useRoute();
 const store = useStore();
@@ -222,11 +229,19 @@ const categories = ref([
 onMounted(async () => {
   if (!blog.value) {
     await store.dispatch("fetchBlogById", blogId);
-    console.log("Blog fetched", blog.value.content);
+    if (blog.value) {
+      console.log("Blog fetched");
+      loading.value = false;
+    } else {
+      console.log("Blog not found");
+      loading.value = false;
+      // push to not found page
+      router.push("/not-found");
+    }
+  }else{
+    console.log("Blog already fetched");
+    loading.value = false;
   }
-  loading.value = false;
-  const { slug, id } = route.params;
-  console.log(slug, id);
 });
 </script>
 

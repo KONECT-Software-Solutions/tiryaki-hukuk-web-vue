@@ -2,7 +2,7 @@
   <div>
     <!-- HERO SECTION START -->
     <section
-      class="relative hero-bg bg-secondary bg-cover bg-center flex pt-20 items-end min-h-[60vh]" style="background-attachment: fixed;">
+      class="relative hero-bg bg-secondary bg-cover bg-center flex pt-20 items-end min-h-[60vh]" >
       <div class="absolute inset-0 bg-black opacity-65"></div>
       <div
         v-if="!loading"
@@ -243,9 +243,7 @@ onMounted(async () => {
 <style scoped>
 .hero-bg {
   background-image: url("../assets/images/blog-page-bg.webp");
-  background-size: cover;
-  background-position: center;
-  background-attachment: fixed; 
+
 }
 
 .cursor-pointer {

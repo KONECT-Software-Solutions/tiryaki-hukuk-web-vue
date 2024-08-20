@@ -5,6 +5,7 @@
       key="blogs"
       :class="gridClass"
       class="relative">
+      <!--- Test to see if this line deployed-->
       <!-- I will try this later <div class="absolute h-2/5 w-full bottom-0 bg-gradient-to-t from-white to-transparent z-50"></div>-->
       <div
         v-for="(columnBlogs, index) in splitBlogs(visibleBlogs, columnCount)"

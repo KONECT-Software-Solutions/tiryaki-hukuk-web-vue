@@ -1,6 +1,6 @@
 <template>
   <div
-    class="mx-auto max-w-lg border border-gray-200 bg-white pb-4 overflow-hidden flex flex-col">
+    class="mx-auto border border-gray-200 bg-white pb-4 w-full overflow-hidden flex flex-col">
     <!-- Title Section -->
     <div class="p-4 h-16 w-full">
       <div class="h-6 animate-pulse bg-gray-200 rounded"></div>

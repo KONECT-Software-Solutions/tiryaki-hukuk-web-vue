@@ -1,32 +1,19 @@
 <template>
   <div class="w-full">
-    <div v-if="filteredBlogs.length == 0">
-      <div key="blogs" class="">
-        <div
-          v-for="(columnBlogs, index) in [
-            [{ a: 1 }, { a: 1 }, { a: 1 }],
-            [{ a: 1 }, { a: 1 }, { a: 1 }],
-            [{ a: 1 }, { a: 1 }],
-          ]"
-          :key="index"
-          class="grid grid-1 md:grid-cols-3 gap-4">
-          <div v-for="blog in columnBlogs" :key="blog.id" class="py-8">
-            <BlogCardSkeleton />
-          </div>
+    <div v-if="filteredBlogs.length == 0" class="relative">
+      <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
+        <div v-for="index in 6" :key="index" class="flex flex-col gap-4">
+          <BlogCardSkeleton />
         </div>
       </div>
     </div>
-    <div
-      v-else
-      key="blogs"
-      :class="gridClass"
-      class="relative">
-      <!--- Test to see if this line deployed-->
-      <!-- I will try this later <div class="absolute h-2/5 w-full bottom-0 bg-gradient-to-t from-white to-transparent z-50"></div>-->
+
+    <!-- Blog cards in a flex column layout -->
+    <div v-else key="blogs" class="relative flex gap-4">
       <div
         v-for="(columnBlogs, index) in splitBlogs(visibleBlogs, columnCount)"
         :key="index"
-        class="flex flex-col gap-4">
+        class="flex flex-col gap-4 flex-1">
         <div v-for="blog in columnBlogs" :key="blog.id">
           <BlogCard :blog="blog" />
         </div>

@@ -38,7 +38,7 @@
       <button
         @click="visibleCount += 3"
         class="bg-tertiary text-white px-4 py-2 self-start">
-        Daha Fazla Blog Göster
+        Daha Fazla Blog Göster Test 2
       </button>
     </div>
   </div>

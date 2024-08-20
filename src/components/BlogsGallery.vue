@@ -16,7 +16,7 @@
       </div>
     </div>
     <div v-else>
-      <div key="blogs" class="grid grid-cols-3 gap-4">
+      <div key="blogs" class="">
         <div
           v-for="(columnBlogs, index) in [
             [{ a: 1 }, { a: 1 }, { a: 1 }],
@@ -24,8 +24,8 @@
             [{ a: 1 }, { a: 1 }],
           ]"
           :key="index"
-          class="flex flex-col gap-4">
-          <div v-for="blog in columnBlogs" :key="blog.id">
+          class="grid grid-1 md:grid-cols-3 gap-4">
+          <div v-for="blog in columnBlogs" :key="blog.id" class="py-8">
             <BlogCardSkeleton />
           </div>
         </div>

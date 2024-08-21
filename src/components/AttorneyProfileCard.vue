@@ -79,7 +79,6 @@
 </template>
 
 <script setup>
-import DateTimePicker from "./DateTimePicker.vue";
 import { onMounted, computed, ref } from "vue";
 import { useStore } from "vuex";
 
@@ -87,11 +86,6 @@ const store = useStore();
 
 const attorneysData = computed(() => store.state.attorneys);
 const showDateTimePicker = ref(false);
-
-const toggleDateTimePicker = (index) => {
-  showDateTimePicker.value = showDateTimePicker.value === index ? null : index;
-  console.log("toggleDateTimePicker", showDateTimePicker.value);
-};
 
 // Filter out the attorneys with role !== "admin"
 const filteredAttorneys = computed(() =>

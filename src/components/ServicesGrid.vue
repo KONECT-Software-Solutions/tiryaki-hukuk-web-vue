@@ -3,7 +3,7 @@
     class="grid container grid-cols-1 md:grid-cols-3 gap-4 gap-y-0 lg:grid-cols-4">
     <router-link
       :to="'/services/' + 'service'"
-      class="bg-white border leading-relaxed mb-10 py-4">
+      class="bg-white border leading-relaxed mb-10 py-4 hover:scale-105 hover:shadow-lg hover:border-gray-300 group transition duration-300 ease-in-out">
       <div class="p-5 text-center">
         <div
           class="rounded-full bg-gray-100 w-24 h-24 mx-auto mb-2 flex items-center justify-center p-4">
@@ -19,7 +19,7 @@
     </router-link>
     <router-link
       :to="'/services/' + 'service'"
-      class="bg-white border leading-relaxed mb-10 py-4">
+      class="bg-white border leading-relaxed mb-10 py-4 hover:scale-105 hover:shadow-lg hover:border-gray-300 group transition duration-300 ease-in-out transform">
       <div class="p-5 text-center">
         <div
           class="rounded-full bg-gray-100 w-24 h-24 mx-auto mb-2 flex items-center justify-center p-4">
@@ -35,7 +35,7 @@
     </router-link>
     <router-link
       :to="'/services/' + 'service'"
-      class="bg-white border leading-relaxed mb-10 py-4">
+      class="bg-white border leading-relaxed mb-10 py-4 hover:scale-105 hover:shadow-lg hover:border-gray-300 group transition duration-300 ease-in-out transform">
       <div class="p-5 text-center">
         <div
           class="rounded-full bg-gray-100 w-24 h-24 mx-auto mb-2 flex items-center justify-center p-4">
@@ -51,7 +51,7 @@
     </router-link>
     <router-link
       :to="'/services/' + 'service'"
-      class="bg-white border leading-relaxed mb-10 py-4">
+      class="bg-white border leading-relaxed mb-10 py-4 hover:scale-105 hover:shadow-lg hover:border-gray-300 group transition duration-300 ease-in-out transform">
       <div class="p-5 text-center">
         <div
           class="rounded-full bg-gray-100 w-24 h-24 mx-auto mb-2 flex items-center justify-center p-4">
@@ -67,7 +67,7 @@
     </router-link>
     <router-link
       :to="'/services/' + 'service'"
-      class="bg-white border leading-relaxed mb-10 py-4">
+      class="bg-white border leading-relaxed mb-10 py-4 hover:scale-105 hover:shadow-lg hover:border-gray-300 group transition duration-300 ease-in-out transform">
       <div class="p-5 text-center">
         <div
           class="rounded-full bg-gray-100 w-24 h-24 mx-auto mb-2 flex items-center justify-center p-4">
@@ -83,7 +83,7 @@
     </router-link>
     <router-link
       :to="'/services/' + 'service'"
-      class="bg-white border leading-relaxed mb-10 py-4">
+      class="bg-white border leading-relaxed mb-10 py-4 hover:scale-105 hover:shadow-lg hover:border-gray-300 group transition duration-300 ease-in-out transform">
       <div class="p-5 text-center">
         <div
           class="rounded-full bg-gray-100 w-24 h-24 mx-auto mb-2 flex items-center justify-center p-4">
@@ -99,7 +99,7 @@
     </router-link>
     <router-link
       :to="'/services/' + 'service'"
-      class="bg-white border leading-relaxed mb-10 py-4">
+      class="bg-white border leading-relaxed mb-10 py-4 hover:scale-105 hover:shadow-lg hover:border-gray-300 group transition duration-300 ease-in-out transform">
       <div class="p-5 text-center">
         <div
           class="rounded-full bg-gray-100 w-24 h-24 mx-auto mb-2 flex items-center justify-center p-4">
@@ -115,7 +115,7 @@
     </router-link>
     <router-link
       :to="'/services/' + 'service'"
-      class="bg-white border leading-relaxed mb-10 py-4">
+      class="bg-white border leading-relaxed mb-10 py-4 hover:scale-105 hover:shadow-lg hover:border-gray-300 group transition duration-300 ease-in-out transform">
       <div class="p-5 text-center">
         <div
           class="rounded-full bg-gray-100 w-24 h-24 mx-auto mb-2 flex items-center justify-center p-4">

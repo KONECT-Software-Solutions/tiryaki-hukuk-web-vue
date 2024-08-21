@@ -17,7 +17,6 @@ const route = useRoute();
 const scrollToSection = (sectionId) => {
   const section = document.getElementById(sectionId);
   if (section) {
-    console.log("scrolling to section", sectionId);
     section.scrollIntoView({ behavior: "smooth" });
   }
 };

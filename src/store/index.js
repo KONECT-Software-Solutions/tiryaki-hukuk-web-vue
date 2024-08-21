@@ -255,7 +255,7 @@ export default createStore({
           }
         }
         commit("setMeetings", meetingsData);
-        console.log("Meetings data fetched successfully.", meetingsData);
+        console.log("Meetings data fetched successfully.");
       } catch (error) {
         console.error("Error fetching meetings data by ID:", error);
       }

@@ -61,7 +61,7 @@ const selectCategory = (item) => {
 const menu = ["Randevular", "Hesap"];
 
 const handleCancelMeeting = async (id) => {
-  console.log("Cancel appointment", id);
+  console.log("Cancelling appointment");
   try {
     // Update the meeting status to 3
     await updateDoc(doc(db, "meetings", id), {

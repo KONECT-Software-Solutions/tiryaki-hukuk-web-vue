@@ -3,10 +3,10 @@
   <div
     tabindex="-1"
     class="fixed inset-0 flex items-center justify-center z-50 w-full md:inset-0 h-[calc(100%-1rem)] max-h-screen">
-    <div class="relative p-4 w-[36rem] max-h-full overflow-y-auto">
+    <div class="relative w-[36rem] max-h-full overflow-y-auto">
       <!-- Modal content -->
       <div class="bg-white">
-        <div class="flex p-4 items-center justify-between">
+        <div class="flex pt-4 px-4 items-center justify-between">
           <span class="font-medium text-lg">Giriş Yap</span>
           <button
             type="button"
@@ -27,7 +27,10 @@
             <span class="sr-only">Close modal</span>
           </button>
         </div>
-        <Auth @signedIn="$emit('close')" />
+        <div class="p-3">
+          <Auth @signedIn="$emit('close')" />
+        </div>
+  
       </div>
     </div>
   </div>

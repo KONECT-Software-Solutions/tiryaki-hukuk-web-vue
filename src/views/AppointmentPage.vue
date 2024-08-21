@@ -184,10 +184,6 @@ const handleContinueStep2 = (formData_) => {
   formData.value.day = day.value;
   formData.value.slot = slot.value;
   formData.value.dateForDisplay = dateForDisplay.value;
-  console.log(
-    "handleContinueStep2 datefordisplay",
-    formData.value.dateForDisplay
-  );
   nextStep();
 };
 
@@ -200,7 +196,6 @@ const handleContinueStep4 = (uploadedFiles_, notes_) => {
   console.log("handleContinueStep4");
   uploadedFiles.value = uploadedFiles_;
   formData.value.notes = notes_;
-  console.log("data from step 3", uploadedFiles_);
   nextStep();
 };
 

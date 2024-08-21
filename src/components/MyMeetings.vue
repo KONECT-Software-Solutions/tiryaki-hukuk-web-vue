@@ -8,10 +8,9 @@
       <div class="relative p-4 w-[36rem] max-h-full overflow-y-auto">
         <!-- Modal content -->
         <div class="bg-white">
+          
           <div class="flex p-4 items-center justify-between">
-            <span class="font-medium text-lg"
-              >Randevuyu iptal et.</span
-            >
+            <span class="font-medium text-lg">Randevuyu iptal et.</span>
             <button
               type="button"
               @click="showCancelModal = false"
@@ -32,13 +31,12 @@
             </button>
           </div>
           <div>
-            <p class="p-4 text-slate-900">
-              Randevuyu iptal etmek istediğinizden emin misiniz? Bu işlem
-              geri alınamaz.
+            <p class="p-4  text-slate-900">
+              Randevuyu iptal etmek istediğinizden emin misiniz? Bu işlem geri
+              alınamaz.
             </p>
           </div>
-          <div class="flex items-center py-4 justify-center space-x-3">
-            
+          <div class="flex items-center py-4 pr-12 justify-end space-x-3">
             <button
               @click="cancel(meetingId)"
               class="px-4 py-1 border bg-slate-100 text-slate-700 hover:bg-slate-700 hover:text-slate-100 transition duration-300">
@@ -203,7 +201,7 @@ const displayText = (type) => {
 
 const cancel = (id) => {
   showLoadingSpinner.value = true;
-  console.log("emitting Cancel appointment", id);
+  console.log("emitting Cancel appointment");
   emits("cancel", id);
   setTimeout(() => {
     showLoadingSpinner.value = false;

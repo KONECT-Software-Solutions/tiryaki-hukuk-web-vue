@@ -50,7 +50,7 @@
         </div>
       </form>
     </div>
-    <div class="flex-1 bg-white p-4 border border-gray-300 rounded-md">
+    <div class="flex-1 bg-white p-4 border border-gray-300 ">
       <h2 class="text-center text-lg font-medium mb-4">Üyeliğiniz yok mu?</h2>
       <button
         v-if="!showRegister"
@@ -97,7 +97,8 @@
                 v-model="phone"
                 id="phone-input"
                 class="w-full p-2 border border-l-0 rounded rounded-l-none border-gray-300"
-                placeholder="532-123-4567"
+                placeholder="5551234567"
+                maxlength="10"
                 required />
             </div>
           </div>
@@ -150,7 +151,7 @@
       <div
         v-if="isCreatingUser"
         class="absolute inset-0 flex items-center m-4 justify-center bg-white bg-opacity-65">
-        <LoadingSpinner :text="''"/>
+        <LoadingSpinner :text="''" />
       </div>
       <div
         v-if="confirmationErrorMessage"
@@ -160,7 +161,7 @@
       <div
         v-if="confirmationSuccessMessage"
         class="text-center text-green-600 border border-green-400 rounded-md p-2 mb-4">
-        {{ confirmationSuccessMessage }} 
+        {{ confirmationSuccessMessage }}
       </div>
       <div class="mb-4">
         <label class="block text-lg font-medium mb-2"
@@ -238,7 +239,9 @@ const emailRegistiration = ref("");
 const confirmEmail = ref("");
 const passwordRegistiration = ref("");
 const verificationCode = ref("");
-const verificationCodetoSend = Math.floor(100000 + Math.random() * 900000).toString();
+const verificationCodetoSend = Math.floor(
+  100000 + Math.random() * 900000
+).toString();
 
 const emailSingIn = ref("");
 const passwordSignIn = ref("");
@@ -262,27 +265,26 @@ const createUser = async () => {
     console.log("User created successfully");
 
     setTimeout(() => {
-    isCreatingUser.value = false;
-    showConfirm.value = false;
-    showAfterConfirm.value = true;
-    emits("signedIn");
-  }, 2000);
+      isCreatingUser.value = false;
+      showConfirm.value = false;
+      showAfterConfirm.value = true;
+      emits("signedIn");
+    }, 2000);
   } catch (error) {
     if (error.code === "auth/email-already-in-use") {
       confirmationSuccessMessage.value = null;
       confirmationErrorMessage.value =
         "Bu email adresi zaten kullanımda. Lütfen başka bir email adresi deneyin.";
-        console.log(error )
-        isCreatingUser.value = false;
+      console.log(error);
+      isCreatingUser.value = false;
     } else {
       console.error("Error creating user:", error);
       confirmationSuccessMessage.value = null;
       confirmationErrorMessage.value =
         "Kullanıcı oluşturulurken bir hata oluştu. Lütfen tekrar deneyin.";
-        isCreatingUser.value = false;
+      isCreatingUser.value = false;
     }
   }
-  
 };
 
 const sendVerificationEmail = async (emailRegistiration, verificationCode) => {
@@ -306,15 +308,15 @@ const sendVerificationEmail = async (emailRegistiration, verificationCode) => {
 };
 
 const handleRegister = async () => {
-  window.scrollTo(0, 0)
+  window.scrollTo(0, 0);
   isLoading.value = true; // show loading spinner
   registerErrorMessage.value = ""; // Reset error message
-  const phoneRegex = /^\d{3}-\d{3}-\d{2}-\d{2}$/;
-  // phone regex for 555-554-52-26
+  const phoneRegex = /^\d{10}$/;
+  // phone regex for 5555545226
 
   if (!phoneRegex.test(phone.value)) {
     registerErrorMessage.value =
-      "Geçersiz telefon numarası. Tekrar deneyin. Örnek: 555-555-55-55";
+      "Geçersiz telefon numarası. Tekrar deneyin. Örnek: 5555555555";
     isLoading.value = false;
     return;
   }
@@ -367,7 +369,6 @@ const handleRegister = async () => {
 
 const handleConfirmation = async () => {
   console.log("verification code entered", verificationCode.value);
-  console.log("verification code sended", verificationCodetoSend.toString());
   if (verificationCode.value === verificationCodetoSend.toString()) {
     console.log("Email verified successfully");
     confirmationErrorMessage.value = null;
@@ -385,7 +386,6 @@ const handleSignIn = async () => {
   // reset  signin message
   loginErrorMessage.value = "";
   console.log("Sign in form submitted");
-  console.log(emailSingIn.value, passwordSignIn.value);
   try {
     await store.dispatch("signIn", {
       email: emailSingIn.value,

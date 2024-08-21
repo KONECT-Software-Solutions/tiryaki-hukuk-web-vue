@@ -165,7 +165,7 @@ const saveMeeting = async (meetingData) => {
     console.log("saving meeting data...");
     // Save the meeting data to the firebase database
     const meetingDocRef = await addDoc(collection(db, "meetings"), meetingData);
-    console.log("meeting data saved", meetingData);
+    console.log("meeting data saved");
     // id of the saved document
 
     // Take meetingData, take user uid, go to user's document and add meetings array with meetingData as first element
@@ -240,7 +240,6 @@ const createMeeting = async () => {
 
 onMounted(async () => {
   console.log("AppointmentStep4 component mounted");
-  console.log("userdata", userData.value);
 
   if (props) {
     // wait 1 second before creating the meeting

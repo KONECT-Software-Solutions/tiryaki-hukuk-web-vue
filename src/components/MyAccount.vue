@@ -52,8 +52,6 @@ import { onMounted } from "vue";
 const props = defineProps(["userData"]);
 
 onMounted(() => {
-  if (props.userData) {
-    console.log("user.value", props.userData);
-  }
+  console.log("my account page mounted");
 });
 </script>

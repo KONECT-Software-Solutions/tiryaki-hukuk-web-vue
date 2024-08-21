@@ -19,7 +19,7 @@ const user = computed(() => store.getters.getUser);
 
 watch(user, (newUser, oldUser) => {
   if (newUser) {
-    console.log('User data updated', newUser);
+    console.log('User data updated');
   }
 }, { immediate: true });
 

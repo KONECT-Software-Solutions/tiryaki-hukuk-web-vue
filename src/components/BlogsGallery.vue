@@ -51,7 +51,7 @@ const visibleBlogs = computed(() => {
 
 // Setup Vuex store
 const store = useStore();
-const blogsData = computed(() => store.state.blogs);
+const blogsData = computed(() => store.getters.getBlogs);
 
 // Filtered blogs based on selected category
 const filteredBlogs = computed(() => {
@@ -95,7 +95,16 @@ const gridClass = computed(() => {
 });
 
 onMounted(async () => {
-  await store.dispatch("fetchBlogs");
+  if (blogsData.value.length === 0) {
+    await store.dispatch("fetchBlogs");
+    if (blogsData.value.length > 0) {
+      console.log("BlogsData fetched");
+    } else {
+      console.log("BlogsData not found");
+    }
+  } else {
+    console.log("BlogsData already fetched");
+  }
 
   updateColumnCount();
   window.addEventListener("resize", updateColumnCount);

@@ -1,7 +1,7 @@
 <template>
   <div
     class="group bg-white border max-w-72 border-gray-200 hover:shadow-xl hover:scale-110 transition duration-300 flex items-center justify-center">
-    <div  class="relative flex flex-col">
+    <div class="relative flex flex-col">
       <div class="flex flex-col space-y-4">
         <div class="flex justify-center">
           <div class="text-center">
@@ -69,11 +69,9 @@
 </template>
 
 <script setup>
-
 const props = defineProps({
   attorneyData: Object,
 });
-
 </script>
 
 <style scoped>

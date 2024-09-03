@@ -30,6 +30,9 @@ export default createStore({
     getBlogById: (state) => (id) => {
       return state.blogs.find((blog) => blog.id === id);
     },
+    getBlogs: (state) => {
+      return state.blogs;
+    },
     getAttorneyById: (state) => (id) => {
       return state.attorneys.find((attorney) => attorney.id === id);
     },

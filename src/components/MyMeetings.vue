@@ -117,7 +117,7 @@
             İptal Et
           </button>
           <router-link
-            :to="'/payment/' + meeting.id"
+            :to="'/odeme/' + meeting.id"
             class="px-4 py-1 border bg-quaternary text-white hover:bg-white hover:text-quaternary transition duration-30000">
             Öde
           </router-link>
@@ -212,7 +212,7 @@ const cancel = (id) => {
 const pay = (id) => {
   console.log("Pay appointment", id);
   // go to payment page with router
-  router.push(`/payment/${id}`);
+  router.push(`/odeme/${id}`);
 };
 
 onMounted(() => {});

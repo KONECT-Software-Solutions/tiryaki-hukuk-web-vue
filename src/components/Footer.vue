@@ -122,43 +122,43 @@
         <h3 class="text-xl mb-4">Hizmetlerimiz</h3>
         <ul class="space-y-2 text-slate-300">
           <li>
-            <router-link :to="'/services/' + 'service'" class="hover:text-white"
+            <router-link :to="'/hizmetler/' + 'aile-hukuku'" class="hover:text-white"
               >Aile Hukuku</router-link
             >
           </li>
           <li>
-            <router-link :to="'/services/' + 'service'" class="hover:text-white"
-              >Boşanma Davaları</router-link
+            <router-link :to="'/hizmetler/' + 'ticaret-hukuku'" class="hover:text-white"
+              >Ticaret Hukuku</router-link
             >
           </li>
           <li>
-            <router-link :to="'/services/' + 'service'" class="hover:text-white"
-              >Ceza Hukuku</router-link
+            <router-link :to="'/hizmetler/' + 'deniz-ticareti-hukuku'" class="hover:text-white"
+              >Deniz Ticareti Hukuku</router-link
             >
           </li>
           <li>
-            <router-link :to="'/services/' + 'service'" class="hover:text-white"
-              >İcra Hukuku</router-link
-            >
-          </li>
-          <li>
-            <router-link :to="'/services/' + 'service'" class="hover:text-white"
+            <router-link :to="'/hizmetler/' + 'is-hukuku'" class="hover:text-white"
               >İş Hukuku</router-link
             >
           </li>
           <li>
-            <router-link :to="'/services/' + 'service'" class="hover:text-white"
-              >Sağlık Hukuku</router-link
+            <router-link :to="'/hizmetler/' + 'ceza-hukuku'" class="hover:text-white"
+              >Ceza Hukuku</router-link
             >
           </li>
           <li>
-            <router-link :to="'/services/' + 'service'" class="hover:text-white"
-              >Tanıma ve Tenfiz Davaları</router-link
+            <router-link :to="'/hizmetler/' + 'miras-hukuku'" class="hover:text-white"
+              >Miras Hukuku</router-link
             >
           </li>
           <li>
-            <router-link :to="'/services/' + 'service'" class="hover:text-white"
-              >Vekalet Bilgileri</router-link
+            <router-link :to="'/hizmetler/' + 'kripto-hukuku'" class="hover:text-white"
+              >Kripto Hukuku</router-link
+            >
+          </li>
+          <li>
+            <router-link :to="'/hizmetler/' + 'yapay-zeka-hukuku'" class="hover:text-white"
+              >Yapay Zeka Hukuku</router-link
             >
           </li>
         </ul>

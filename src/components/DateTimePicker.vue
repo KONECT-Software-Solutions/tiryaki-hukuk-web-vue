@@ -203,6 +203,6 @@ const handleSelectDate = (slot) => {
     selectedSlot: slot,
   });
   // print store dateTimePickerData
-  router.push("/appointment");
+  router.push("/randevu-olustur");
 };
 </script>

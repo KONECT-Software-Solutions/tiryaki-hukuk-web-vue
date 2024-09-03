@@ -31,7 +31,7 @@
         </li>
         <li v-else class="flex justify-center">
           <router-link
-            :to="'/profile'"
+            :to="'/hesabım'"
             class="bg-primary flex items-center text-white py-[0.5rem] px-4 mr-2">
             <i class="ri-user-line text-xl pr-2"></i> Hesabım
           </router-link>
@@ -107,7 +107,7 @@
         </li>
         <li v-else>
           <router-link
-            :to="'/profile'"
+            :to="'/hesabım'"
             @click="toggleMenu"
             class="bg-primary flex items-start border-b border-gray-400 text-white py-4 px-4">
             <div class="flex justify-center items-center">
@@ -153,10 +153,10 @@ const showSignInModal = ref(false);
 
 const menus = [
   { title: "Ana Sayfa", link: "/" },
-  { title: "Ekibimiz", link: "/team" },
-  { title: "Hizmetlerimiz", link: "/services" },
+  { title: "Ekibimiz", link: "/ekip" },
+  { title: "Hizmetlerimiz", link: "/hizmetler" },
   { title: "Blog", link: "/blog" },
-  { title: "İletişim", link: "/contact" },
+  { title: "İletişim", link: "/iletisim" },
 ];
 
 const toggleMenu = () => {

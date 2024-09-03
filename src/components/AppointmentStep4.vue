@@ -60,7 +60,7 @@
 
         <!-- Action Buttons Section -->
         <router-link
-          :to="'/profile'"
+          :to="'/hesabım'"
           class="bg-primary text-white py-[0.5rem] px-4">
           Randevularım
         </router-link>

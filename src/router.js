@@ -9,38 +9,38 @@ import BlogSinglePage from "./views/BlogSinglePage.vue";
 import AppointmentPage from "./views/AppointmentPage.vue";
 import ProfilePage from "./views/ProfilePage.vue";
 import PaymentPage from "./views/PaymentPage.vue";
-import ServicesSinglePage from "./views/ServicesSinglePage.vue";
+import ServiceDetailPage from "./views/ServiceDetailPage.vue";
 import NotFound from "./views/NotFound.vue";
 
 const routes = [
   { path: "/", name: "Home", component: HomePage },
-  { path: "/team", name: "Team", component: TeamPage },
-  { path: "/services", name: "Services", component: ServicesPage },
+  { path: "/ekip", name: "Team", component: TeamPage },
+  { path: "/hizmetler", name: "Services", component: ServicesPage },
   { path: "/blog", name: "Blog", component: BlogPage },
-  { path: "/contact", name: "Contact", component: ContactPage },
+  { path: "/iletisim", name: "Contact", component: ContactPage },
   {
     path: "/blog/:slug/:id",
     name: "BlogSinglePage",
     component: BlogSinglePage,
   },
   {
-    path: "/services/:service",
-    name: "ServicesSinglePage",
-    component: ServicesSinglePage,
+    path: "/hizmetler/:serviceName",
+    name: "ServiceDetail",
+    component: ServiceDetailPage 
   },
   {
-    path: "/appointment",
+    path: "/randevu-olustur",
     name: "AppointmentPage",
     component: AppointmentPage,
   },
   {
-    path: "/profile",
+    path: "/hesabım",
     name: "Profile",
     component: ProfilePage,
     meta: { requiresAuth: true },
   },
   {
-    path: "/payment/:id",
+    path: "/odeme/:id",
     name: "Payment",
     component: PaymentPage,
     meta: { requiresAuth: true },

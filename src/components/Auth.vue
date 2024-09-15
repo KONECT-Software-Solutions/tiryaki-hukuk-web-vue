@@ -58,13 +58,13 @@
         class="w-full bg-quaternary text-white py-2">
         Kayıt Ol
       </button>
-      <form v-else-if="showRegister" @submit.prevent="handleRegister">
+      <form v-else-if="showRegister" @submit.prevent="handleRegister" class="space-y-4">
         <div
           v-if="registerErrorMessage"
           class="text-center text-red-600 border border-red-400 rounded-md p-2 mb-4">
           {{ registerErrorMessage }}
         </div>
-        <div class="mb-4">
+        <div>
           <label class="block text-sm font-medium mb-2">Ad*</label>
           <input
             v-model="firstName"
@@ -72,7 +72,7 @@
             class="w-full p-2 border border-gray-300 rounded"
             required />
         </div>
-        <div class="mb-4">
+        <div>
           <label class="block text-sm font-medium mb-2">Soyad*</label>
           <input
             v-model="lastName"
@@ -80,7 +80,7 @@
             class="w-full p-2 border border-gray-300 rounded"
             required />
         </div>
-        <div class="mb-4">
+        <div>
           <label class="block text-sm font-medium mb-2">Telefon*</label>
           <div class="flex items-center">
             <div
@@ -103,7 +103,7 @@
             </div>
           </div>
         </div>
-        <div class="mb-4">
+        <div>
           <label class="block text-sm font-medium mb-2">Email*</label>
           <input
             v-model="emailRegistiration"
@@ -111,7 +111,7 @@
             class="w-full p-2 border border-gray-300 rounded"
             required />
         </div>
-        <div class="mb-4">
+        <div>
           <label class="block text-sm font-medium mb-2">Email doğrulama*</label>
           <input
             v-model="confirmEmail"
@@ -119,22 +119,13 @@
             class="w-full p-2 border border-gray-300 rounded"
             required />
         </div>
-        <div class="mb-4">
+        <div>
           <label class="block text-sm font-medium mb-2">Şifre*</label>
           <input
             v-model="passwordRegistiration"
             type="password"
             class="w-full p-2 border border-gray-300 rounded"
             required />
-        </div>
-        <div class="mb-4 flex items-center">
-          <input type="checkbox" id="terms" class="mr-2" required />
-          <label for="terms" class="text-sm">
-            Tiryaki Hukuk ve Arabuluculuk'un
-            <a href="#" class="text-blue-500">Kullanım Koşulları</a> ve
-            <a href="#" class="text-blue-500">Gizlilik Politikasını</a>
-            kabul ediyorum.
-          </label>
         </div>
         <button
           type="submit"
@@ -143,6 +134,14 @@
           Kayıt Ol
         </button>
         <LoadingSpinner v-else />
+        <div class="flex items-center">
+          <label for="terms" class="text-sm text-slate-400">
+            Üye olarak Tiryaki Hukuk ve Arabuluculuk'un
+            <a href="#" class="text-blue-500">Kullanım Koşulları</a> ve
+            <a href="#" class="text-blue-500">Gizlilik Politikasını</a>
+            kabul etmiş olursunuz.
+          </label>
+        </div>
       </form>
     </div>
   </div>

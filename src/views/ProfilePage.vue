@@ -4,7 +4,7 @@
       <div class="absolute inset-0 bg-[rgb(34,40,49)]"></div>
     </section>
 
-    <div class="flex min-h-screen px-0 md:px-20 lg:px-32 2xl:px-60 bg-gray-100">
+    <div class="flex min-h-screen pb-4 md:pb-8 px-0 md:px-20 lg:px-32 2xl:px-60 bg-gray-100">
       <!-- Side Menu -->
 
       <!-- Main Content -->

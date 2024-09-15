@@ -169,7 +169,7 @@
       <!-- Working Hours Column -->
       <div class="w-full md:w-1/4">
         <h3 class="text-xl mb-4">Online Görüşme Al</h3>
-        <p class="mb-2 text-slate-300">
+        <p class="mb-4 text-slate-300">
           İstediğiniz avukatımızdan, dilediğiniz saatleri seçin ve online
           görüşme randevunuzu oluşturun.
         </p>

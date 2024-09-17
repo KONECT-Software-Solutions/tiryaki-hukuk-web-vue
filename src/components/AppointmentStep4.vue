@@ -145,7 +145,7 @@ const sendAppointmentRecievedMail = async (meetingData) => {
         day: meetingData.day,
         slot: meetingData.slot,
         end_time: meetingData.end_time,
-        customer_email: meetingData.customer_email,
+        email: meetingData.customer_email,
       },
       {
         headers: {
@@ -153,6 +153,7 @@ const sendAppointmentRecievedMail = async (meetingData) => {
         },
       }
     );
+    console.log(meetingData)
     console.log(response.data);
   } catch (error) {
     console.error("Error sending meeting accepted email:", error);

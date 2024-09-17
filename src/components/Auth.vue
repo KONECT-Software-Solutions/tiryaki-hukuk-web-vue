@@ -289,7 +289,7 @@ const createUser = async () => {
 const sendVerificationEmail = async (emailRegistiration, verificationCode) => {
   try {
     const response = await axios.post(
-      "https://obscure-oasis-12313-0014f39ac81c.herokuapp.com/send-verification-email",
+      "https://ykt7hblm31.execute-api.eu-north-1.amazonaws.com/prod/send-verification-email",
       {
         email: emailRegistiration,
         verification_code: verificationCode,

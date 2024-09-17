@@ -137,7 +137,7 @@ const uploadFilesToFireStore = () => {
 const sendAppointmentRecievedMail = async (meetingData) => {
   try {
     const response = await axios.post(
-      "https://obscure-oasis-12313-0014f39ac81c.herokuapp.com/send-appointment-recieved-email",
+      "https://ykt7hblm31.execute-api.eu-north-1.amazonaws.com/prod/send-appointment-recieved-email",
       {
         customer_name: meetingData.customer_name,
         attorney_name: meetingData.attorney_name,
@@ -159,6 +159,22 @@ const sendAppointmentRecievedMail = async (meetingData) => {
   }
 };
 // api key for google meet AIzaSyCl6q_iRFcgsH2CosKjx9MjVmExK6jNXeU
+
+// add exception to the attorney's schedule
+const addException = async (exceptionData) => {
+  try {
+        const attorneyDocRef = doc(db, "attorneys", props.attorneyData.id);
+        const attorneyDoc = await getDoc(attorneyDocRef);
+        if (attorneyDoc.exists()) {
+          const attorneyData = attorneyDoc.data();
+          const exceptions = attorneyData.exceptions || [];
+          exceptions.push(exceptionData);
+          await updateDoc(attorneyDocRef, { exceptions });
+        }
+      } catch (error) {
+        console.error("Error fetching attorney by ID:", error);
+      }
+};
 
 const saveMeeting = async (meetingData) => {
   try {
@@ -233,6 +249,14 @@ const createMeeting = async () => {
     status: "0",
   };
   saveMeeting(meetingData);
+   addException({
+    // format time stamp date to YYYY-MM-DD
+    date: props.formData.date,
+    startTime: props.formData.slot,
+    endTime: props.formData.endTime,
+    repeat: false, 
+    isMeeting: true
+  });
 
   // Send an email to the customer
   sendAppointmentRecievedMail(meetingData);

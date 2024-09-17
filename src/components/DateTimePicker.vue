@@ -83,7 +83,7 @@ const router = useRouter();
 const today = dayjs();
 // today in YYYY-MM-DD format
 const todayFormatted = new Date(today.format("YYYY-MM-DD"));
-const timeSlotsDataExample = createWeeklyTimeSlots(
+let timeSlotsDataExample = createWeeklyTimeSlots(
   todayFormatted,
   props.attorneyData
 );
@@ -178,21 +178,30 @@ function createWeeklyTimeSlots(startDate, attorneyData) {
   return timeSlotsData;
 }
 
-// remove exceptions from the time slots data
 function removeExceptions(timeSlotsData, exceptions) {
+  const dates = Object.keys(timeSlotsData);
   exceptions.forEach((exception) => {
-    const dateKey = generateDateKey(new Date(exception.date));
-    if (timeSlotsData[dateKey]) {
-      timeSlotsData[dateKey] = timeSlotsData[dateKey].filter((slot) => {
-        const slotTime = slot.split(":").map(Number);
-        const startTime = exception.startTime.split(":").map(Number);
-        const endTime = exception.endTime.split(":").map(Number);
-        return slotTime[0] < startTime[0] || slotTime[0] > endTime[0];
-      });
-    }
+    const exceptionDateObj = new Date(exception.date);
+    const exceptionDay = exceptionDateObj.getDay(); // 0 (Sunday) to 6 (Saturday)
+
+    dates.forEach((date) => {
+      const dateObj = new Date(date);
+      const isSameDate = date === exception.date;
+      const isRepeatingException =
+        exception.repeat && dateObj.getDay() === exceptionDay;
+
+      if (isSameDate || isRepeatingException) {
+        const updatedTimeSlots = timeSlotsData[date].filter((slot) => {
+          return slot < exception.startTime || slot >= exception.endTime;
+        });
+
+        timeSlotsData[date] = updatedTimeSlots;
+      }
+    });
   });
   return timeSlotsData;
 }
+
 
 const handleSelectDate = (slot) => {
   store.dispatch("updateDateTimePickerData", {
@@ -205,4 +214,18 @@ const handleSelectDate = (slot) => {
   // print store dateTimePickerData
   router.push("/randevu-olustur");
 };
+
+onMounted(() => {
+  selectDate(selectedIndex.value);
+
+  if (props.attorneyData.email == "attorney4@example.com") {
+    timeSlotsDataExample = removeExceptions(
+      timeSlotsDataExample,
+      props.attorneyData.exceptions
+    );
+
+    console.log("After removing exceptions:", timeSlotsDataExample);
+    
+  }
+});
 </script>

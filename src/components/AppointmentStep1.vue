@@ -76,7 +76,7 @@
         required
         class="w-full p-2 border text-sm border-gray-300 rounded focus:ring-black focus:ring-0">
         <option v-for="duration in durations" :key="duration" :value="duration">
-          {{ duration }} mins
+          {{ duration }} dk
         </option>
       </select>
     </div>

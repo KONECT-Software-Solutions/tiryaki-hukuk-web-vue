@@ -11,7 +11,6 @@ import { auth, db } from "../firebase"; // Adjust the import according to your f
 import { signInWithEmailAndPassword, signOut } from "firebase/auth";
 import { formatDate, convertMonthToTurkish } from "../utils";
 
-
 export default createStore({
   state: {
     blogs: [],
@@ -69,9 +68,11 @@ export default createStore({
     },
     setUser(state, user) {
       state.user = user;
+      localStorage.setItem("user", JSON.stringify(user)); // Store user in localStorage
     },
     clearUser(state) {
       state.user = null;
+      localStorage.removeItem("user"); // Remove user from localStorage
     },
     setDateTimePickerData(state, data) {
       state.dateTimePickerData = { ...state.dateTimePickerData, ...data };
@@ -94,12 +95,12 @@ export default createStore({
         meeting.status = status;
       }
     },
-    updatePaymentStatus(state, { id, is_paid }) {
+    updatePaymentStatus(state, { id, payment_status }) {
       const meeting = state.meetings.find((meeting) => meeting.id === id);
       if (meeting) {
-        meeting.is_paid = is_paid;
+        meeting.payment_status = payment_status;
       }
-    }
+    },
   },
   actions: {
     async fetchBlogs({ commit }) {
@@ -224,26 +225,37 @@ export default createStore({
     },
     async fetchUserData({ commit }) {
       console.log("fetchUserData invoked.");
-      auth.onAuthStateChanged(async (user) => {
-        if (user) {
-          console.log("User is signed in.");
-          try {
-            const userDocRef = doc(db, "users", user.uid);
-            const userDoc = await getDoc(userDocRef);
-            if (userDoc.exists()) {
-              user = { ...user, ...userDoc.data() };
-              commit("setUser", user);
-            } else {
-              console.log("No such document!");
+      if (localStorage.getItem("user")) {
+        console.log("User found in localStorage.");
+        const user = JSON.parse(localStorage.getItem("user"));
+        commit("setUser", user);
+      }
+      else {
+        console.log("No user in localStorage. fetching");
+
+        auth.onAuthStateChanged(async (user) => {
+          if (user) {
+            console.log("User is signed in.");
+            try {
+              const userDocRef = doc(db, "users", user.uid);
+              const userDoc = await getDoc(userDocRef);
+              if (userDoc.exists()) {
+                user = { ...user, ...userDoc.data() };
+                commit("setUser", user);
+              } else {
+                console.log("No such document!");
+              }
+            } catch (error) {
+              console.error("Error fetching user data:", error);
             }
-          } catch (error) {
-            console.error("Error fetching user data:", error);
+          } else {
+            console.log("No user is signed in.");
+            commit("clearUser");
           }
-        } else {
-          console.log("No user is signed in.");
-          commit("clearUser");
-        }
-      });
+        
+        });
+      }
+      
     },
 
     async fetchMeetingsData({ commit }, { meetingIds }) {

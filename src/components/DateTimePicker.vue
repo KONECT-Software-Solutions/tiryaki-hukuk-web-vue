@@ -87,6 +87,12 @@ let timeSlotsDataExample = createWeeklyTimeSlots(
   todayFormatted,
   props.attorneyData
 );
+
+timeSlotsDataExample = removeExceptions(
+      timeSlotsDataExample,
+      props.attorneyData.exceptions
+);
+
 const startOfWeek = today.startOf("isoWeek");
 const endOfWeek = today.endOf("isoWeek");
 const currentMonth = ref(today.format("MMMM"));
@@ -218,14 +224,5 @@ const handleSelectDate = (slot) => {
 onMounted(() => {
   selectDate(selectedIndex.value);
 
-  if (props.attorneyData.email == "attorney4@example.com") {
-    timeSlotsDataExample = removeExceptions(
-      timeSlotsDataExample,
-      props.attorneyData.exceptions
-    );
-
-    console.log("After removing exceptions:", timeSlotsDataExample);
-    
-  }
 });
 </script>

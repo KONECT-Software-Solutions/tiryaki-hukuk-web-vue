@@ -95,7 +95,7 @@ const gridClass = computed(() => {
 });
 
 onMounted(async () => {
-  if (blogsData.value.length === 0) {
+  if (blogsData.value.length <= 1) {
     await store.dispatch("fetchBlogs");
     if (blogsData.value.length > 0) {
       console.log("BlogsData fetched");

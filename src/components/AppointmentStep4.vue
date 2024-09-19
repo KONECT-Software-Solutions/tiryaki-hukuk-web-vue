@@ -4,8 +4,7 @@
     <div
       v-if="isCreatingMeeting && userData"
       class="absolute inset-0 flex items-center justify-center bg-white bg-opacity-95">
-      <LoadingSpinner />
-      <div class="ml-2 text-gray-800">Randevu Oluşturuluyor</div>
+      <LoadingSpinner :text="'Randevu oluşturuluyor'" />
     </div>
 
     <div>
@@ -60,7 +59,7 @@
 
         <!-- Action Buttons Section -->
         <router-link
-          :to="'/hesabım'"
+          :to="'/hesabim'"
           class="bg-primary text-white py-[0.5rem] px-4">
           Randevularım
         </router-link>
@@ -153,7 +152,7 @@ const sendAppointmentRecievedMail = async (meetingData) => {
         },
       }
     );
-    console.log(meetingData)
+    console.log(meetingData);
     console.log(response.data);
   } catch (error) {
     console.error("Error sending meeting accepted email:", error);
@@ -161,21 +160,7 @@ const sendAppointmentRecievedMail = async (meetingData) => {
 };
 // api key for google meet AIzaSyCl6q_iRFcgsH2CosKjx9MjVmExK6jNXeU
 
-// add exception to the attorney's schedule
-const addException = async (exceptionData) => {
-  try {
-        const attorneyDocRef = doc(db, "attorneys", props.attorneyData.id);
-        const attorneyDoc = await getDoc(attorneyDocRef);
-        if (attorneyDoc.exists()) {
-          const attorneyData = attorneyDoc.data();
-          const exceptions = attorneyData.exceptions || [];
-          exceptions.push(exceptionData);
-          await updateDoc(attorneyDocRef, { exceptions });
-        }
-      } catch (error) {
-        console.error("Error fetching attorney by ID:", error);
-      }
-};
+
 
 const saveMeeting = async (meetingData) => {
   try {
@@ -235,6 +220,7 @@ const createMeeting = async () => {
     customer_email: userData.value.email,
     customer_phone: userData.value.phone,
     customer_name: userData.value.name,
+    date: props.formData.date,
     date_time: date_time,
     day: props.formData.day,
     slot: props.formData.slot,
@@ -250,14 +236,7 @@ const createMeeting = async () => {
     status: "0",
   };
   saveMeeting(meetingData);
-   addException({
-    // format time stamp date to YYYY-MM-DD
-    date: props.formData.date,
-    startTime: props.formData.slot,
-    endTime: props.formData.endTime,
-    repeat: false, 
-    isMeeting: true
-  });
+  console.log(props.formData);
 
   // Send an email to the customer
   sendAppointmentRecievedMail(meetingData);

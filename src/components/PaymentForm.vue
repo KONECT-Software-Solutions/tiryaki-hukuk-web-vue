@@ -67,7 +67,7 @@ try {
     console.log("payment updated successfully on db for id", props.id);
 
     store.commit('updatePaymentStatus', {id: props.id, is_paid: true});
-    router.push('/hesabım');
+    router.push('/hesabim');
   } catch (error) {
     console.error("Error updating db for payment:", error);
   }

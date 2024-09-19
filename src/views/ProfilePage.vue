@@ -60,17 +60,43 @@ const selectCategory = (item) => {
 
 const menu = ["Randevular", "Hesap"];
 
-const handleCancelMeeting = async (id) => {
+const handleCancelMeeting = async (meetingId, attorneyId) => {
   console.log("Cancelling appointment");
   try {
-    // Update the meeting status to 3
-    await updateDoc(doc(db, "meetings", id), {
+    // Update the meeting status to "6"
+    await updateDoc(doc(db, "meetings", meetingId), {
       status: "6",
     });
+   
     console.log("Meeting cancelled successfully");
-    //
 
-    store.commit("updateMeetingStatus", { id, status: "6" });
+    console.log("delete exception from attorney");
+    // Now we need to go to the attorney's document and remove the exception that has meetingId === meetingId
+    const attorneyDocRef = doc(db, "attorneys", attorneyId);
+    const attorneySnapshot = await getDoc(attorneyDocRef);
+
+    if (attorneySnapshot.exists()) {
+      const attorneyData = attorneySnapshot.data();
+      const exceptions = attorneyData.exceptions || [];  // Get the exceptions array
+      console.log("Attorney's exceptions array:", exceptions);
+      // Filter out the exception that matches the meetingId
+      const updatedExceptions = exceptions.filter(
+        (exception) => exception.meetingId !== meetingId
+      );
+      console.log("Updated exceptions array:", updatedExceptions);
+      // Update the attorney's document with the new exceptions array
+      await updateDoc(attorneyDocRef, {
+        exceptions: updatedExceptions,
+      });
+
+      console.log("Exception removed from attorney's exceptions array");
+    } else {
+      console.error("Attorney document does not exist");
+    }
+
+    // Update Vuex or other state management
+    store.commit("updateMeetingStatus", { id: meetingId, status: "6" });
+
   } catch (error) {
     console.error("Error cancelling meeting:", error);
   }

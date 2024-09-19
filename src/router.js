@@ -34,7 +34,7 @@ const routes = [
     component: AppointmentPage,
   },
   {
-    path: "/hesabım",
+    path: "/hesabim",
     name: "Profile",
     component: ProfilePage,
     meta: { requiresAuth: true },
@@ -62,6 +62,7 @@ const router = createRouter({
 
 router.beforeEach((to, from, next) => {
   if (to.meta.requiresAuth && !store.getters.isAuthenticated) {
+    alert('Bu sayfayı görüntülemek için giriş yapmalısınız.');
     next('/');
   } else {
     next();

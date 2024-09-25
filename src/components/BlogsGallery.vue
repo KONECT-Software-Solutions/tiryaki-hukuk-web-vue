@@ -55,7 +55,7 @@ const blogsData = computed(() => store.getters.getBlogs);
 
 // Filtered blogs based on selected category
 const filteredBlogs = computed(() => {
-  if (props.selectedCategory === "Tüm Yazılar") {
+  if (props.selectedCategory === "all") {
     return blogsData.value;
   }
   return blogsData.value.filter(
@@ -95,7 +95,7 @@ const gridClass = computed(() => {
 });
 
 onMounted(async () => {
-  if (blogsData.value.length === 0) {
+  if (blogsData.value.length <= visibleCount.value + 3) {
     await store.dispatch("fetchBlogs");
     if (blogsData.value.length > 0) {
       console.log("BlogsData fetched");
@@ -105,6 +105,8 @@ onMounted(async () => {
   } else {
     console.log("BlogsData already fetched");
   }
+
+  console.log("blog data", blogsData.value);
 
   updateColumnCount();
   window.addEventListener("resize", updateColumnCount);

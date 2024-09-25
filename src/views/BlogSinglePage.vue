@@ -2,7 +2,7 @@
   <div>
     <!-- HERO SECTION START -->
     <section
-      class="relative hero-bg bg-secondary bg-cover bg-center flex pt-20 items-end min-h-[60vh]" >
+      class="relative hero-bg bg-secondary bg-cover bg-center flex pt-20 items-end min-h-[60vh]">
       <div class="absolute inset-0 bg-black opacity-65"></div>
       <div
         v-if="!loading"
@@ -31,7 +31,8 @@
     <!-- MAIN CONTENT START -->
     <div>
       <div v-if="loading">
-        <div class="animate-pulse px-4 md:px-20 lg:px-32 2xl:px-60 py-10 md:py-16 lg:py-24 ">
+        <div
+          class="animate-pulse px-4 md:px-20 lg:px-32 2xl:px-60 py-10 md:py-16 lg:py-24">
           <div class="h-10 bg-gray-200 rounded mb-4"></div>
           <div class="h-64 bg-gray-200 rounded mb-4"></div>
           <div class="h-6 bg-gray-200 rounded mb-2"></div>
@@ -47,7 +48,7 @@
             <img :src="blog.image" alt="Blog Image" class="w-full mb-6" />
 
             <div
-              class="text-slate-700 border-b mb-8 blog-content"
+              class="text-slate-700 border-b pb-4 mb-8 blog-content"
               v-html="blog.content"></div>
             <div></div>
             <h1 class="text-2xl mb-4">Yorum Yap</h1>
@@ -97,9 +98,11 @@
                   v-for="category in categories"
                   :key="category"
                   class="mb-2 flex items-center pb-2 justify-between border-b border-gray-200 hover:translate-x-4 hover:font-semibold transition duration-300">
-                  <router-link :to="'/blog'">
-                    <span>{{ category }}</span></router-link
-                  ><i class="ri-arrow-right-s-line"></i>
+                  <router-link
+                    :to="{ name: 'Blog', params: { category: category } }">
+                    <span>{{ categoryMap[category] }}</span>
+                  </router-link>
+                  <i class="ri-arrow-right-s-line"></i>
                 </li>
               </ul>
             </div>
@@ -108,39 +111,33 @@
             <div class="mb-6 mt-6">
               <h4 class="text-lg font-semibold mb-3">Son Blog Yazılarımız</h4>
               <ul>
-                <li class="mb-4 flex">
+                <li
+                  v-for="recentBlog in latestBlogs"
+                  :key="recentBlog.id"
+                  class="mb-4 flex">
                   <img
-                    src="../assets/images/blog-card-image.png"
-                    alt="Recent Post 1"
-                    class="w-16 h-16 mr-4" />
+                    :src="recentBlog.image"
+                    alt="Recent Post"
+                    class="w-16  mr-4" />
                   <div>
-                    <a href="#" class="hover:underline">Geçmiş Blog Yazısı 1</a>
-                    <p class="text-sm text-gray-600">Oct. 18, 2019</p>
-                  </div>
-                </li>
-                <li class="mb-4 flex">
-                  <img
-                    src="../assets/images/blog-card-image.png"
-                    alt="Recent Post 2"
-                    class="w-16 h-16 mr-4" />
-                  <div>
-                    <a href="#" class="hover:underline">Geçmiş Blog Yazısı 2</a>
-                    <p class="text-sm text-gray-600">Oct. 18, 2019</p>
-                  </div>
-                </li>
-                <li class="mb-4 flex">
-                  <img
-                    src="../assets/images/blog-card-image.png"
-                    alt="Recent Post 3"
-                    class="w-16 h-16 mr-4" />
-                  <div>
-                    <a href="#" class="hover:underline">Geçmiş Blog Yazısı 3</a>
-                    <p class="text-sm text-gray-600">Oct. 18, 2019</p>
+                    <div class="hover:translate-x-2 hover:font-semibold transition duration-300 text-gray-700">
+                      <router-link
+                        :to="'/blog/' + recentBlog.slug + '/' + recentBlog.id"
+                        >
+                        {{ recentBlog.title }}
+                      </router-link>
+                    </div>
+
+                    <p class="text-sm text-gray-600">
+                      {{
+                        recentBlog.created_date.toDate().toLocaleDateString()
+                      }}
+                    </p>
                   </div>
                 </li>
               </ul>
             </div>
-          
+
             <!-- Tags -->
             <div class="mb-6">
               <h4 class="text-lg font-semibold mb-3">Etiketler</h4>
@@ -176,7 +173,7 @@
                   </div>
                 </a>
               </div>
-            </div>           
+            </div>
           </div>
         </div>
       </div>
@@ -199,51 +196,85 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, onUpdated } from "vue";
+import { ref, computed, onMounted, watch } from "vue";
 import { useRoute } from "vue-router";
-import { useRouter } from "vue-router";
 import { useStore } from "vuex";
 import router from "../router";
-import GetAppointmentButton from "../components/GetAppointmentButton.vue";
+import { db } from "../firebase";
+import { getDocs, collection, query, orderBy, limit } from "firebase/firestore";
 
 const route = useRoute();
 const store = useStore();
-const blogId = route.params.id;
+let blogId = ref(route.params.id); // Use ref for reactivity
 const loading = ref(true);
 
-const blog = computed(() => store.getters.getBlogById(blogId));
+const blog = computed(() => store.getters.getBlogById(blogId.value));
+const latestBlogs = ref([]);
 
-const categories = ref([
-  "Tüm Yazılar",
-  "Blog Yazısı",
-  "Haberler",
-  "Hukuk",
-  "Son Dakika",
-]);
+const categories = ref(["all", "blog", "haberler", "hukuk", "son-dakika"]);
 
-onMounted(async () => {
-  if (!blog.value) {
-    await store.dispatch("fetchBlogById", blogId);
-    if (blog.value) {
-      console.log("Blog fetched");
-      loading.value = false;
-    } else {
-      console.log("Blog not found");
-      loading.value = false;
-      // push to not found page
-      router.push("/not-found");
-    }
-  }else{
-    console.log("Blog already fetched");
-    loading.value = false;
+const categoryMap = {
+  all: "Tüm Yazılar",
+  blog: "Blog Yazısı",
+  haberler: "Haberler",
+  hukuk: "Hukuk",
+  "son-dakika": "Son Dakika",
+};
+
+// Function to fetch latest blogs
+const fetchLatestBlogs = async () => {
+  try {
+    const blogsQuery = query(
+      collection(db, "blogs"),
+      orderBy("created_date", "desc"), // Order by creation time
+      limit(3) // Limit to 3 blogs
+    );
+
+    const querySnapshot = await getDocs(blogsQuery);
+    const latestBlogs = [];
+
+    querySnapshot.forEach((doc) => {
+      latestBlogs.push({ id: doc.id, ...doc.data() });
+    });
+
+    return latestBlogs;
+  } catch (error) {
+    console.error("Error fetching latest blogs: ", error);
+    return [];
   }
+};
+
+// Function to fetch blog by id
+const fetchBlog = async (id) => {
+  loading.value = true;
+  await store.dispatch("fetchBlogById", id);
+  if (blog.value) {
+    loading.value = false;
+  } else {
+    router.push("/not-found");
+  }
+};
+
+// Watch route params and fetch the new blog when `id` changes
+watch(
+  () => route.params.id,
+  async (newId) => {
+    blogId.value = newId;
+    await fetchBlog(newId); // Fetch new blog based on the new id
+  }
+);
+
+// Initial fetch
+onMounted(async () => {
+  await fetchBlog(blogId.value);
+  const data = await fetchLatestBlogs();
+  latestBlogs.value = data.filter((b) => b.id !== blogId.value); // Exclude current blog
 });
 </script>
 
 <style scoped>
 .hero-bg {
   background-image: url("../assets/images/blog-page-bg.webp");
-
 }
 
 .cursor-pointer {

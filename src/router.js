@@ -16,7 +16,7 @@ const routes = [
   { path: "/", name: "Home", component: HomePage },
   { path: "/ekip", name: "Team", component: TeamPage },
   { path: "/hizmetler", name: "Services", component: ServicesPage },
-  { path: "/blog", name: "Blog", component: BlogPage },
+  { path: '/blog/:category?', name: "Blog", component: BlogPage },
   { path: "/iletisim", name: "Contact", component: ContactPage },
   {
     path: "/blog/:slug/:id",
@@ -34,7 +34,7 @@ const routes = [
     component: AppointmentPage,
   },
   {
-    path: "/hesabım",
+    path: "/hesabim",
     name: "Profile",
     component: ProfilePage,
     meta: { requiresAuth: true },
@@ -62,6 +62,7 @@ const router = createRouter({
 
 router.beforeEach((to, from, next) => {
   if (to.meta.requiresAuth && !store.getters.isAuthenticated) {
+    alert('Bu sayfayı görüntülemek için giriş yapmalısınız.');
     next('/');
   } else {
     next();

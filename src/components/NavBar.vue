@@ -31,7 +31,7 @@
         </li>
         <li v-else class="flex justify-center">
           <router-link
-            :to="'/hesabım'"
+            :to="'/hesabim'"
             class="bg-primary flex items-center text-white py-[0.5rem] px-4 mr-2">
             <i class="ri-user-line text-xl pr-2"></i> Hesabım
           </router-link>
@@ -107,7 +107,7 @@
         </li>
         <li v-else>
           <router-link
-            :to="'/hesabım'"
+            :to="'/hesabim'"
             @click="toggleMenu"
             class="bg-primary flex items-start border-b border-gray-400 text-white py-4 px-4">
             <div class="flex justify-center items-center">

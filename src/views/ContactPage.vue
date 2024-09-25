@@ -83,29 +83,52 @@
         </div>
         <!-- google maps section end -->
         <div class="flex-1">
-          <form class="border p-10">
+          <form class="border p-10 relative" @submit.prevent="handleSubmit">
+            <div
+              class="absolute inset-0 flex items-center justify-center bg-white bg-opacity-95"
+              v-if="isLoading">
+              <LoadingSpinner :text="'Mesaj gönderiliyor'" />
+            </div>
+
+            <div class="space-y-3 text-center mb-5">
+              <div
+                v-if="isSuccess"
+                class="text-center text-sm md:text-base bg-slate-50 text-green-600 border border-green-400 rounded-md p-2">
+                <p>E-mail başarıyla gönderildi</p>
+              </div>
+              <div
+                v-if="isError"
+                class="text-center text-sm md:text-base bg-slate-50 text-red-600 border border-red-400 rounded-md p-2">
+                <p>E-mail gönderilemedi, tekrar deneyin</p>
+              </div>
+            </div>
+
             <div class="mb-4">
               <input
                 type="text"
                 placeholder="İsim"
-                class="w-full px-3 py-2 border border-gray-300 rounded" />
+                class="w-full px-3 py-2 border border-gray-300 rounded"
+                required />
             </div>
             <div class="mb-4">
               <input
                 type="email"
                 placeholder="Email"
-                class="w-full px-3 py-2 border border-gray-300 rounded" />
+                class="w-full px-3 py-2 border border-gray-300 rounded"
+                required />
             </div>
             <div class="mb-4">
               <input
                 type="text"
                 placeholder="Konu"
-                class="w-full px-3 py-2 border border-gray-300 rounded" />
+                class="w-full px-3 py-2 border border-gray-300 rounded"
+                required />
             </div>
             <div class="mb-4">
               <textarea
                 placeholder="Mesajınız"
-                class="w-full px-3 py-2 border border-gray-300 rounded">
+                class="w-full px-3 py-2 border border-gray-300 rounded"
+                required>
               </textarea>
             </div>
             <div class="flex justify-end">
@@ -125,7 +148,9 @@
 </template>
 
 <script setup>
-import { onMounted } from "vue";
+import { onMounted, ref} from "vue";
+import axios from "axios";
+import LoadingSpinner from "../components/LoadingSpinner.vue";
 
 onMounted(() => {
   const mapOptions = {
@@ -139,7 +164,7 @@ onMounted(() => {
 
     // Ensure that google.maps.places is available
     if (google.maps.places) {
-      const placeId = 'ChIJrw1HKUcUyhQRUTH1NsaVpjU'; // Replace with actual Place ID
+      const placeId = "ChIJrw1HKUcUyhQRUTH1NsaVpjU"; // Replace with actual Place ID
 
       const service = new google.maps.places.PlacesService(map);
       service.getDetails({ placeId: placeId }, (place, status) => {
@@ -170,6 +195,43 @@ onMounted(() => {
     console.error("Error initializing Google Maps:", error);
   }
 });
+
+const isLoading = ref(false);
+const isSuccess = ref(false);
+const isError = ref(false);
+
+const handleSubmit = async (event) => {
+  event.preventDefault();
+
+  // Reset status before submission
+  isLoading.value = true;
+  isSuccess.value = false;
+  isError.value = false;
+
+  // Extract form data
+  const formData = {
+    name: event.target[0].value, // Get the name from the first input field
+    email: event.target[1].value, // Get the email from the second input field
+    subject: event.target[2].value, // Get the subject from the third input field
+    message: event.target[3].value, // Get the message from the textarea
+  };
+
+  try {
+    // Send the form data to the Lambda endpoint
+    const response = await axios.post(
+      "https://ykt7hblm31.execute-api.eu-north-1.amazonaws.com/prod/send-contact-form-email",
+      formData
+    );
+
+    console.log("Email sent successfully:", response.data);
+    isSuccess.value = true;
+  } catch (error) {
+    console.error("Error sending email:", error);
+    isError.value = true;
+  } finally {
+    isLoading.value = false; // Stop loading once the request is completed
+  }
+};
 </script>
 
 <style scoped>

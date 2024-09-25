@@ -11,21 +11,24 @@
 <script setup>
 import NavBar from "./components/NavBar.vue";
 import Footer from "./components/Footer.vue";
-import { onMounted, computed, watch } from 'vue';
-import { useStore } from 'vuex';
+import { onMounted, computed, watch } from "vue";
+import { useStore } from "vuex";
 
 const store = useStore();
 const user = computed(() => store.getters.getUser);
 
-watch(user, (newUser, oldUser) => {
-  if (newUser) {
-    console.log('User data updated');
-  }
-}, { immediate: true });
+watch(
+  user,
+  (newUser, oldUser) => {
+    if (newUser) {
+      console.log("User data updated");
+    }
+  },
+  { immediate: true }
+);
 
-onMounted(async ()=> {
-  await store.dispatch('fetchUserData');
-
+onMounted(async () => {
+  await store.dispatch("fetchUserData");
 });
 </script>
 
@@ -33,10 +36,10 @@ onMounted(async ()=> {
 /* Add any necessary styles here */
 /* add font monserrat open sans*/
 
-@import url('https://fonts.googleapis.com/css2?family=Roboto+Condensed:ital,wght@0,100..900;1,100..900&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Roboto+Condensed:ital,wght@0,100..900;1,100..900&display=swap");
 
 body {
-  font-family: 'Roboto Condensed', sans-serif;
+  font-family: "Roboto Condensed", sans-serif;
 }
 
 .bg-brown-600 {
@@ -67,10 +70,12 @@ body {
 }
 
 /* Add the following CSS for the transition */
-.fade-enter-active, .fade-leave-active {
+.fade-enter-active,
+.fade-leave-active {
   transition: opacity 0.4s;
 }
-.fade-enter-from, .fade-leave-to {
+.fade-enter-from,
+.fade-leave-to {
   opacity: 30%;
 }
 

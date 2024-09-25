@@ -244,6 +244,7 @@ const createMeeting = async () => {
   console.log(props.formData);
 
   // Send an email to the customer
+  // uncomment
   sendAppointmentRecievedMail(meetingData);
 };
 

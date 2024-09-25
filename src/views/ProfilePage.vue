@@ -66,6 +66,7 @@ const handleCancelMeeting = async (meetingId, attorneyId) => {
     // Update the meeting status to "6"
     await updateDoc(doc(db, "meetings", meetingId), {
       status: "6",
+      cancel_reason: "Randevu danışan tarafından iptal edildi.",
     });
    
     console.log("Meeting cancelled successfully");
@@ -104,7 +105,10 @@ const handleCancelMeeting = async (meetingId, attorneyId) => {
 
 onMounted(async () => {
   console.log("profile page mounted");
+  console.log("meetingsData", meetingsData.value);
   if (userData.value.meetings && meetingsData.value.length === 0) {
+    console.log("fetching meetings data");
+    console.log("userData", userData.value.meetings);
     await store.dispatch("fetchMeetingsData", {
       meetingIds: userData.value.meetings,
     });

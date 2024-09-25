@@ -16,7 +16,7 @@ const routes = [
   { path: "/", name: "Home", component: HomePage },
   { path: "/ekip", name: "Team", component: TeamPage },
   { path: "/hizmetler", name: "Services", component: ServicesPage },
-  { path: "/blog", name: "Blog", component: BlogPage },
+  { path: '/blog/:category?', name: "Blog", component: BlogPage },
   { path: "/iletisim", name: "Contact", component: ContactPage },
   {
     path: "/blog/:slug/:id",

@@ -22,7 +22,7 @@
           <p
             class="text-nowrap text-slate-300 flex items-start hover:text-white">
             <i class="ri-mail-fill align-middle text-lg text-white pr-2"></i>
-            tiryaki.hukuk@gmail.com
+            info@tiryakihukuk.com
           </p>
         </div>
         <div class="flex space-x-4 mt-4">

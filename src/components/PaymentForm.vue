@@ -62,7 +62,7 @@ const handlePayment = async () => {
 try {
     // Update the meeting status to 3
     await updateDoc(doc(db, "meetings", props.id), {
-      is_paid: true,
+      payment_status: "1",
     });
     console.log("payment updated successfully on db for id", props.id);
 

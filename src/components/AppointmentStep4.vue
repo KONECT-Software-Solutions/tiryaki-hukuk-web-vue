@@ -75,6 +75,7 @@ import LoadingSpinner from "./LoadingSpinner.vue";
 import { doc, getDoc, addDoc, collection, updateDoc } from "firebase/firestore";
 import { db } from "../firebase"; // Adjust the path as necessary
 import axios from "axios";
+import { sub } from "date-fns";
 
 const store = useStore();
 const userData = computed(() => store.getters.getUser);
@@ -182,6 +183,7 @@ const saveMeeting = async (meetingData) => {
       await store.dispatch("fetchMeetingsData", {
         meetingIds: meetings,
       });
+      // update meetings state in Vuex
     }
   } catch (error) {
     console.error("Error saving meeting data:", error);
@@ -194,6 +196,8 @@ const createMeeting = async () => {
 
   //create date_time using date and slot
   const date_time = new Date(props.formData.date);
+  const deadline = sub(date_time, { days: 1 })
+
   const [hours, minutes] = props.formData.slot.split(":").map(Number);
   date_time.setHours(hours, minutes);
 
@@ -222,6 +226,7 @@ const createMeeting = async () => {
     customer_name: userData.value.name,
     date: props.formData.date,
     date_time: date_time,
+    deadline: deadline,
     day: props.formData.day,
     slot: props.formData.slot,
     date_for_display: props.formData.dateForDisplay,
@@ -239,7 +244,7 @@ const createMeeting = async () => {
   console.log(props.formData);
 
   // Send an email to the customer
-  sendAppointmentRecievedMail(meetingData);
+  //sendAppointmentRecievedMail(meetingData);
 };
 
 onMounted(async () => {

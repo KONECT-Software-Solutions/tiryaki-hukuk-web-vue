@@ -6,6 +6,7 @@ import {
   doc,
   getDoc,
   getDocs,
+  updateDoc,
 } from "firebase/firestore";
 import { auth, db } from "../firebase"; // Adjust the import according to your firebase setup
 import { signInWithEmailAndPassword, signOut } from "firebase/auth";
@@ -225,39 +226,56 @@ export default createStore({
     },
     async fetchUserData({ commit }) {
       console.log("fetchUserData invoked.");
-      if (localStorage.getItem("user")) {
+
+      // Check if the user is already authenticated (even if there's data in local storage)
+      const localUser = localStorage.getItem("user");
+
+      if (localUser) {
         console.log("User found in localStorage.");
-        const user = JSON.parse(localStorage.getItem("user"));
-        commit("setUser", user);
+        const user = JSON.parse(localUser);
+        commit("setUser", user); // Use the local storage data for quick initialization
       }
-      else {
-        console.log("No user in localStorage. fetching");
 
-        auth.onAuthStateChanged(async (user) => {
-          if (user) {
-            console.log("User is signed in.");
-            try {
-              const userDocRef = doc(db, "users", user.uid);
-              const userDoc = await getDoc(userDocRef);
-              if (userDoc.exists()) {
-                user = { ...user, ...userDoc.data() };
-                commit("setUser", user);
-              } else {
-                console.log("No such document!");
-              }
-            } catch (error) {
-              console.error("Error fetching user data:", error);
+      // Always attempt to fetch fresh data from Firestore
+      auth.onAuthStateChanged(async (user) => {
+        if (user) {
+          console.log("Fetching fresh user data from Firestore.");
+          try {
+            const userDocRef = doc(db, "users", user.uid);
+            const userDoc = await getDoc(userDocRef);
+
+            if (userDoc.exists()) {
+              const freshUser = { ...user, ...userDoc.data() };
+              commit("setUser", freshUser); // Update Vuex store with fresh data
+              localStorage.setItem("user", JSON.stringify(freshUser)); // Sync with localStorage
+            } else {
+              console.log("No such document found in Firestore!");
             }
-          } else {
-            console.log("No user is signed in.");
-            commit("clearUser");
+          } catch (error) {
+            console.error("Error fetching user data from Firestore:", error);
           }
-        
-        });
-      }
-      
+        } else {
+          console.log("No user is signed in.");
+          commit("clearUser");
+        }
+      });
     },
-
+    async deleteException({ exceptionData }) {
+      try {
+        const attorneyDocRef = doc(db, "attorneys", exceptionData.attorney_id);
+        const attorneyDoc = await getDoc(attorneyDocRef);
+        if (attorneyDoc.exists()) {
+          const attorneyData = attorneyDoc.data();
+          const exceptions = attorneyData.exceptions || [];
+          const updatedExceptions = exceptions.filter(
+            (exception) => exception.meeting_id !== exceptionData.meeting_id
+          );
+          await updateDoc(attorneyDocRef, { exceptions: updatedExceptions });
+        }
+      } catch (error) {
+        console.error("Error fetching attorney by ID:", error);
+      }
+    },
     async fetchMeetingsData({ commit }, { meetingIds }) {
       console.log("fetching meetings...");
       try {
@@ -269,6 +287,27 @@ export default createStore({
             meetingsData.push({ id: meetingDocRef.id, ...meetingDoc.data() });
           }
         }
+        meetingsData.forEach((meeting) => {
+          const deadline = new Date(meeting.deadline.seconds * 1000);
+          const currentDate = new Date();
+          if (currentDate > deadline && meeting.status === "1" && meeting.payment_status === "0") {
+            // find this meeting in the firestore and update the status to 6
+            const docRef = doc(db, "meetings", meeting.id);
+            updateDoc(docRef, {
+              status: "6",
+              cancel_reason: "Ödeme süresi geçti.",
+              payment_status: "2",
+            });
+            deleteException({
+              attorney_id: meeting.attorney_id,
+              meeting_id: meeting.id,
+            });
+            return true;
+          } else {
+            return false;
+          }
+        });
+        console.log("Meetings data", meetingsData);
         commit("setMeetings", meetingsData);
         console.log("Meetings data fetched successfully.");
       } catch (error) {

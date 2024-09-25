@@ -118,5 +118,6 @@ onMounted(async () => {
   } else {
     loading.value = false;
   }
+  console.log("meetingsData", meetingsData.value);
 });
 </script>

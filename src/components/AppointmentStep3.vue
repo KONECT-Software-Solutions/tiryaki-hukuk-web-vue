@@ -111,12 +111,12 @@
           </div>
           <label
             for="message"
-            class="block mb-3 text-sm font-medium text-gray-900">
+            class="block mb-3 text-sm text-gray-900">
             <textarea
               id="message"
               v-model="notes"
               rows="4"
-              class="block p-2.5 w-full text-base text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-black focus:ring-0"
+              class="block p-2.5 w-full text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-black focus:ring-0"
               placeholder="Notlarınız buraya yazın..."></textarea>
           </label>
 

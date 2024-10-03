@@ -127,9 +127,20 @@
             <div class="mb-4">
               <textarea
                 placeholder="Mesajınız"
-                class="w-full px-3 py-2 border border-gray-300 rounded"
-                required>
-              </textarea>
+                class="w-full px-3 py-2 border border-gray-300 h-24 rounded"></textarea>
+            </div>
+            <div class="flex items-center mb-4">
+              <label for="terms" class="text-sm text-slate-500">
+                Mesaj gönderdiğinizde Tiryaki Hukuk ve Arabuluculuk'un Kişisel
+                Verilerin İşlenmesine Yönelik
+                <router-link
+                  :to="'/aydinlatma-metni'"
+                  target="_blank"
+                  class="text-blue-500">
+                  KVKK Aydınlatma Metni
+                </router-link>
+                okumuş ve kabul etmiş olursunuz.
+              </label>
             </div>
             <div class="flex justify-end">
               <button
@@ -148,7 +159,7 @@
 </template>
 
 <script setup>
-import { onMounted, ref} from "vue";
+import { onMounted, ref } from "vue";
 import axios from "axios";
 import LoadingSpinner from "../components/LoadingSpinner.vue";
 

@@ -1,4 +1,5 @@
 <template>
+  <ForgotPwModal v-if="showForgotPwModal" @close="showForgotPwModal = false" />
   <div class="flex flex-col items-center justify-center mx-auto max-w-xl">
     <div class="bg-white p-4 border border-gray-300 mb-4 w-full relative">
    
@@ -14,7 +15,7 @@
       >
         <LoadingSpinner />
       </div>
-        <Auth @signedIn="handleSignIn" />
+        <Auth @signedIn="handleSignIn" @forgotPw="showForgotPwModal = true" />
       </div>
     </div>
   </div>
@@ -22,6 +23,7 @@
 
 <script setup>
 import Auth from './Auth.vue';
+import ForgotPwModal from './ForgotPwModal.vue';
 import LoadingSpinner from './LoadingSpinner.vue';
 import { onMounted, ref, computed } from 'vue';
 import { useStore } from 'vuex';
@@ -29,6 +31,8 @@ import { useStore } from 'vuex';
 const store = useStore();
 
 const emits = defineEmits(['continueStep3']);
+
+const showForgotPwModal = ref(false);
 
 const isCheckingAuth = ref(true); // Add state for checking auth status
 

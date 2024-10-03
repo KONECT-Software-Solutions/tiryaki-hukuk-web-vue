@@ -3,6 +3,7 @@ import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
 import { getAuth, setPersistence, browserLocalPersistence } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
+import { getStorage } from "firebase/storage";
 
 
 // Your web app's Firebase configuration (replace with your actual config)
@@ -22,6 +23,7 @@ const app = initializeApp(firebaseConfig);
 const analytics = getAnalytics(app);
 const auth = getAuth(app);
 const db = getFirestore(app);
+const storage = getStorage(app);
 
 setPersistence(auth, browserLocalPersistence)
   .then(() => {
@@ -32,4 +34,4 @@ setPersistence(auth, browserLocalPersistence)
   });
 
 // Export the initialized services for use in other files
-export { app, analytics, auth, db};
+export { app, analytics, auth, db, storage};

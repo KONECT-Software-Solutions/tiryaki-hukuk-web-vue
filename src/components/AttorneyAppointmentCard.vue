@@ -67,7 +67,7 @@
         </div>
       </div>
     </div>
-    <div v-else>fetching</div>
+    <div v-else>fetching</div> <!-- BURAYA SKELETON LOADER GELECEK -->
   </div>
 </template>
 

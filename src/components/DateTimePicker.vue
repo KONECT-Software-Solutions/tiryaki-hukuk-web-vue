@@ -110,9 +110,16 @@ const currentWeek = ref(
 );
 
 const timeSlots = computed(() => {
-  const selectedDate =
-    currentWeek.value[selectedIndex.value].format("YYYY-MM-DD");
-  return timeSlotsDataExample[selectedDate] || [];
+  const selectedDate = currentWeek.value[selectedIndex.value].format("YYYY-MM-DD");
+  const slots = timeSlotsDataExample[selectedDate] || [];
+  
+  // Check if the selected date is today
+  if (selectedDate === today.format("YYYY-MM-DD")) {
+    const currentTime = dayjs().format("HH:mm");
+    return slots.filter(slot => slot >= currentTime);  // Filter out past time slots
+  }
+
+  return slots;
 });
 
 const nextWeek = () => {

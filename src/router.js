@@ -11,6 +11,7 @@ import ProfilePage from "./views/ProfilePage.vue";
 import PaymentPage from "./views/PaymentPage.vue";
 import ServiceDetailPage from "./views/ServiceDetailPage.vue";
 import NotFound from "./views/NotFound.vue";
+import SignUpDocsPage from "./views/SignUpDocsPage.vue";
 
 const routes = [
   { path: "/", name: "Home", component: HomePage },
@@ -18,6 +19,7 @@ const routes = [
   { path: "/hizmetler", name: "Services", component: ServicesPage },
   { path: '/blog/:category?', name: "Blog", component: BlogPage },
   { path: "/iletisim", name: "Contact", component: ContactPage },
+  { path: "/aydinlatma-metni", name: "SingUpDocs", component: SignUpDocsPage },
   {
     path: "/blog/:slug/:id",
     name: "BlogSinglePage",

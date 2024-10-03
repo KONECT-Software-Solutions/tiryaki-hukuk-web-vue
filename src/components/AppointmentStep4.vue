@@ -73,7 +73,8 @@ import { onMounted, ref, computed } from "vue";
 import { useStore } from "vuex";
 import LoadingSpinner from "./LoadingSpinner.vue";
 import { doc, getDoc, addDoc, collection, updateDoc } from "firebase/firestore";
-import { db } from "../firebase"; // Adjust the path as necessary
+import { ref as storageRef, uploadBytes, getDownloadURL } from "firebase/storage";
+import { db, storage } from "../firebase"; // Adjust the path as necessary
 import axios from "axios";
 import { sub } from "date-fns";
 
@@ -129,9 +130,30 @@ const fetchUserData = async (uid) => {
   }
 };
 
-const uploadFilesToFireStore = () => {
-  console.log("uploading files to firestore...");
-  return "firebase url";
+const uploadFilesToFireStore = async (uploadedFiles) => {
+  const fileUrls = [];
+
+  for (const fileObj of uploadedFiles) {
+    try {
+      const file = fileObj.file; // Get the actual File object
+      // Create a storage reference using meetingId + file name
+      const fileRef = storageRef(storage, `customer_documents/${file.name}`);
+      
+      // Use uploadBytes to handle the file binary data safely
+      const snapshot = await uploadBytes(fileRef, file);
+      
+      // Get the download URL after upload
+      const downloadUrl = await getDownloadURL(snapshot.ref);
+
+      // Push the download URL to the array
+      fileUrls.push(downloadUrl);
+    } catch (error) {
+      console.error(`Error uploading file ${file.name}:`, error);
+      throw new Error("File upload failed.");
+    }
+  }
+
+  return fileUrls; // Return an array of file URLs
 };
 
 const sendAppointmentRecievedMail = async (meetingData) => {
@@ -201,18 +223,18 @@ const createMeeting = async () => {
   const [hours, minutes] = props.formData.slot.split(":").map(Number);
   date_time.setHours(hours, minutes);
 
-  console.log("uploading files");
-  const fileUrls = await uploadFilesToFireStore(); // Assuming this function uploads files and returns an array of URLs
-
   console.log("meeting created");
 
-  // Create the customer_documents array
+  const fileUrls = await uploadFilesToFireStore(props.uploadedFiles); // Wait for files to upload
+
+  // Create the customer_documents array with URLs
   const customerDocuments = props.uploadedFiles.map((file, index) => ({
-    file_url: fileUrls[index], // Assuming fileUrls is an array and matches the order of uploadedFiles
+    file_url: fileUrls[index], // Use file URL after upload
     name: file.name,
     size: file.size,
     kind: file.type,
   }));
+
 
   const meetingData = {
     attorney_id: props.attorneyData.id,

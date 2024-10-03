@@ -36,9 +36,27 @@
             class="w-full p-2 border border-gray-300 rounded"
             required />
         </div>
-        <div class="mb-4 flex items-center justify-between">
-          <a href="#" class="text-sm font-medium">Şifremi unuttum?</a>
+        <div class="flex text-slate-600 justify-between mb-4">
+          <div class="flex space-x-2">
+            <input
+              id="rememberMe"
+              v-model="rememberMe"
+              type="checkbox"
+              class="p-2 border border-gray-300 rounded" />
+            <label for="rememberMe" class="block text-sm font-medium mb-2"
+              >Beni hatırla</label
+            >
+          </div>
+          <div class="flex items-center justify-between">
+            <button
+              @click="handleForgotPw"
+              type="button"
+              class="text-sm font-medium">
+              Şifremi unuttum?
+            </button>
+          </div>
         </div>
+
         <button
           type="submit"
           class="w-full bg-primary text-white py-2"
@@ -50,7 +68,8 @@
         </div>
       </form>
     </div>
-    <div class="flex-1 bg-white p-4 border border-gray-300 ">
+
+    <div class="flex-1 bg-white p-4 border border-gray-300">
       <h2 class="text-center text-lg font-medium mb-4">Üyeliğiniz yok mu?</h2>
       <button
         v-if="!showRegister"
@@ -58,7 +77,10 @@
         class="w-full bg-quaternary text-white py-2">
         Kayıt Ol
       </button>
-      <form v-else-if="showRegister" @submit.prevent="handleRegister" class="space-y-4">
+      <form
+        v-else-if="showRegister"
+        @submit.prevent="handleRegister"
+        class="space-y-4">
         <div
           v-if="registerErrorMessage"
           class="text-center text-red-600 border border-red-400 rounded-md p-2 mb-4">
@@ -135,11 +157,15 @@
         </button>
         <LoadingSpinner v-else />
         <div class="flex items-center">
-          <label for="terms" class="text-sm text-slate-400">
-            Üye olarak Tiryaki Hukuk ve Arabuluculuk'un
-            <a href="#" class="text-blue-500">Kullanım Koşulları</a> ve
-            <a href="#" class="text-blue-500">Gizlilik Politikasını</a>
-            kabul etmiş olursunuz.
+          <label for="terms" class="text-sm text-slate-500">
+            Üye olarak Tiryaki Hukuk ve Arabuluculuk'un Kişisel Verilerin
+            İşlenmesine Yönelik
+            <router-link
+              :to="'/aydinlatma-metni'"
+              target="_blank"
+              class="text-blue-500">
+              KVKK Aydınlatma Metni'ni
+            </router-link>okumuş ve kabul etmiş olursunuz.
           </label>
         </div>
       </form>
@@ -179,12 +205,24 @@
           placeholder="Doğrulama kodu..."
           required />
       </div>
-      <div class="mb-4 flex items-center">
-        <label for="terms" class="text-sm"
-          >Eğer 1 dakika içinde doğrulama kodunu almadıysanız
-          <a href="#" class="text-blue-500">buraya</a> tıklayarak yeni kod
-          alabilirsiniz.</label
-        >
+      <div>
+        <div class="mb-4 flex items-center">
+          <label for="terms" class="text-sm">
+            2 dakika içinde aktivasyon kodunu almadıysanız,
+            <span v-if="!isResendActive" class="text-gray-500">
+              ({{ counter }} saniye kaldı)
+            </span>
+            <span v-if="!isResendActive" class="font-medium"> buraya </span>
+            <a
+              v-else
+              href="#"
+              class="text-blue-500 font-medium"
+              @click="handleResendCode">
+              buraya
+            </a>
+            tıklayarak yeni kod alabilirsiniz.
+          </label>
+        </div>
       </div>
       <button
         @click="handleConfirmation"
@@ -205,7 +243,7 @@
 
 <script setup>
 import LoadingSpinner from "./LoadingSpinner.vue";
-import { onMounted, ref, watch } from "vue";
+import { onMounted, ref } from "vue";
 import { auth, db } from "../firebase"; // Adjust the path as necessary
 import {
   createUserWithEmailAndPassword,
@@ -215,7 +253,7 @@ import { doc, setDoc } from "firebase/firestore";
 import axios from "axios";
 import { useStore } from "vuex";
 
-const emits = defineEmits(["emailVerified", "signedIn"]);
+const emits = defineEmits(["emailVerified", "signedIn", "forgotPw"]);
 
 const store = useStore();
 
@@ -238,12 +276,63 @@ const emailRegistiration = ref("");
 const confirmEmail = ref("");
 const passwordRegistiration = ref("");
 const verificationCode = ref("");
-const verificationCodetoSend = Math.floor(
+let verificationCodetoSend = Math.floor(
   100000 + Math.random() * 900000
 ).toString();
 
 const emailSingIn = ref("");
 const passwordSignIn = ref("");
+const rememberMe = ref(false);
+// Define the countdown timer duration in seconds
+const countdownDuration = 120; // 2 minutes in seconds
+let countdownInterval = null; // Declare interval reference outside
+
+// Reactive state
+const counter = ref(countdownDuration);
+const isResendActive = ref(false);
+
+const handleResendCode = async () => {
+  // Generate a new verification code
+  verificationCodetoSend = Math.floor(
+    100000 + Math.random() * 900000
+  ).toString();
+
+  // Reset the counter and button
+  isResendActive.value = false;
+  counter.value = countdownDuration;
+
+  try {
+    // Send the new verification email
+    await sendVerificationEmail(
+      emailRegistiration.value,
+      verificationCodetoSend
+    );
+    console.log("New verification email sent successfully");
+    confirmationSuccessMessage.value = "Yeni doğrulama kodu gönderildi.";
+    confirmationErrorMessage.value = null;
+  } catch (error) {
+    console.error("Error resending verification email:", error);
+    confirmationSuccessMessage.value = null;
+    confirmationErrorMessage.value =
+      "Yeni doğrulama kodu gönderilemedi. Lütfen tekrar deneyin.";
+  }
+};
+
+const startCountdown = () => {
+  // Clear any existing interval to avoid multiple intervals running
+  if (countdownInterval) {
+    clearInterval(countdownInterval);
+  }
+
+  countdownInterval = setInterval(() => {
+    if (counter.value > 0) {
+      counter.value--;
+    } else {
+      isResendActive.value = true;
+      clearInterval(countdownInterval); // Clear the interval once done
+    }
+  }, 1000); // Use 1000 ms (1 second) for accurate countdown timing
+};
 
 const createUser = async () => {
   isCreatingUser.value = true;
@@ -301,6 +390,7 @@ const sendVerificationEmail = async (emailRegistiration, verificationCode) => {
       }
     );
     console.log(response.data);
+    startCountdown();
   } catch (error) {
     console.error("Error sending verification email:", error);
   }
@@ -357,10 +447,13 @@ const handleRegister = async () => {
       emailRegistiration.value,
       verificationCodetoSend
     );
+    confirmationSuccessMessage.value = "Doğrulama kodu gönderildi.";
+    confirmationErrorMessage.value = null;
   } catch (error) {
     console.error("Error sending verification email:", error);
-    registerErrorMessage.value =
-      "Doğrulama emaili gönderilemedi. Lütfen tekrar deneyin.";
+    confirmationSuccessMessage.value = null;
+    confirmationErrorMessage.value =
+      "Doğrulama kodu gönderilemedi. Lütfen tekrar deneyin.";
   } finally {
     isLoading.value = false; // hide loading spinner
   }
@@ -389,6 +482,7 @@ const handleSignIn = async () => {
     await store.dispatch("signIn", {
       email: emailSingIn.value,
       password: passwordSignIn.value,
+      rememberMe: rememberMe.value,
     });
 
     const user = auth.currentUser;
@@ -401,6 +495,11 @@ const handleSignIn = async () => {
   } finally {
     isLoading.value = false; // hide spinner
   }
+};
+
+const handleForgotPw = () => {
+  console.log("Forgot password clicked");
+  emits("forgotPw");
 };
 
 onMounted(() => {

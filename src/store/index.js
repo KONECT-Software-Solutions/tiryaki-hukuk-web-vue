@@ -7,9 +7,16 @@ import {
   getDoc,
   getDocs,
   updateDoc,
+  increment,
 } from "firebase/firestore";
 import { auth, db } from "../firebase"; // Adjust the import according to your firebase setup
-import { signInWithEmailAndPassword, signOut } from "firebase/auth";
+import {
+  signInWithEmailAndPassword,
+  setPersistence,
+  browserLocalPersistence,
+  browserSessionPersistence,
+  signOut
+} from "firebase/auth";
 import { formatDate, convertMonthToTurkish } from "../utils";
 
 export default createStore({
@@ -140,6 +147,7 @@ export default createStore({
       commit("setBlogs", blogs);
     },
     async fetchBlogById({ commit }, id) {
+      console.log("fetching blog by ID... vuex store");
       try {
         const blogDocRef = doc(db, "blogs", id);
         const blogDoc = await getDoc(blogDocRef);
@@ -147,13 +155,19 @@ export default createStore({
           let blog = blogDoc.data();
           blog.id = blogDoc.id;
 
-          const commentsRef = collection(db, "blogs", id, "comments");
-          const commentData = [];
-          const commentsSnapshot = await getDocs(commentsRef);
-          commentsSnapshot.docs.forEach((commentDoc) => {
-            commentData.push(commentDoc.data());
-          });
-          blog.comments = commentData;
+          if (blog.view_count) {
+            console.log("page view + 1");
+            // If the document exists, increment the view count
+            await updateDoc(blogDocRef, {
+              view_count: increment(1),
+            });
+          } else {
+            console.log("page view set to 1");
+            // If the document doesn't exist, set the view count to 1
+            await updateDoc(blogDocRef, {
+              view_count: 1,
+            });
+          }
 
           const formattedCreatedDate = formatDate(blog.created_date);
           const formattedUpdatedDate = formatDate(blog.updated_date);
@@ -200,14 +214,26 @@ export default createStore({
         console.error("Error fetching attorney by ID:", error);
       }
     },
-    async signIn({ commit }, { email, password }) {
+    async signIn({ commit }, { email, password, rememberMe }) {
       console.log("Signing in...");
+
       try {
+        // Set Firebase auth persistence based on rememberMe
+        const persistenceType = rememberMe
+          ? browserLocalPersistence // Persist session across browser restarts
+          : browserSessionPersistence; // Only for current session
+
+        // Set the persistence before signing in
+        await setPersistence(auth, persistenceType);
+
+        // Sign in with email and password
         const userCredential = await signInWithEmailAndPassword(
           auth,
           email,
           password
         );
+
+        // Commit the user to the store
         commit("setUser", userCredential.user);
       } catch (error) {
         console.error("Error signing in:", error);
@@ -224,6 +250,7 @@ export default createStore({
         throw error;
       }
     },
+
     async fetchUserData({ commit }) {
       console.log("fetchUserData invoked.");
 
@@ -290,7 +317,11 @@ export default createStore({
         meetingsData.forEach((meeting) => {
           const deadline = new Date(meeting.deadline.seconds * 1000);
           const currentDate = new Date();
-          if (currentDate > deadline && meeting.status === "1" && meeting.payment_status === "0") {
+          if (
+            currentDate > deadline &&
+            meeting.status === "1" &&
+            meeting.payment_status === "0"
+          ) {
             // find this meeting in the firestore and update the status to 6
             const docRef = doc(db, "meetings", meeting.id);
             updateDoc(docRef, {

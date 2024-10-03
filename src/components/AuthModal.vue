@@ -28,7 +28,7 @@
           </button>
         </div>
         <div class="p-3">
-          <Auth @signedIn="$emit('close')" />
+          <Auth @signedIn="$emit('close')" @forgotPw="handleForgotPw" />
         </div>
   
       </div>
@@ -40,7 +40,12 @@
 import { ref, computed, onMounted } from "vue";
 import Auth from "./Auth.vue";
 
-const emits = defineEmits(["close"]);
+const emits = defineEmits(["close", "forgotPw"]);
+
+const handleForgotPw = () => {
+  emits("close");
+  emits("forgotPw");
+};
 </script>
 
 <style scoped></style>

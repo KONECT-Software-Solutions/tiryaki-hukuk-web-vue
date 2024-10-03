@@ -7,9 +7,6 @@
       <div class="absolute inset-0 bg-black opacity-65"></div>
       <div
         class="relative container px-4 md:px-20 lg:px-32 2xl:px-60 py-2 flex flex-col items-start justify-end h-full">
-        <h2 class="text-white text-lg font-bold mb-2">
-          TIRYAKI HUKUK & ARABULUCULUK BÜROSU
-        </h2>
         <h1 class="text-white text-4xl lg:text-5xl font-bold mb-4">
           Çalışma Alanımız:
           <span class="text-quaternary">{{ pageContent.title }}</span>
@@ -27,9 +24,9 @@
         <div
           class="mx-auto px-4 container md:px-12 py-10 md:py-16 lg:py-24 flex flex-col justify-center lg:items-start lg:flex-row">
           <!-- Left Section -->
-          <div class="max-w-3xl lg:pr-10">
+          <div class="max-w-4xl lg:pr-10">
             <img
-              src="../assets/images/aile-hukuku.webp"
+              :src="pageContent.image"
               alt="Blog Image"
               class="w-full mb-6" />
 
@@ -60,47 +57,44 @@
                   v-for="category in categories"
                   :key="category"
                   class="mb-2 flex items-center pb-2 justify-between border-b border-gray-200 hover:translate-x-4 hover:font-semibold transition duration-300">
-                  <router-link :to="'/hizmetler'">
-                    <span>{{ category }}</span></router-link
-                  ><i class="ri-arrow-right-s-line"></i>
+                  <router-link
+                    :to="{
+                      name: 'ServiceDetail',
+                      params: { serviceName: category },
+                    }">
+                    <span>{{ categoryMap[category] }}</span>
+                  </router-link>
+                  <i class="ri-arrow-right-s-line"></i>
                 </li>
               </ul>
             </div>
 
             <!-- Recent Posts -->
             <div class="mb-6 mt-6">
-              <h4 class="text-lg font-semibold mb-3">
-                Bu Konudaki Yazılarımız
-              </h4>
+              <h4 class="text-lg font-semibold mb-3">Son Blog Yazılarımız</h4>
               <ul>
-                <li class="mb-4 flex">
+                <li
+                  v-for="recentBlog in latestBlogs"
+                  :key="recentBlog.id"
+                  class="mb-4 flex">
                   <img
-                    src="../assets/images/blog-card-image.png"
-                    alt="Recent Post 1"
-                    class="w-16 h-16 mr-4" />
+                    :src="recentBlog.image"
+                    alt="Recent Post"
+                    class="w-16 h-12 mr-4" />
                   <div>
-                    <a href="#" class="hover:underline">Geçmiş Blog Yazısı 1</a>
-                    <p class="text-sm text-gray-600">Oct. 18, 2019</p>
-                  </div>
-                </li>
-                <li class="mb-4 flex">
-                  <img
-                    src="../assets/images/blog-card-image.png"
-                    alt="Recent Post 2"
-                    class="w-16 h-16 mr-4" />
-                  <div>
-                    <a href="#" class="hover:underline">Geçmiş Blog Yazısı 2</a>
-                    <p class="text-sm text-gray-600">Oct. 18, 2019</p>
-                  </div>
-                </li>
-                <li class="mb-4 flex">
-                  <img
-                    src="../assets/images/blog-card-image.png"
-                    alt="Recent Post 3"
-                    class="w-16 h-16 mr-4" />
-                  <div>
-                    <a href="#" class="hover:underline">Geçmiş Blog Yazısı 3</a>
-                    <p class="text-sm text-gray-600">Oct. 18, 2019</p>
+                    <div
+                      class="hover:translate-x-2 hover:font-semibold transition duration-300 text-gray-700">
+                      <router-link
+                        :to="'/blog/' + recentBlog.slug + '/' + recentBlog.id">
+                        {{ recentBlog.title }}
+                      </router-link>
+                    </div>
+
+                    <p class="text-sm text-gray-600">
+                      {{
+                        recentBlog.created_date.toDate().toLocaleDateString()
+                      }}
+                    </p>
                   </div>
                 </li>
               </ul>
@@ -111,7 +105,7 @@
               <h4 class="text-lg font-semibold mb-3">Etiketler</h4>
               <div class="flex flex-wrap uppercase text-[11px]">
                 <span
-                  v-for="(tag, index) in tags"
+                  v-for="(tag, index) in pageContent.tags"
                   :key="index"
                   class="border border-gray-300 hover:border-black rounded-md text-black px-3 py-1 mr-2 mb-2 transition-colors duration-300 ease-in-out"
                   >{{ tag }}</span
@@ -152,21 +146,33 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, onUpdated } from "vue";
+import { ref, computed, onMounted, watch } from "vue";
 import AttorneyProfileCardSingle from "../components/AttorneyProfileCardSingle.vue";
 import GetAppointmentButton from "../components/GetAppointmentButton.vue";
 import { useRoute } from "vue-router";
+import { getDocs, collection, orderBy, query, limit } from "firebase/firestore";
+import { db } from "../firebase";
+import AileHukukuImg from "../assets/images/aile-hukuku.webp";
+import TicaretHukukuImg from "../assets/images/ticaret-hukuku.webp";
+import DenizTicaretHukukuImg from "../assets/images/deniz-ticareti-hukuku.webp";
+import IsHukukuImg from "../assets/images/is-hukuku.webp";
+import CezaHukukuImg from "../assets/images/ceza-hukuku.webp";
+import MirasHukukuImg from "../assets/images/miras-hukuku.webp";
+import KriptoHukukuImg from "../assets/images/kripto-hukuku.webp";
+import YapayZekaHukukuImg from "../assets/images/yapay-zeka-hukuku.webp";
+
 const route = useRoute();
-const serviceName = route.params.serviceName;
+const serviceName = ref(route.params.serviceName);
 
 const serviceDetails = [
   {
     title: "Aile Hukuku",
+    tags: ["Boşanma Davaları", "Nafaka ve Mal Paylaşımı", "Velayet Davaları", "Soybağı ve Evlat Edinme", "Evlilik Sözleşmeleri"],
     description:
       "Aile hukuku, aile bireyleri arasındaki ilişkileri düzenleyen, evlilik, boşanma, velayet ve nafaka gibi konuları kapsayan bir hukuk dalıdır. Bu alanda hukuki danışmanlık sunmaktayız.",
-    image: "../assets/images/aile-hukuku.webp",
+    image: AileHukukuImg,
     content: `
-    <div data-v-082a8f4f="" class="text-slate-700 border-b mb-8 blog-content">
+    <div>
         <h1>Aile Hukuku</h1>
         <p>
             Aile hukuku, aile bireyleri arasındaki ilişkileri düzenleyen, evlilik, boşanma, velayet, nafaka gibi konuları kapsayan bir hukuk dalıdır. Aile hukuku, bireylerin aile içindeki haklarını ve yükümlülüklerini belirler.
@@ -225,9 +231,10 @@ const serviceDetails = [
   },
   {
     title: "Ticaret Hukuku",
+    tags: ["Ticaret Hukuku", "Şirket Kuruluşu ve Yönetimi", "Şirket Birleşmeleri ve Devralmaları", "Rekabet Hukuku", "Ticari Sözleşmeler"], 
     description:
       "Ticaret hukuku, ticari işletmelerin faaliyetlerini düzenleyen bir hukuk dalıdır. Şirket kuruluşları, ticari sözleşmeler, rekabet hukuku ve uluslararası ticaret gibi konular bu alanın kapsamındadır.",
-    image: "../assets/images/aile-hukuku.webp",
+    image: TicaretHukukuImg,
     content: `
     <div>
         <h1>Ticaret Hukuku</h1>
@@ -297,9 +304,10 @@ const serviceDetails = [
   },
   {
     title: "Deniz Ticareti Hukuku",
+    tags: ["Deniz Ticareti Hukuku", "Taşıma Sözleşmeleri", "Navlun Anlaşmaları", "Gemi Alım-Satım İşlemleri", "Deniz Kazaları ve Zararların Tazmini"],
     description:
       "Deniz ticareti hukuku, deniz yoluyla gerçekleştirilen taşımacılık ve denizcilik faaliyetlerini düzenleyen bir hukuk dalıdır. Gemi alım-satım işlemleri, deniz kazaları, navlun anlaşmaları, gemi finansmanı ve uluslararası denizcilik hukuku gibi konular bu alanın kapsamındadır.",
-    image: "../assets/images/aile-hukuku.webp",
+    image: DenizTicaretHukukuImg,
     content: `
   <div>
     <h1>Deniz Ticareti Hukuku</h1>
@@ -374,9 +382,10 @@ const serviceDetails = [
   },
   {
     title: "İş Hukuku",
+    tags: ["İş Hukuku", "İş Sözleşmeleri", "Çalışma Koşulları ve İş Güvenliği", "Disiplin ve İşten Çıkarma", "Toplu İş Sözleşmeleri ve Sendikal İlişkiler"],
     description:
-    "İş hukuku, işçi hakları ve işveren yükümlülüklerini düzenleyen bir hukuk dalıdır. İş sözleşmeleri, çalışma koşulları ve sendikal faaliyetler bu alanda ele alınan temel konulardır.",
-    image: "../assets/images/aile-hukuku.webp",
+      "İş hukuku, işçi hakları ve işveren yükümlülüklerini düzenleyen bir hukuk dalıdır. İş sözleşmeleri, çalışma koşulları ve sendikal faaliyetler bu alanda ele alınan temel konulardır.",
+    image: IsHukukuImg,
     content: `
 <div>
   <h1>İş Hukuku</h1>
@@ -441,9 +450,10 @@ const serviceDetails = [
   },
   {
     title: "Ceza Hukuku",
+    tags: ["Ceza Hukuku", "Şüpheli ve Sanık Savunması", "Delil Toplama ve Analizi", "Gözaltı ve Tutukluluk", "İtiraz ve Temyiz Süreçleri"],
     description:
-    "Ceza hukuku, suç teşkil eden fiillerin tespiti, delil yönetimi, savunma ve gözaltı süreçlerini kapsayan bir hukuk dalıdır. Tutukluluk, mahkeme süreci ve ceza infazı gibi konularda uzman hukuki destek sunar.",
-    image: "../assets/images/aile-hukuku.webp",
+      "Ceza hukuku, suç teşkil eden fiillerin tespiti, delil yönetimi, savunma ve gözaltı süreçlerini kapsayan bir hukuk dalıdır. Tutukluluk, mahkeme süreci ve ceza infazı gibi konularda uzman hukuki destek sunar.",
+    image: CezaHukukuImg,
     content: `
   <div>
     <h1>Ceza Hukuku</h1>
@@ -499,9 +509,10 @@ const serviceDetails = [
   },
   {
     title: "Miras Hukuku",
+    tags: ["Miras Hukuku", "Vasiyetname Hazırlama", "Miras Paylaşımı", "Mirasçı Hakları", "Miras Planlaması"],
     description:
-    "Miras hukuku, miras paylaşımı, mirasçı hakları ve miras planlaması gibi konuları düzenleyen bir hukuk dalıdır. Vasiyetname hazırlama ve miras süreçlerinin yönetimi bu alanda sağlanan hizmetler arasındadır.",
-    image: "../assets/images/aile-hukuku.webp",
+      "Miras hukuku, miras paylaşımı, mirasçı hakları ve miras planlaması gibi konuları düzenleyen bir hukuk dalıdır. Vasiyetname hazırlama ve miras süreçlerinin yönetimi bu alanda sağlanan hizmetler arasındadır.",
+    image: MirasHukukuImg,
     content: `
   <div>
     <h1>Miras Hukuku</h1>
@@ -561,9 +572,10 @@ const serviceDetails = [
   },
   {
     title: "Kripto Hukuku",
+    tags: ["Kripto Hukuku", "Kripto Para Şirketleri", "Token Düzenlemeleri", "Akıllı Sözleşmeler ve Blockchain Teknolojisi", "Kripto Para Dolandırıcılığı ve Siber Güvenlik"],
     description:
-    "Kripto hukuku, dijital varlıklar ve blockchain teknolojisi alanında yasal düzenlemeleri içeren bir hukuk dalıdır. Kripto para şirketlerinin kurulumu, token düzenlemeleri, akıllı sözleşmeler ve siber güvenlik gibi konular bu alanda ele alınır.",
-    image: "../assets/images/aile-hukuku.webp",
+      "Kripto hukuku, dijital varlıklar ve blockchain teknolojisi alanında yasal düzenlemeleri içeren bir hukuk dalıdır. Kripto para şirketlerinin kurulumu, token düzenlemeleri, akıllı sözleşmeler ve siber güvenlik gibi konular bu alanda ele alınır.",
+    image: KriptoHukukuImg,
     content: `
     <div>
         <h1>Kripto Hukuku</h1>
@@ -627,8 +639,10 @@ const serviceDetails = [
   },
   {
     title: "Yapay Zeka Hukuku",
+    tags: ["Yapay Zeka Hukuku", "Telif Hakları", "Veri Kullanımı", "Siber Suçlar", "Yapay Zeka Sistemlerinin Sorumluluğu"],
+    image: YapayZekaHukukuImg,
     description:
-    "Yapay zeka hukuku, yapay zeka sistemlerinin yasal ve etik standartlara uygun şekilde geliştirilmesi ve kullanılması ile ilgili düzenlemeleri kapsayan bir hukuk dalıdır. Bu hukuk dalı, telif hakları, veri kullanımı, siber suçlar ve yapay zeka sistemlerinin sorumluluğu gibi konuları içerir.",
+      "Yapay zeka hukuku, yapay zeka sistemlerinin yasal ve etik standartlara uygun şekilde geliştirilmesi ve kullanılması ile ilgili düzenlemeleri kapsayan bir hukuk dalıdır. Bu hukuk dalı, telif hakları, veri kullanımı, siber suçlar ve yapay zeka sistemlerinin sorumluluğu gibi konuları içerir.",
     content: `
     <div>
         <h1>Yapay Zeka Hukuku</h1>
@@ -695,13 +709,21 @@ const serviceDetails = [
 ];
 // switch case for service name
 
+watch(
+  () => route.params.serviceName,
+  (newServiceName) => {
+    serviceName.value = newServiceName;
+    console.log("Service Name Changed: ", serviceName.value);
+  }
+);
+
 const pageContent = computed(() => {
-  switch (serviceName) {
+  switch (serviceName.value) {
     case "aile-hukuku":
       return serviceDetails[0];
     case "ticaret-hukuku":
       return serviceDetails[1];
-    case "deniz-tiraceti-hukuku":
+    case "deniz-ticareti-hukuku":
       return serviceDetails[2];
     case "is-hukuku":
       return serviceDetails[3];
@@ -719,17 +741,61 @@ const pageContent = computed(() => {
 });
 
 const tags = ref(["Tag 1", "Tag 2", "Tag 3", "Tag 4", "Tag 5"]);
+const categoryMap = {
+  "aile-hukuku": "Aile Hukuku",
+  "ticaret-hukuku": "Ticaret Hukuku",
+  "deniz-ticareti-hukuku": "Deniz Ticareti Hukuku",
+  "is-hukuku": "İş Hukuku",
+  "ceza-hukuku": "Ceza Hukuku",
+  "miras-hukuku": "Miras Hukuku",
+  "kripto-hukuku": "Kripto Hukuku",
+  "yapay-zeka-hukuku": "Yapay Zeka Hukuku",
+};
+
 const categories = ref([
-  "Aile Hukuku",
-  "Aile Hukuku",
-  "Aile Hukuku",
-  "Aile Hukuku",
-  "Aile Hukuku",
+  "aile-hukuku",
+  "ticaret-hukuku",
+  "deniz-ticareti-hukuku",
+  "is-hukuku",
+  "ceza-hukuku",
+  "miras-hukuku",
+  "kripto-hukuku",
+  "yapay-zeka-hukuku",
 ]);
 
+function handleContentChange(category) {
+  serviceName.value = category;
+}
 
-onMounted(() => {
+const latestBlogs = ref([]);
+
+// Function to fetch latest blogs
+const fetchLatestBlogs = async () => {
+  try {
+    const blogsQuery = query(
+      collection(db, "blogs"),
+      orderBy("created_date", "desc"), // Order by creation time
+      limit(3) // Limit to 3 blogs
+    );
+
+    const querySnapshot = await getDocs(blogsQuery);
+    const latestBlogs = [];
+
+    querySnapshot.forEach((doc) => {
+      latestBlogs.push({ id: doc.id, ...doc.data() });
+    });
+
+    return latestBlogs;
+  } catch (error) {
+    console.error("Error fetching latest blogs: ", error);
+    return [];
+  }
+};
+
+onMounted(async () => {
   console.log("Service Name: ", serviceName);
+  const data = await fetchLatestBlogs();
+  latestBlogs.value = data;
 });
 </script>
 

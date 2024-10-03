@@ -1,5 +1,6 @@
 <template>
-  <AuthModal v-if="showSignInModal" @close="showSignInModal = false" />
+  <ForgotPwModal v-if="showForgotPwModal" @close="showForgotPwModal = false"/>
+  <AuthModal v-if="showSignInModal" @close="showSignInModal = false" @forgotPw="showSignInModal = false; showForgotPwModal = true"/>
   <nav
     :class="[
       'nav-bar w-full top-0 left-0 z-30 px-4 md:px-20 lg:px-32 2xl:px-60',
@@ -137,6 +138,7 @@ import { computed } from "vue";
 import { useStore } from "vuex";
 import { useRouter } from "vue-router";
 import GetAppointmentButton from "./GetAppointmentButton.vue";
+import ForgotPwModal from "./ForgotPwModal.vue";
 
 const store = useStore();
 const router = useRouter();
@@ -150,6 +152,7 @@ const shouldAnimateNavBar = computed(() => {
   return scrollPosition.value >= window.innerHeight / 2;
 });
 const showSignInModal = ref(false);
+const showForgotPwModal = ref(false);
 
 const menus = [
   { title: "Ana Sayfa", link: "/" },

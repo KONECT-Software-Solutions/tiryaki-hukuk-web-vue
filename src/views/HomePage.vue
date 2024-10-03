@@ -60,7 +60,7 @@
           Son Blog Yazılarımız
         </h2>
         <BlogsGallery
-          :selectedCategory="'Tüm Yazılar'"
+          :selectedCategory="'all'"
           :showMoreButton="false"
           :initialBlogCount="6" />
         <div class="text-center mt-4">

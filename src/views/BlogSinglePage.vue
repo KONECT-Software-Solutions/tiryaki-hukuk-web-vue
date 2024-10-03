@@ -44,14 +44,12 @@
         <div
           class="mx-auto px-4 container md:px-12 py-10 md:py-16 lg:py-24 flex flex-col justify-center lg:items-start lg:flex-row">
           <!-- Left Section -->
-          <div class="max-w-3xl lg:pr-10">
+          <div class="max-w-4xl lg:pr-10">
             <img :src="blog.image" alt="Blog Image" class="w-full mb-6" />
-
             <div
-              class="text-slate-700 border-b pb-4 mb-8 blog-content"
+              class="text-slate-700 border-b pb-4 mb-4 blog-content"
               v-html="blog.content"></div>
-            <div></div>
-            <h1 class="text-2xl mb-4">Yorum Yap</h1>
+            <!-- <h1 class="text-2xl mb-4">Yorum Yap</h1>
             <div class="flex-1">
               <form class="bg-gray-100 p-10 rounded">
                 <div class="mb-4">
@@ -85,13 +83,13 @@
                   </button>
                 </div>
               </form>
-            </div>
+            </div>-->
           </div>
 
           <!-- Right Sidebar -->
           <div class="lg:w-auto">
             <!-- Categories -->
-            <div class="mt-6 lg:mt-0">
+            <div class="lg:mt-0">
               <h4 class="text-lg font-semibold mb-3">Kategoriler</h4>
               <ul class="text-gray-600 text-[15px]">
                 <li
@@ -118,12 +116,12 @@
                   <img
                     :src="recentBlog.image"
                     alt="Recent Post"
-                    class="w-16  mr-4" />
+                    class="w-16 h-12 mr-4" />
                   <div>
-                    <div class="hover:translate-x-2 hover:font-semibold transition duration-300 text-gray-700">
+                    <div
+                      class="hover:translate-x-2 hover:font-semibold transition duration-300 text-gray-700">
                       <router-link
-                        :to="'/blog/' + recentBlog.slug + '/' + recentBlog.id"
-                        >
+                        :to="'/blog/' + recentBlog.slug + '/' + recentBlog.id">
                         {{ recentBlog.title }}
                       </router-link>
                     </div>
@@ -196,12 +194,23 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, watch } from "vue";
+import { ref, computed, onMounted, watch, onUpdated } from "vue";
 import { useRoute } from "vue-router";
 import { useStore } from "vuex";
 import router from "../router";
 import { db } from "../firebase";
-import { getDocs, collection, query, orderBy, limit } from "firebase/firestore";
+import {
+  getDocs,
+  getDoc,
+  updateDoc,
+  collection,
+  query,
+  orderBy,
+  limit,
+  increment,
+  setDoc,
+  doc,
+} from "firebase/firestore";
 
 const route = useRoute();
 const store = useStore();

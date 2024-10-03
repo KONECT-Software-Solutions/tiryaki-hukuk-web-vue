@@ -137,9 +137,7 @@
                   :to="'/aydinlatma-metni'"
                   target="_blank"
                   class="text-blue-500">
-                  KVKK Aydınlatma Metni
-                </router-link>
-                okumuş ve kabul etmiş olursunuz.
+                  KVKK Aydınlatma Metni'ni </router-link>okumuş ve kabul etmiş olursunuz.
               </label>
             </div>
             <div class="flex justify-end">

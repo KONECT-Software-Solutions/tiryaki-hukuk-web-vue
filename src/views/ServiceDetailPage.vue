@@ -7,9 +7,6 @@
       <div class="absolute inset-0 bg-black opacity-65"></div>
       <div
         class="relative container px-4 md:px-20 lg:px-32 2xl:px-60 py-2 flex flex-col items-start justify-end h-full">
-        <h2 class="text-white text-lg font-bold mb-2">
-          TIRYAKI HUKUK & ARABULUCULUK BÜROSU
-        </h2>
         <h1 class="text-white text-4xl lg:text-5xl font-bold mb-4">
           Çalışma Alanımız:
           <span class="text-quaternary">{{ pageContent.title }}</span>
@@ -27,7 +24,7 @@
         <div
           class="mx-auto px-4 container md:px-12 py-10 md:py-16 lg:py-24 flex flex-col justify-center lg:items-start lg:flex-row">
           <!-- Left Section -->
-          <div class="max-w-3xl lg:pr-10">
+          <div class="max-w-4xl lg:pr-10">
             <img
               :src="pageContent.image"
               alt="Blog Image"

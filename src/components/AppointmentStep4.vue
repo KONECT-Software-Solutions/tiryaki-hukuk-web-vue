@@ -50,11 +50,11 @@
         <button
           @click="handlePayment"
           type="submit"
-          class="bg-primary w-full text-white py-[1rem] px-4 flex justify-center">
+          class="bg-[#6a994e] w-full text-white py-[1rem] px-4 flex justify-center">
           <img
             src="../assets/icons/iyzico_ile_ode_horizontal_white.svg"
             class="w-36"
-            alt="family-icon" />
+            alt="iyzico-ile-ode" />
         </button>
       </div>
     </div>
@@ -94,7 +94,7 @@
 
         <!-- Payment Action Button -->
         <button
-            @click="handleSubmit"
+            @click="handleContinue"
             class="bg-primary w-full text-white py-[0.5rem] px-4">
             Devam Et
           </button>
@@ -110,7 +110,7 @@ import LoadingSpinner from "./LoadingSpinner.vue";
 const emits = defineEmits(["continueStep5"]);
 const props = defineProps(["in24Hours"]);
 
-const handleSubmit = () => {
+const handleContinue = () => {
   emits("continueStep5");
 };
 

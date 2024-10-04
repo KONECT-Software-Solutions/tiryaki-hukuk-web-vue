@@ -113,7 +113,7 @@ const forgotPasswordErrorMessage = ref(null);
 const emailSended = ref(false);
 const isLoading = ref(false);
 
-const countdownDuration = 10; // 5 minutes in seconds
+const countdownDuration = 300; // 5 minutes in seconds
 let countdownInterval = null; // Declare interval reference outside
 
 // Reactive state

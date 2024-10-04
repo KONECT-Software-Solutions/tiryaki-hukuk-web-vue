@@ -150,11 +150,11 @@
             required />
         </div>
 
-        <div class="flex">
+        <div>
           <input
             id="kvkk"
             type="checkbox"
-            class="p-2 border mr-2 border-gray-300 rounded"
+            class="p-2 border mr-1 border-gray-300 rounded"
             required />
           <label for="kvkk" class="text-sm text-slate-500">
             Tiryaki Hukuk ve Arabuluculuk'un Kişisel Verilerin İşlenmesine

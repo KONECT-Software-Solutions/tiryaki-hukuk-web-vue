@@ -21,7 +21,7 @@
         id="topic"
         v-model="formData.topic"
         rows="4"
-        class="block p-2.5 w-full  text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-black focus:ring-0"
+        class="block p-2.5 w-full text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-black focus:ring-0"
         placeholder="Lütfen görüşmek istediğiniz konu ile ilgili kısa bir bilgi verin."
         required></textarea>
     </div>
@@ -88,9 +88,9 @@
         <span class="text-2xl">{{ price }} TL</span>
       </div>
     </div>
-    <div class="bg-white p-4 border border-gray-300 mb-4 w-full">
+    <div class="bg-white p-4 border border-gray-300 mb-3 w-full">
       <label class="block text-lg font-medium mb-2">Randevu Tarihi</label>
-      <div class="flex flex-col md:flex-row items-center justify-between">
+      <div class="flex flex-col space-y-3">
         <div class="flex items-center">
           <i class="ri-calendar-line mr-2 text-2xl"></i>
           <div class="px-1 flex text-sm md:text-base items-center">
@@ -102,7 +102,52 @@
             >
           </div>
         </div>
-        <button type="submit" class="bg-tertiary w-full md:w-auto mt-4 md:mt-0 text-white py-[0.5rem] px-4">
+        <div>
+          <input
+            id="kvkk"
+            type="checkbox"
+            class="p-2 border mr-1 border-gray-300 rounded"
+            required />
+          <label for="kvkk" class="text-sm text-slate-500">
+            Tiryaki Hukuk ve Arabuluculuk'un Kişisel Verilerin İşlenmesine
+            Yönelik
+            <router-link :to="'/kvkk'" target="_blank" class="text-blue-500">
+              KVKK Aydınlatma Metni'ni </router-link
+            >okudum ve kabul ediyorum.
+          </label>
+        </div>
+        <div>
+          <input
+            id="kvkk"
+            type="checkbox"
+            class="p-2 border mr-1 border-gray-300 rounded"
+            required />
+          <label for="kvkk" class="text-sm text-slate-500">
+            Tiryaki Hukuk ve Arabuluculuk'un
+            <router-link :to="'/mss'" target="_blank" class="text-blue-500">
+              Mesafeli Satış Sözleşmesi'ni </router-link
+            >okudum ve kabul ediyorum.
+          </label>
+        </div>
+        <div>
+          <input
+            id="kvkk"
+            type="checkbox"
+            class="p-2 border mr-1 border-gray-300 rounded"
+            required />
+          <label for="kvkk" class="text-sm text-slate-500">
+            Tiryaki Hukuk ve Arabuluculuk'un
+            <router-link
+              :to="'/iptal-iade'"
+              target="_blank"
+              class="text-blue-500">
+              İptal ve İade Koşulları'nı </router-link
+            >okudum ve kabul ediyorum.
+          </label>
+        </div>
+        <button
+          type="submit"
+          class="bg-tertiary w-full md:w-auto mt-4 text-white py-[0.5rem] px-4">
           Devam Et
         </button>
       </div>

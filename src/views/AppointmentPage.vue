@@ -91,18 +91,45 @@
               </svg>
             </div>
           </li>
+          <li
+            :class="{
+              'after:border-tertiary': currentStep > 4,
+              'after:border-gray-200': currentStep === 4,
+            }"
+            class="flex w-full items-center after:content-[''] after:w-full after:h-1 after:border-b after:border-4 after:inline-block">
+            <div
+              :class="{
+                'bg-tertiary ': currentStep > 4,
+                'bg-gray-100': currentStep <= 4,
+              }"
+              class="flex items-center justify-center rounded-full h-14 w-14 shrink-0">
+              <svg
+                class="w-7 h-7"
+                :class="{
+                  'text-white ': currentStep > 4,
+                  'text-slate-400 ': currentStep <= 4,
+                }"
+                aria-hidden="true"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="currentColor"
+                viewBox="0 0 24 24">
+                <path
+                  d="M11.0049 2L18.3032 4.28071C18.7206 4.41117 19.0049 4.79781 19.0049 5.23519V7H21.0049C21.5572 7 22.0049 7.44772 22.0049 8V16C22.0049 16.5523 21.5572 17 21.0049 17L17.7848 17.0011C17.3982 17.5108 16.9276 17.9618 16.3849 18.3318L11.0049 22L5.62486 18.3318C3.98563 17.2141 3.00488 15.3584 3.00488 13.3744V5.23519C3.00488 4.79781 3.28913 4.41117 3.70661 4.28071L11.0049 2ZM11.0049 4.094L5.00488 5.97V13.3744C5.00488 14.6193 5.58406 15.7884 6.56329 16.5428L6.75154 16.6793L11.0049 19.579L14.7869 17H10.0049C9.4526 17 9.00488 16.5523 9.00488 16V8C9.00488 7.44772 9.4526 7 10.0049 7H17.0049V5.97L11.0049 4.094ZM11.0049 12V15H20.0049V12H11.0049ZM11.0049 10H20.0049V9H11.0049V10Z"></path>
+              </svg>
+            </div>
+          </li>
           <li class="flex items-center">
             <div
               :class="{
-                'bg-tertiary ': currentStep === 4,
-                'bg-gray-100 ': currentStep < 4,
+                'bg-tertiary ': currentStep === 5,
+                'bg-gray-100 ': currentStep < 5,
               }"
               class="flex items-center justify-center rounded-full h-14 w-14">
               <svg
                 class="p-1 w-6 h-6 rounded-full"
                 :class="{
-                  'text-tertiary bg-white ': currentStep === 4,
-                  'text-white bg-slate-400 ': currentStep < 4,
+                  'text-tertiary bg-white ': currentStep === 5,
+                  'text-white bg-slate-400 ': currentStep < 5,
                 }"
                 aria-hidden="true"
                 xmlns="http://www.w3.org/2000/svg"
@@ -139,8 +166,9 @@
         :formData="formData"
         :attorneyData="attorneyData"
         @continueStep4="handleContinueStep4" />
-      <AppointmentStep4
-        v-if="currentStep === 4"
+      <AppointmentStep4 v-if="currentStep === 4" @continueStep5="handleContinueStep5" />
+      <AppointmentStep5
+        v-if="currentStep === 5"
         :formData="formData"
         :attorneyData="attorneyData"
         :uploadedFiles="uploadedFiles" />
@@ -156,6 +184,7 @@ import AppointmentStep1 from "../components/AppointmentStep1.vue";
 import AppointmentStep2 from "../components/AppointmentStep2.vue";
 import AppointmentStep3 from "../components/AppointmentStep3.vue";
 import AppointmentStep4 from "../components/AppointmentStep4.vue";
+import AppointmentStep5 from "../components/AppointmentStep5.vue";
 import SkeletonLoader from "../components/SkeletonLoader.vue";
 
 const store = useStore();
@@ -163,7 +192,7 @@ const store = useStore();
 const currentStep = ref(1);
 const loading = ref(true);
 
-const steps = [{ number: 1 }, { number: 2 }, { number: 3 }, { number: 4 }];
+const steps = [{ number: 1 }, { number: 2 }, { number: 3 }, { number: 4 }, { number: 5 }];
 const attorneyData = computed(() => store.state.attorney);
 const dateTimePickerData = computed(() => store.getters.getDateTimePickerData);
 const formData = ref({});
@@ -197,6 +226,12 @@ const handleContinueStep4 = (uploadedFiles_, notes_) => {
   uploadedFiles.value = uploadedFiles_;
   formData.value.notes = notes_;
   nextStep();
+};
+
+const handleContinueStep5 = () => {
+  console.log("handleContinueStep5");
+  nextStep();
+  console.log("currentStep", currentStep.value);
 };
 
 const nextStep = () => {

@@ -50,8 +50,7 @@
             </div>
             <form
               @submit.prevent="handleForgotPassword"
-              class="mt-4"
-              v-if="!emailSended">
+              class="mt-4">
               <div class="mb-4">
                 <label class="block text-sm font-medium mb-2">Email*</label>
                 <input
@@ -60,15 +59,38 @@
                   class="w-full p-2 border border-gray-300 rounded"
                   required />
               </div>
-              <button
+              <div>
+                <div class="flex justify-between items-center">
+                  <div class="text-gray-500 flex items-center">
+                    <i class="ri-time-fill mr-1 text-xl"></i>
+                    <span v-if="!isResendActive"> {{ counter }} saniye </span>
+                    <span v-else> 0 saniye </span>
+                  </div>
+                  <div class="flex items-center text-gray">
+                    <i class="ri-restart-line mr-1 text-xl"></i>
+                    <span v-if="!isResendActive" class=""> Tekrar gönder </span>
+                    <a
+                      v-else
+                      href="#"
+                      class="text-blue-500 font-medium"
+                      @click="handleResendMail">
+                      Tekrar gönder
+                    </a>
+                  </div>
+                </div>
+              </div>
+              <div v-if="!emailSended" class="mt-4">
+                <button
                 v-if="!isLoading"
                 type="submit"
-                class="w-full bg-quaternary text-white py-2">
+                class="w-full bg-[#6a994e] text-white py-2">
                 Şifre Yenileme Linki Gönder
               </button>
-              <div v-else class="w-full bg-quaternary text-white py-2">
+              <div v-else class="w-full bg-[#6a994e] text-white py-2">
                 <LoadingSpinner :text="'Mail Gönderiliyor'" />
               </div>
+              </div>
+            
             </form>
           </div>
         </div>
@@ -78,7 +100,7 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
 import { sendPasswordResetEmail } from "firebase/auth";
 import { auth } from "../firebase";
 import LoadingSpinner from "./LoadingSpinner.vue";
@@ -90,6 +112,33 @@ const forgotPasswordSuccessMessage = ref(null);
 const forgotPasswordErrorMessage = ref(null);
 const emailSended = ref(false);
 const isLoading = ref(false);
+
+const countdownDuration = 10; // 5 minutes in seconds
+let countdownInterval = null; // Declare interval reference outside
+
+// Reactive state
+const counter = ref(countdownDuration);
+const isResendActive = ref(false);
+
+const handleResendMail = async () => {
+  isResendActive.value = false; // Disable the resend button
+  counter.value = countdownDuration; // Reset the counter to the initial value
+
+  try {
+    // Send the password reset email again
+    await sendPasswordResetEmail(auth, forgotPasswordEmail.value);
+    forgotPasswordSuccessMessage.value = "Şifre yenileme linki tekrar gönderildi.";
+    forgotPasswordErrorMessage.value = null;
+    emailSended.value = true;
+
+    // Restart the countdown
+    startCountdown();
+  } catch (error) {
+    console.error("Error resending password reset email:", error);
+    forgotPasswordSuccessMessage.value = null;
+    forgotPasswordErrorMessage.value = "Bir hata oluştu. Lütfen tekrar deneyiniz.";
+  }
+};
 
 const handleForgotPassword = async () => {
   forgotPasswordSuccessMessage.value = null;
@@ -103,6 +152,7 @@ const handleForgotPassword = async () => {
     forgotPasswordSuccessMessage.value =
       "Şifre yenileme linki email adresinize gönderildi.";
     emailSended.value = true;
+    startCountdown();
   } catch (error) {
     console.error("Error sending password reset email:", error);
     forgotPasswordSuccessMessage.value = null;
@@ -112,6 +162,23 @@ const handleForgotPassword = async () => {
     isLoading.value = false;
   }
 };
+
+const startCountdown = () => {
+  // Clear any existing interval to avoid multiple intervals running
+  if (countdownInterval) {
+    clearInterval(countdownInterval);
+  }
+
+  countdownInterval = setInterval(() => {
+    if (counter.value > 0) {
+      counter.value--;
+    } else {
+      isResendActive.value = true;
+      clearInterval(countdownInterval); // Clear the interval once done
+    }
+  }, 1000); // Use 1000 ms (1 second) for accurate countdown timing
+};
+
 </script>
 
 <style scoped></style>

@@ -134,7 +134,7 @@
                 Mesaj gönderdiğinizde Tiryaki Hukuk ve Arabuluculuk'un Kişisel
                 Verilerin İşlenmesine Yönelik
                 <router-link
-                  :to="'/aydinlatma-metni'"
+                  :to="'/kvkk'"
                   target="_blank"
                   class="text-blue-500">
                   KVKK Aydınlatma Metni'ni </router-link>okumuş ve kabul etmiş olursunuz.

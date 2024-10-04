@@ -11,7 +11,9 @@ import ProfilePage from "./views/ProfilePage.vue";
 import PaymentPage from "./views/PaymentPage.vue";
 import ServiceDetailPage from "./views/ServiceDetailPage.vue";
 import NotFound from "./views/NotFound.vue";
-import SignUpDocsPage from "./views/SignUpDocsPage.vue";
+import KVKKPage from "./views/KVKKPage.vue";
+import MSSPage from "./views/MSSPage.vue";
+import CPPage from "./views/CPPage.vue";
 
 const routes = [
   { path: "/", name: "Home", component: HomePage },
@@ -19,7 +21,11 @@ const routes = [
   { path: "/hizmetler", name: "Services", component: ServicesPage },
   { path: '/blog/:category?', name: "Blog", component: BlogPage },
   { path: "/iletisim", name: "Contact", component: ContactPage },
-  { path: "/aydinlatma-metni", name: "SingUpDocs", component: SignUpDocsPage },
+  { path: "/kvkk", name: "KVKK", component: KVKKPage },
+  { path: "/mss", name: "MSS", component: MSSPage },
+  { path: "/iptal-iade", name: "CP", component: CPPage },
+
+
   {
     path: "/blog/:slug/:id",
     name: "BlogSinglePage",

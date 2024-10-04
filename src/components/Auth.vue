@@ -149,6 +149,21 @@
             class="w-full p-2 border border-gray-300 rounded"
             required />
         </div>
+
+        <div>
+          <input
+            id="kvkk"
+            type="checkbox"
+            class="p-2 border mr-1 border-gray-300 rounded"
+            required />
+          <label for="kvkk" class="text-sm text-slate-500">
+            Tiryaki Hukuk ve Arabuluculuk'un Kişisel Verilerin İşlenmesine
+            Yönelik
+            <router-link :to="'/kvkk'" target="_blank" class="text-blue-500">
+              KVKK Aydınlatma Metni'ni </router-link
+            >okudum ve kabul ediyorum.
+          </label>
+        </div>
         <button
           type="submit"
           class="w-full bg-quaternary text-white py-2"
@@ -156,18 +171,6 @@
           Kayıt Ol
         </button>
         <LoadingSpinner v-else />
-        <div class="flex items-center">
-          <label for="terms" class="text-sm text-slate-500">
-            Üye olarak Tiryaki Hukuk ve Arabuluculuk'un Kişisel Verilerin
-            İşlenmesine Yönelik
-            <router-link
-              :to="'/aydinlatma-metni'"
-              target="_blank"
-              class="text-blue-500">
-              KVKK Aydınlatma Metni'ni
-            </router-link>okumuş ve kabul etmiş olursunuz.
-          </label>
-        </div>
       </form>
     </div>
   </div>
@@ -206,22 +209,23 @@
           required />
       </div>
       <div>
-        <div class="mb-4 flex items-center">
-          <label for="terms" class="text-sm">
-            2 dakika içinde aktivasyon kodunu almadıysanız,
-            <span v-if="!isResendActive" class="text-gray-500">
-              ({{ counter }} saniye kaldı)
-            </span>
-            <span v-if="!isResendActive" class="font-medium"> buraya </span>
+        <div class="mb-4 flex justify-between items-center">
+          <div class="text-gray-500 flex items-center">
+            <i class="ri-time-fill mr-1 text-xl"></i>
+            <span v-if="!isResendActive"> {{ counter }} saniye </span>
+            <span v-else> 0 saniye </span>
+          </div>
+          <div class="flex items-center text-gray">
+            <i class="ri-restart-line mr-1 text-xl"></i>
+            <span v-if="!isResendActive" class=""> Tekrar gönder </span>
             <a
               v-else
               href="#"
               class="text-blue-500 font-medium"
               @click="handleResendCode">
-              buraya
+              Tekrar gönder
             </a>
-            tıklayarak yeni kod alabilirsiniz.
-          </label>
+          </div>
         </div>
       </div>
       <button
@@ -284,7 +288,7 @@ const emailSingIn = ref("");
 const passwordSignIn = ref("");
 const rememberMe = ref(false);
 // Define the countdown timer duration in seconds
-const countdownDuration = 120; // 2 minutes in seconds
+const countdownDuration = 300; // 5 minutes in seconds
 let countdownInterval = null; // Declare interval reference outside
 
 // Reactive state
@@ -307,6 +311,7 @@ const handleResendCode = async () => {
       emailRegistiration.value,
       verificationCodetoSend
     );
+
     console.log("New verification email sent successfully");
     confirmationSuccessMessage.value = "Yeni doğrulama kodu gönderildi.";
     confirmationErrorMessage.value = null;
@@ -389,8 +394,8 @@ const sendVerificationEmail = async (emailRegistiration, verificationCode) => {
         },
       }
     );
-    console.log(response.data);
     startCountdown();
+    console.log(response.data);
   } catch (error) {
     console.error("Error sending verification email:", error);
   }

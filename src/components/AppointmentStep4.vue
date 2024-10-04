@@ -7,279 +7,121 @@
       <LoadingSpinner :text="'Randevu oluşturuluyor'" />
     </div>
 
-    <div>
-      <!-- Header Section -->
-      <div class="flex flex-col items-center text-center space-y-2">
-        <i class="ri-calendar-check-fill text-8xl text-tertiary"></i>
-        <p class="text-lg font-medium">
-          Sayın <span class="font-semibold">{{ userData.name }}</span
-          >, randevunuz başarı ile alınmıştır.
-        </p>
-        <div class="w-full border-b border-gray-300 p-2 text-lg">
-          Randevu Detayları
-        </div>
+    <div v-if="in24Hours">
+      <!-- Payment Section (when in24Hours is true) -->
+      <div class="flex flex-col items-center text-center">
         <div
-          class="px-1 text-lg flex flex-col text-wrap md:text-nowrap items-center">
-          <span>Randevu Tipi: {{ displayText }}</span>
-          <span>
-            Tarih: {{ formData.dateForDisplay }}
-            <span class="ml-1">{{ formData.day }}</span>
-          </span>
-          <div class="flex">
-            Saat:
-            <span
-              class="flex ml-2 items-center text-nowrap bg-yellow-100 rounded-xl px-1 text-sm">
-              <i class="ri-time-fill text-lg"></i>{{ formData.slot }} -
-              {{ formData.endTime }}
-            </span>
-          </div>
-          <div class="text-lg">Avukat: {{ attorneyData.name }}</div>
+          class="flex bg-white items-center justify-center rounded-full h-32 w-32 shrink-0">
+          <svg
+            class="w-28 h-28 text-tertiary"
+            aria-hidden="true"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="currentColor"
+            viewBox="0 0 24 24">
+            <path
+              d="M11.0049 2L18.3032 4.28071C18.7206 4.41117 19.0049 4.79781 19.0049 5.23519V7H21.0049C21.5572 7 22.0049 7.44772 22.0049 8V16C22.0049 16.5523 21.5572 17 21.0049 17L17.7848 17.0011C17.3982 17.5108 16.9276 17.9618 16.3849 18.3318L11.0049 22L5.62486 18.3318C3.98563 17.2141 3.00488 15.3584 3.00488 13.3744V5.23519C3.00488 4.79781 3.28913 4.41117 3.70661 4.28071L11.0049 2ZM11.0049 4.094L5.00488 5.97V13.3744C5.00488 14.6193 5.58406 15.7884 6.56329 16.5428L6.75154 16.6793L11.0049 19.579L14.7869 17H10.0049C9.4526 17 9.00488 16.5523 9.00488 16V8C9.00488 7.44772 9.4526 7 10.0049 7H17.0049V5.97L11.0049 4.094ZM11.0049 12V15H20.0049V12H11.0049ZM11.0049 10H20.0049V9H11.0049V10Z"></path>
+          </svg>
+        </div>
+        <p class="text-lg border-b mb-3 border-gray-300 p-2 font-medium">
+          Randevunuz 24 saat içinde olduğu için ödemenizi şuan yapmanız
+          gerekmektedir.
+        </p>
+
+        <div
+          class="px-1 text-lg w-full flex flex-col text-wrap md:text-nowrap items-center">
+          <span>Toplam Tutar: <span class="font-semibold">XX TL</span></span>
         </div>
       </div>
       <div class="flex flex-col space-y-3 mt-2 items-center">
-        <!-- Reminders Section -->
+        <!-- Payment Instructions -->
         <div class="space-y-3 text-center">
           <div
             class="text-center text-sm md:text-base border bg-slate-50 text-slate-600 border-slate-300 rounded-md p-2">
             <p>
-              Görüşmeden 24 saat önce randevunuzun ödemesini tamamlamanız
-              gerekmektedir. Aksi takdirde görüşmeniz iptal edilecektir.
-              Ödemenizi Randevularım sayfasından yapabilirsiniz.
-            </p>
-          </div>
-          <div
-            class="text-center text-sm md:text-base border bg-slate-50 text-slate-600 border-slate-300 rounded-md p-2">
-            <p>
-              Toplantı detayları ve hatırlatma maili e-postanıza
-              gönderilecektir. Ayrıca Randevularım sayfasından da görüşmeye
-              katılabilirsiniz.
+              Ödemenizi aşağıdaki butona tıklayarak
+              <span class="italic font-semibold">iyzico</span> güvencesi ile
+              tamamlayabilirsiniz. Ödeme yapıldıktan sonra ödeme ve randevunuz
+              ile alakalı size e-posta ile bilgilendirme maili gelecektir.
             </p>
           </div>
         </div>
 
-        <!-- Action Buttons Section -->
-        <router-link
-          :to="'/hesabim'"
-          class="bg-primary text-white py-[0.5rem] px-4">
-          Randevularım
-        </router-link>
+        <!-- Payment Action Button -->
+        <button
+          @click="handlePayment"
+          type="submit"
+          class="bg-[#6a994e] w-full text-white py-[1rem] px-4 flex justify-center">
+          <img
+            src="../assets/icons/iyzico_ile_ode_horizontal_white.svg"
+            class="w-36"
+            alt="iyzico-ile-ode" />
+        </button>
+      </div>
+    </div>
+
+    <div v-else>
+      <!-- Payment Section (when in24Hours is true) -->
+      <div class="flex flex-col items-center text-center space-y-2">
+        <div
+          class="flex bg-white items-center justify-center rounded-full h-32 w-32 shrink-0">
+          <svg
+            class="w-28 h-28 text-tertiary"
+            aria-hidden="true"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="currentColor"
+            viewBox="0 0 24 24">
+            <path
+              d="M11.0049 2L18.3032 4.28071C18.7206 4.41117 19.0049 4.79781 19.0049 5.23519V7H21.0049C21.5572 7 22.0049 7.44772 22.0049 8V16C22.0049 16.5523 21.5572 17 21.0049 17L17.7848 17.0011C17.3982 17.5108 16.9276 17.9618 16.3849 18.3318L11.0049 22L5.62486 18.3318C3.98563 17.2141 3.00488 15.3584 3.00488 13.3744V5.23519C3.00488 4.79781 3.28913 4.41117 3.70661 4.28071L11.0049 2ZM11.0049 4.094L5.00488 5.97V13.3744C5.00488 14.6193 5.58406 15.7884 6.56329 16.5428L6.75154 16.6793L11.0049 19.579L14.7869 17H10.0049C9.4526 17 9.00488 16.5523 9.00488 16V8C9.00488 7.44772 9.4526 7 10.0049 7H17.0049V5.97L11.0049 4.094ZM11.0049 12V15H20.0049V12H11.0049ZM11.0049 10H20.0049V9H11.0049V10Z"></path>
+          </svg>
+        </div>
+        <p class="text-lg border-b mb-3 border-gray-300 p-2 font-medium">
+          Şuan ödeme yapmak zorunda değilsiniz. Lütfen randevu tarihinden 24 saat önce ödemenizi tamamlayınız.
+        </p>
+
+        <div
+          class="px-1 text-lg w-full flex flex-col text-wrap md:text-nowrap items-center">
+          <span>Toplam Tutar: <span class="font-semibold">XX TL</span></span>
+        </div>
+      </div>
+      <div class="flex flex-col space-y-3 mt-2 items-center">
+        <!-- Payment Instructions -->
+        <div class="space-y-3 text-center">
+          <div
+            class="text-center text-sm md:text-base border bg-slate-50 text-slate-600 border-slate-300 rounded-md p-2">
+            <p>Ödemenizi sağ üst taraftaki Hesabım sekmesinden tamamlayabilirsiniz. Randevudan 24 saat önce ödeme yapılmaz ise randevu iptal olacaktır.</p>
+          </div>
+        </div>
+
+        <!-- Payment Action Button -->
+        <button
+            @click="handleContinue"
+            class="bg-primary w-full text-white py-[0.5rem] px-4">
+            Devam Et
+          </button>
       </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { onMounted, ref, computed } from "vue";
-import { useStore } from "vuex";
+import { defineProps, defineEmits, onMounted } from "vue";
 import LoadingSpinner from "./LoadingSpinner.vue";
-import { doc, getDoc, addDoc, collection, updateDoc } from "firebase/firestore";
-import { ref as storageRef, uploadBytes, getDownloadURL } from "firebase/storage";
-import { db, storage } from "../firebase"; // Adjust the path as necessary
-import axios from "axios";
-import { sub } from "date-fns";
 
-const store = useStore();
-const userData = computed(() => store.getters.getUser);
+const emits = defineEmits(["continueStep5"]);
+const props = defineProps(["in24Hours"]);
 
-const isCreatingMeeting = ref(true);
-
-const props = defineProps({
-  formData: Object,
-  attorneyData: Object,
-  uploadedFiles: Object,
-});
-
-const iconClass = computed(() => {
-  switch (props.formData.selectedType) {
-    case "video":
-      return "ri-video-on-line";
-    case "phone":
-      return "ri-phone-line";
-    case "inPerson":
-      return "ri-user-line";
-    // Add more cases as needed
-    default:
-      return "ri-question-line"; // Default icon
-  }
-});
-
-const displayText = computed(() => {
-  switch (props.formData.selectedType) {
-    case "video":
-      return "Online Video Görüşme";
-    case "phone":
-      return "Telefonla Görüşme";
-    case "inPerson":
-      return "Yüz Yüze Görüşme";
-    // Add more cases as needed
-    default:
-      return "Belirtilmemiş"; // Default text
-  }
-});
-
-const fetchUserData = async (uid) => {
-  console.log("fetching user data...");
-  try {
-    const userDocRef = doc(db, "users", uid);
-    const userDoc = await getDoc(userDocRef);
-    if (userDoc.exists()) {
-      userData.value = userDoc.data();
-    }
-  } catch (error) {
-    console.error("Error fetching user data by ID:", error);
-  }
+const handleContinue = () => {
+  emits("continueStep5");
 };
 
-const uploadFilesToFireStore = async (uploadedFiles) => {
-  const fileUrls = [];
+const handlePayment = () => {
+  // Handle payment logic here
+  console.log("Payment initiated");
 
-  for (const fileObj of uploadedFiles) {
-    try {
-      const file = fileObj.file; // Get the actual File object
-      // Create a storage reference using meetingId + file name
-      const fileRef = storageRef(storage, `customer_documents/${file.name}`);
-      
-      // Use uploadBytes to handle the file binary data safely
-      const snapshot = await uploadBytes(fileRef, file);
-      
-      // Get the download URL after upload
-      const downloadUrl = await getDownloadURL(snapshot.ref);
-
-      // Push the download URL to the array
-      fileUrls.push(downloadUrl);
-    } catch (error) {
-      console.error(`Error uploading file ${file.name}:`, error);
-      throw new Error("File upload failed.");
-    }
-  }
-
-  return fileUrls; // Return an array of file URLs
 };
 
-const sendAppointmentRecievedMail = async (meetingData) => {
-  try {
-    const response = await axios.post(
-      "https://ykt7hblm31.execute-api.eu-north-1.amazonaws.com/prod/send-appointment-recieved-email",
-      {
-        customer_name: meetingData.customer_name,
-        attorney_name: meetingData.attorney_name,
-        date_for_display: meetingData.date_for_display,
-        day: meetingData.day,
-        slot: meetingData.slot,
-        end_time: meetingData.end_time,
-        email: meetingData.customer_email,
-      },
-      {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }
-    );
-    console.log(meetingData);
-    console.log(response.data);
-  } catch (error) {
-    console.error("Error sending meeting accepted email:", error);
-  }
-};
-// api key for google meet AIzaSyCl6q_iRFcgsH2CosKjx9MjVmExK6jNXeU
-
-
-
-const saveMeeting = async (meetingData) => {
-  try {
-    console.log("saving meeting data...");
-    // Save the meeting data to the firebase database
-    const meetingDocRef = await addDoc(collection(db, "meetings"), meetingData);
-    console.log("meeting data saved");
-    // id of the saved document
-
-    // Take meetingData, take user uid, go to user's document and add meetings array with meetingData as first element
-    const userDocRef = doc(db, "users", userData.value.uid);
-    const userDoc = await getDoc(userDocRef);
-
-    if (userDoc.exists()) {
-      const userData_ = userDoc.data();
-      const meetings = userData_.meetings || [];
-      meetings.push(meetingDocRef.id);
-      await updateDoc(userDocRef, { meetings });
-      await store.dispatch("fetchMeetingsData", {
-        meetingIds: meetings,
-      });
-      // update meetings state in Vuex
-    }
-  } catch (error) {
-    console.error("Error saving meeting data:", error);
-    alert("Error saving meeting data: " + error.message);
-  }
-};
-
-const createMeeting = async () => {
-  console.log("creating meeting...");
-
-  //create date_time using date and slot
-  const date_time = new Date(props.formData.date);
-  const deadline = sub(date_time, { days: 1 })
-
-  const [hours, minutes] = props.formData.slot.split(":").map(Number);
-  date_time.setHours(hours, minutes);
-
-  console.log("meeting created");
-
-  const fileUrls = await uploadFilesToFireStore(props.uploadedFiles); // Wait for files to upload
-
-  // Create the customer_documents array with URLs
-  const customerDocuments = props.uploadedFiles.map((file, index) => ({
-    file_url: fileUrls[index], // Use file URL after upload
-    name: file.name,
-    size: file.size,
-    kind: file.type,
-  }));
-
-
-  const meetingData = {
-    attorney_id: props.attorneyData.id,
-    customer_id: userData.value.uid,
-    attorney_name: props.attorneyData.name,
-    attorney_email: props.attorneyData.email,
-    category: props.formData.selectedArea,
-    customer_documents: customerDocuments,
-    customer_email: userData.value.email,
-    customer_phone: userData.value.phone,
-    customer_name: userData.value.name,
-    date: props.formData.date,
-    date_time: date_time,
-    deadline: deadline,
-    day: props.formData.day,
-    slot: props.formData.slot,
-    date_for_display: props.formData.dateForDisplay,
-    end_time: props.formData.endTime,
-    duration: props.formData.selectedDuration,
-    type: props.formData.selectedType,
-    price: props.formData.price,
-    payment_status: "0",
-    meeting_url: "mock-meeting-url",
-    notes: props.formData.notes,
-    topic: props.formData.topic,
-    status: "0",
-  };
-  saveMeeting(meetingData);
-  console.log(props.formData);
-
-  // Send an email to the customer
-  // uncomment
-  sendAppointmentRecievedMail(meetingData);
-};
-
-onMounted(async () => {
-  console.log("AppointmentStep4 component mounted");
-
-  if (props) {
-    // wait 1 second before creating the meeting
-    setTimeout(() => {
-      createMeeting();
-      isCreatingMeeting.value = false;
-    }, 1000);
-  }
+onMounted(() => {
+  console.log("in24Hours", props.in24Hours);
 });
 </script>
 

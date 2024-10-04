@@ -24,6 +24,7 @@
             <i class="ri-mail-fill align-middle text-lg text-white pr-2"></i>
             info@tiryakihukuk.com
           </p>
+          
         </div>
         <div class="flex space-x-4 mt-4">
           <a href="#" class="" aria-label="Twitter">
@@ -115,6 +116,7 @@
               >Türkiye Barolar Birliği</a
             >
           </li>
+          
         </ul>
       </div>
 
@@ -122,42 +124,58 @@
         <h3 class="text-xl mb-4">Hizmetlerimiz</h3>
         <ul class="space-y-2 text-slate-300">
           <li>
-            <router-link :to="'/hizmetler/' + 'aile-hukuku'" class="hover:text-white"
+            <router-link
+              :to="'/hizmetler/' + 'aile-hukuku'"
+              class="hover:text-white"
               >Aile Hukuku</router-link
             >
           </li>
           <li>
-            <router-link :to="'/hizmetler/' + 'ticaret-hukuku'" class="hover:text-white"
+            <router-link
+              :to="'/hizmetler/' + 'ticaret-hukuku'"
+              class="hover:text-white"
               >Ticaret Hukuku</router-link
             >
           </li>
           <li>
-            <router-link :to="'/hizmetler/' + 'deniz-ticareti-hukuku'" class="hover:text-white"
+            <router-link
+              :to="'/hizmetler/' + 'deniz-ticareti-hukuku'"
+              class="hover:text-white"
               >Deniz Ticareti Hukuku</router-link
             >
           </li>
           <li>
-            <router-link :to="'/hizmetler/' + 'is-hukuku'" class="hover:text-white"
+            <router-link
+              :to="'/hizmetler/' + 'is-hukuku'"
+              class="hover:text-white"
               >İş Hukuku</router-link
             >
           </li>
           <li>
-            <router-link :to="'/hizmetler/' + 'ceza-hukuku'" class="hover:text-white"
+            <router-link
+              :to="'/hizmetler/' + 'ceza-hukuku'"
+              class="hover:text-white"
               >Ceza Hukuku</router-link
             >
           </li>
           <li>
-            <router-link :to="'/hizmetler/' + 'miras-hukuku'" class="hover:text-white"
+            <router-link
+              :to="'/hizmetler/' + 'miras-hukuku'"
+              class="hover:text-white"
               >Miras Hukuku</router-link
             >
           </li>
           <li>
-            <router-link :to="'/hizmetler/' + 'kripto-hukuku'" class="hover:text-white"
+            <router-link
+              :to="'/hizmetler/' + 'kripto-hukuku'"
+              class="hover:text-white"
               >Kripto Hukuku</router-link
             >
           </li>
           <li>
-            <router-link :to="'/hizmetler/' + 'yapay-zeka-hukuku'" class="hover:text-white"
+            <router-link
+              :to="'/hizmetler/' + 'yapay-zeka-hukuku'"
+              class="hover:text-white"
               >Yapay Zeka Hukuku</router-link
             >
           </li>
@@ -169,10 +187,33 @@
       <!-- Working Hours Column -->
       <div class="w-full md:w-1/4">
         <h3 class="text-xl mb-4">Online Görüşme Al</h3>
-        <p class="mb-4 text-slate-300">
+        <p class="text-slate-300 mb-4">
           İstediğiniz avukatımızdan, dilediğiniz saatleri seçin ve online
           görüşme randevunuzu oluşturun.
         </p>
+        <ul class="space-y-2 text-sm text-slate-200">
+          <li>
+            <router-link :to="'/kvkk'" target="_blank">
+              KVKK Aydınlatma Metni</router-link
+            >
+          </li>
+          <li>
+            <router-link :to="'/mss'" target="_blank">
+              Mesafeli Satış Sözleşmesi</router-link
+            >
+          </li>
+          <li>
+            <router-link :to="'/iptal-iade'" target="_blank">
+              İptal ve İade Koşulları</router-link
+            >
+          </li>
+        </ul>
+        <div class="py-[1rem] mx-auto flex w-full">
+          <img
+            src="../assets/icons/logo_band_white.svg"
+            class="max-w-[300px] md:max-w-[200px] lg:max-w-[330px] h-auto"
+            alt="iyzico" />
+        </div>
         <GetAppointmentButton />
       </div>
     </div>
@@ -187,5 +228,4 @@
 
 <script setup>
 import GetAppointmentButton from "../components/GetAppointmentButton.vue";
-
 </script>

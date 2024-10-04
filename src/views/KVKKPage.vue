@@ -150,13 +150,11 @@
       </div>
     </div>
 
-    <AppointmentStep4 :in24Hours="true" />
   </div>
 </template>
 
 <script setup>
 import { onMounted } from "vue";
-import AppointmentStep4 from "../components/AppointmentStep4.vue";
 </script>
 
 <style scoped>

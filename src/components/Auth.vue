@@ -15,11 +15,9 @@
         Giriş Yap
       </button>
       <form v-if="showSignIn" @submit.prevent="handleSignIn">
-        <div
-          v-if="loginErrorMessage"
-          class="text-center text-red-600 border border-red-400 rounded-md p-2 mb-4">
+        <MessageWrapper type="error" v-if="loginErrorMessage">
           {{ loginErrorMessage }}
-        </div>
+        </MessageWrapper>
         <div class="mb-4">
           <label class="block text-sm font-medium mb-2">Email*</label>
           <input
@@ -81,11 +79,9 @@
         v-else-if="showRegister"
         @submit.prevent="handleRegister"
         class="space-y-4">
-        <div
-          v-if="registerErrorMessage"
-          class="text-center text-red-600 border border-red-400 rounded-md p-2 mb-4">
+        <MessageWrapper type="error" v-if="registerErrorMessage">
           {{ registerErrorMessage }}
-        </div>
+        </MessageWrapper>
         <div>
           <label class="block text-sm font-medium mb-2">Ad*</label>
           <input
@@ -181,16 +177,12 @@
         class="absolute inset-0 flex items-center m-4 justify-center bg-white bg-opacity-65">
         <LoadingSpinner :text="''" />
       </div>
-      <div
-        v-if="confirmationErrorMessage"
-        class="text-center text-red-600 border border-red-400 rounded-md p-2 mb-4">
+      <MessageWrapper type="error" v-if="confirmationErrorMessage">
         {{ confirmationErrorMessage }}
-      </div>
-      <div
-        v-if="confirmationSuccessMessage"
-        class="text-center text-green-600 border border-green-400 rounded-md p-2 mb-4">
+      </MessageWrapper>
+      <MessageWrapper type="success" v-if="confirmationSuccessMessage">
         {{ confirmationSuccessMessage }}
-      </div>
+      </MessageWrapper>
       <div class="mb-4">
         <label class="block text-lg font-medium mb-2"
           >E-posta doğrulaması*</label
@@ -237,16 +229,16 @@
   </div>
   <div v-if="showAfterConfirm" class="flex flex-col space-y-3">
     <div class="flex-1 bg-white p-4 border border-gray-300 rounded-md">
-      <div
-        class="text-center text-green-600 border border-green-400 rounded-md p-2 mb-4">
+      <MessageWrapper type="success">
         Hesabınız başarıyla oluşturuldu ve giriş yapıldı.
-      </div>
+      </MessageWrapper>
     </div>
   </div>
 </template>
 
 <script setup>
 import LoadingSpinner from "./LoadingSpinner.vue";
+import MessageWrapper from "../wrappers/MessageWrapper.vue";
 import { onMounted, ref } from "vue";
 import { auth, db } from "../firebase"; // Adjust the path as necessary
 import {

@@ -4,7 +4,7 @@
     <div
       v-if="isCreatingMeeting && userData"
       class="absolute inset-0 flex items-center justify-center bg-white bg-opacity-95">
-      <LoadingSpinner :text="'Randevu oluşturuluyor'" />
+      <LoadingSpinner :text="''" />
     </div>
 
     <div>
@@ -60,7 +60,7 @@
         <!-- Action Buttons Section -->
         <router-link
           :to="'/hesabim'"
-          class="bg-primary text-white py-[0.5rem] px-4">
+          class="bg-primary flex w-full justify-center items-center border border-primary text-white py-[0.7rem] px-5 hover:bg-white hover:text-primary hover:border-black transition duration-300">
           Randevularım
         </router-link>
       </div>
@@ -73,7 +73,11 @@ import { onMounted, ref, computed } from "vue";
 import { useStore } from "vuex";
 import LoadingSpinner from "./LoadingSpinner.vue";
 import { doc, getDoc, addDoc, collection, updateDoc } from "firebase/firestore";
-import { ref as storageRef, uploadBytes, getDownloadURL } from "firebase/storage";
+import {
+  ref as storageRef,
+  uploadBytes,
+  getDownloadURL,
+} from "firebase/storage";
 import { db, storage } from "../firebase"; // Adjust the path as necessary
 import axios from "axios";
 import { sub } from "date-fns";
@@ -138,10 +142,10 @@ const uploadFilesToFireStore = async (uploadedFiles) => {
       const file = fileObj.file; // Get the actual File object
       // Create a storage reference using meetingId + file name
       const fileRef = storageRef(storage, `customer_documents/${file.name}`);
-      
+
       // Use uploadBytes to handle the file binary data safely
       const snapshot = await uploadBytes(fileRef, file);
-      
+
       // Get the download URL after upload
       const downloadUrl = await getDownloadURL(snapshot.ref);
 
@@ -183,8 +187,6 @@ const sendAppointmentRecievedMail = async (meetingData) => {
 };
 // api key for google meet AIzaSyCl6q_iRFcgsH2CosKjx9MjVmExK6jNXeU
 
-
-
 const saveMeeting = async (meetingData) => {
   try {
     console.log("saving meeting data...");
@@ -218,7 +220,7 @@ const createMeeting = async () => {
 
   //create date_time using date and slot
   const date_time = new Date(props.formData.date);
-  const deadline = sub(date_time, { days: 1 })
+  const deadline = sub(date_time, { days: 1 });
 
   const [hours, minutes] = props.formData.slot.split(":").map(Number);
   date_time.setHours(hours, minutes);
@@ -234,7 +236,6 @@ const createMeeting = async () => {
     size: file.size,
     kind: file.type,
   }));
-
 
   const meetingData = {
     attorney_id: props.attorneyData.id,

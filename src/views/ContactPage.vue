@@ -91,16 +91,12 @@
             </div>
 
             <div class="space-y-3 text-center mb-5">
-              <div
-                v-if="isSuccess"
-                class="text-center text-sm md:text-base bg-slate-50 text-green-600 border border-green-400 rounded-md p-2">
-                <p>E-mail başarıyla gönderildi</p>
-              </div>
-              <div
-                v-if="isError"
-                class="text-center text-sm md:text-base bg-slate-50 text-red-600 border border-red-400 rounded-md p-2">
-                <p>E-mail gönderilemedi, tekrar deneyin</p>
-              </div>
+              <MessageWrapper type="success" v-if="isSuccess">
+                E-mail başarıyla gönderildi
+              </MessageWrapper>
+              <MessageWrapper type="error" v-if="isError">
+                E-mail gönderilirken bir hata oluştu
+              </MessageWrapper>
             </div>
 
             <div class="mb-4">
@@ -160,6 +156,7 @@
 import { onMounted, ref } from "vue";
 import axios from "axios";
 import LoadingSpinner from "../components/LoadingSpinner.vue";
+import MessageWrapper from "../wrappers/MessageWrapper.vue";
 
 onMounted(() => {
   const mapOptions = {

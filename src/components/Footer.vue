@@ -186,7 +186,13 @@
 
       <!-- Working Hours Column -->
       <div class="w-full md:w-1/4">
-        <h3 class="text-xl mb-4">Online Görüşme Al</h3>
+        <GetAppointmentButton />
+        <div class="py-[1rem] mx-auto flex w-full">
+          <img
+            src="../assets/icons/logo_band_white.svg"
+            class="max-w-[300px] md:max-w-[200px] lg:max-w-[330px] h-auto"
+            alt="iyzico" />
+        </div>
         <p class="text-slate-300 mb-4">
           İstediğiniz avukatımızdan, dilediğiniz saatleri seçin ve online
           görüşme randevunuzu oluşturun.
@@ -208,13 +214,7 @@
             >
           </li>
         </ul>
-        <div class="py-[1rem] mx-auto flex w-full">
-          <img
-            src="../assets/icons/logo_band_white.svg"
-            class="max-w-[300px] md:max-w-[200px] lg:max-w-[330px] h-auto"
-            alt="iyzico" />
-        </div>
-        <GetAppointmentButton />
+   
       </div>
     </div>
     <div class="mt-12 text-center text-gray-500 text-sm">

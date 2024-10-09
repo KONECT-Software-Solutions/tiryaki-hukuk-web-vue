@@ -14,6 +14,7 @@ import NotFound from "./views/NotFound.vue";
 import KVKKPage from "./views/KVKKPage.vue";
 import MSSPage from "./views/MSSPage.vue";
 import CPPage from "./views/CPPage.vue";
+import Test from "./views/Test.vue";
 
 const routes = [
   { path: "/", name: "Home", component: HomePage },
@@ -58,6 +59,12 @@ const routes = [
     name: 'NotFound',
     component: NotFound
   },
+  {
+    path: '/test', // Catch-all route
+    name: 'Test',
+    component: Test
+  },
+  
 ];
 
 const router = createRouter({

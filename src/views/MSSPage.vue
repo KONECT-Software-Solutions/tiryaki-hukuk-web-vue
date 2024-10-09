@@ -5,8 +5,8 @@
     </section>
 
     <div
-      class="flex min-h-screen px-0 md:px-20 lg:px-32 2xl:px-60 py-24 bg-gray-100">
-      <!-- Side Menu -->
+    class="flex min-h-screen px-4 py-6 md:px-16 lg:px-32 2xl:px-60 md:py-24 bg-gray-100">
+    <!-- Side Menu -->
 
       <div class="w-full">
         <h1 class="text-center text-3xl font-bold mb-8">

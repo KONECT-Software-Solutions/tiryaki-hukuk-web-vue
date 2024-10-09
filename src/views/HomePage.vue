@@ -62,7 +62,7 @@
         <BlogsGallery
           :selectedCategory="'all'"
           :showMoreButton="false"
-          :initialBlogCount="6" />
+          :initialBlogCount="3" />
         <div class="text-center mt-4">
           <button
             @click="router.push('/blog')"

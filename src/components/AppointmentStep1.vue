@@ -156,7 +156,8 @@
 </template>
 
 <script setup>
-import { onUpdated, ref, computed, watch } from "vue";
+import { onUpdated, ref, computed, watch, onMounted } from "vue";
+
 
 const props = defineProps(["attorneyData", "dateForDisplay", "slot", "day"]);
 const emits = defineEmits(["continueStep2"]);
@@ -241,4 +242,5 @@ const handleSubmit = () => {
   };
   emits("continueStep2", formData_);
 };
+
 </script>

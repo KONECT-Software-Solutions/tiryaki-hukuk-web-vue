@@ -260,6 +260,7 @@ const formatName = (name) => {
 
 onMounted(() => {
   console.log("AppointmentStep3 mounted");
+
 });
 
 </script>

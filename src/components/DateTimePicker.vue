@@ -215,7 +215,7 @@ function removeExceptions(timeSlotsData, exceptions) {
   return timeSlotsData;
 }
 
-
+// after selecting the date and slot, update the store and navigate to the randevu-olustur page
 const handleSelectDate = (slot) => {
   store.dispatch("updateDateTimePickerData", {
     attorneyId: props.attorneyData.id,

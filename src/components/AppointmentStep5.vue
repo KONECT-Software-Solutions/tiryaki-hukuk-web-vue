@@ -217,6 +217,7 @@ const saveMeeting = async (meetingData) => {
 
 const createMeeting = async () => {
   console.log("creating meeting...");
+  return null
 
   //create date_time using date and slot
   const date_time = new Date(props.formData.date);

@@ -25,7 +25,7 @@
         <div class="py-[1rem] mx-auto flex justify-center w-full">
           <img
             src="../assets/icons/logo_band_colored.svg"
-            class="max-w-[300px] md:max-w-[200px] lg:max-w-[330px] h-auto"
+            class="max-w-[300px]  min-w-[250px] h-auto"
             alt="iyzico" />
         </div>
       </div>
@@ -75,6 +75,24 @@
           Devam Et
         </button>
       </div>
+      <div v-if="status === 'succes'" class="flex flex-col space-y-3 mt-2 items-center">
+        <!-- Payment Instructions -->
+        <div class="space-y-4 text-center">
+          <MessageWrapper type="normal">
+            Ödemenin başarı ile tamamlandı.
+          </MessageWrapper>
+          <MessageWrapper type="normal">
+            Randevunuzu tamamlamak için lütfen devam ediniz.
+          </MessageWrapper>
+        </div>
+
+        <!-- Payment Action Button -->
+        <button
+          @click="handleContinue"
+          class="bg-quaternary flex w-full justify-center items-center border border-quaternary text-white py-[0.7rem] px-5 hover:bg-white hover:text-primary hover:border-black hover:scale-105 transition duration-300">
+          Devam Et
+        </button>
+      </div>
     </div>
   </div>
 </template>
@@ -88,9 +106,22 @@ import axios from "axios";
 const emits = defineEmits(["continueStep5"]);
 const props = defineProps(["in24Hours"]);
 const loaderOn = ref(true);
+const status = ref("");
 
 const handleContinue = () => {
-  emits("continueStep5");
+  if (props.in24Hours === false) {
+    emits("continueStep5");
+  }
+  else {
+    if (status === "success") {
+    emits("continueStep5");
+  }
+  else {
+    console.error("Ödeme başarısız.");
+  }
+  }
+ 
+  
 };
 
 const handlePayment = async () => {
@@ -102,7 +133,7 @@ const handlePayment = async () => {
     currency: "TRY",
     basketId: "B67832",
     paymentGroup: "PRODUCT",
-    callbackUrl: "https://tiryakihukuk.com/test",
+    callbackUrl: "http://127.0.0.1:5000/callback",
     enabledInstallments: ["2", "3", "6", "9"],
     buyer: {
       id: "BY789",
@@ -184,47 +215,30 @@ const handlePayment = async () => {
   }
 };
 
-const retrievePaymentResult = async (token) => {
-  const request_data = {
-    locale: "tr",
-    conversationId: "123456789",
-    token: token,  // Make sure you pass the token dynamically
-  };
-
-  try {
-    const response_json = await axios.post(
-      "http://127.0.0.1:5000/retrieve-payment-result",
-      request_data,  // Send the request data as a POST body
-      {
-        headers: {
-          'Content-Type': 'application/json',  // Ensure the Content-Type is set
-        },
-      }
-    );
-    const response = JSON.parse(response_json.data.payment_result);
-    console.log("retrieve payment result", response);
-  } catch (error) {
-    console.error("Ödeme sonucu alınamadı:", error);
-  }
-};
-
 onMounted(() => {
 
-  console.log("in24Hours", props.in24Hours);
   setTimeout(() => {
     loaderOn.value = false;
   }, 1500);
 
   // When the user is redirected back to the callback URL, get the token from the query parameters
   const urlParams = new URLSearchParams(window.location.search);
-  const token = urlParams.get("token");
+  status.value = urlParams.get("status");
 
-  if (token) {
+  if (status) {
     // Call the function to retrieve the payment result
-    retrievePaymentResult(token);
+    if (status === "success") {
+      console.log("Payment successful.");
+    } else {
+      console.error("Payment failed or was cancelled.");
+    }
   } else {
-    console.error("Token not found in the URL");
+    console.error("Status not found in the URL");
   }
+
+  console.log("in24Hours", props.in24Hours);
+  console.log("status", status);
+
 });
 </script>
 

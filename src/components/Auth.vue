@@ -484,6 +484,8 @@ const handleSignIn = async () => {
 
     const user = auth.currentUser;
     console.log("User signed in successfully:", user);
+    const userData = store.getters.getUser;
+    console.log("userdata", userData)
 
     emits("signedIn");
   } catch (error) {

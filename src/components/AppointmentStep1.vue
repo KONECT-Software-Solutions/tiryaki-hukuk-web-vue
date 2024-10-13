@@ -8,7 +8,7 @@
         v-model="formData.selectedArea"
         required
         class="w-full p-2 border text-sm border-gray-300 rounded focus:ring-black focus:ring-0">
-        <option v-for="area in attorneyData.practiceAreas" :key="area">
+        <option v-for="area in appointmentProcessData.attorneyData.practiceAreas" :key="area">
           {{ area }}
         </option>
       </select>
@@ -94,10 +94,10 @@
         <div class="flex items-center">
           <i class="ri-calendar-line mr-2 text-2xl"></i>
           <div class="px-1 flex text-sm md:text-base items-center">
-            {{ dateForDisplay }} <span class="ml-2">{{ day }}</span>
+            {{ appointmentProcessData.selectedDateForDisplay }} <span class="ml-2">{{ appointmentProcessData.selectedDay }}</span>
             <span
               class="flex ml-2 items-center text-nowrap bg-yellow-100 rounded-xl px-2 text-sm">
-              <i class="ri-time-fill mr-1 text-lg"></i>{{ slot }} -
+              <i class="ri-time-fill mr-1 text-lg"></i>{{ appointmentProcessData.selectedSlot }} -
               {{ endTime || "..." }}</span
             >
           </div>
@@ -158,12 +158,11 @@
 <script setup>
 import { onUpdated, ref, computed, watch, onMounted } from "vue";
 
-
-const props = defineProps(["attorneyData", "dateForDisplay", "slot", "day"]);
+const props = defineProps(["appointmentProcessData"]);
 const emits = defineEmits(["continueStep2"]);
 
 const formData = ref({
-  selectedArea: props.attorneyData.practiceAreas[0],
+  selectedArea: props.appointmentProcessData.attorneyData.practiceAreas[0],
   topic: "",
   selectedType: "",
   selectedDuration: "",
@@ -176,17 +175,19 @@ const typeMapping = {
 };
 
 const options = computed(() => {
-  return props.attorneyData.appointment_settings.map((setting, index) => {
-    const { value, icon } = typeMapping[setting.type] || {};
-    return {
-      id: index + 1,
-      value: value || setting.type.toLowerCase(),
-      price: setting.price,
-      duration: setting.duration,
-      label: setting.type,
-      icon: icon || "ri-question-line", // Default icon if not found
-    };
-  });
+  return props.appointmentProcessData.attorneyData.appointment_settings.map(
+    (setting, index) => {
+      const { value, icon } = typeMapping[setting.type] || {};
+      return {
+        id: index + 1,
+        value: value || setting.type.toLowerCase(),
+        price: setting.price,
+        duration: setting.duration,
+        label: setting.type,
+        icon: icon || "ri-question-line", // Default icon if not found
+      };
+    }
+  );
 });
 
 const uniqueOptions = computed(() => {
@@ -200,7 +201,7 @@ const uniqueOptions = computed(() => {
 });
 
 const durations = computed(() => {
-  return props.attorneyData.appointment_settings
+  return props.appointmentProcessData.attorneyData.appointment_settings
     .filter(
       (setting) =>
         (typeMapping[setting.type]?.value || setting.type.toLowerCase()) ===
@@ -210,19 +211,24 @@ const durations = computed(() => {
 });
 
 const price = computed(() => {
-  if (!props.attorneyData || !props.attorneyData.appointment_settings) return 0;
-  const setting = props.attorneyData.appointment_settings.find(
-    (setting) =>
-      (typeMapping[setting.type]?.value || setting.type.toLowerCase()) ===
-        formData.value.selectedType &&
-      setting.duration === formData.value.selectedDuration
-  );
+  if (
+    !props.appointmentProcessData.attorneyData ||
+    !props.appointmentProcessData.attorneyData.appointment_settings
+  )
+    return 0;
+  const setting =
+    props.appointmentProcessData.attorneyData.appointment_settings.find(
+      (setting) =>
+        (typeMapping[setting.type]?.value || setting.type.toLowerCase()) ===
+          formData.value.selectedType &&
+        setting.duration === formData.value.selectedDuration
+    );
   return setting ? setting.price : 0;
 });
 
 const endTime = computed(() => {
-  if (!props.slot || !formData.value.selectedDuration) return "";
-  const [hours, minutes] = props.slot.split(":").map(Number);
+  if (!props.appointmentProcessData.selectedSlot || !formData.value.selectedDuration) return "";
+  const [hours, minutes] = props.appointmentProcessData.selectedSlot.split(":").map(Number);
   const end = new Date();
   end.setHours(hours, minutes + formData.value.selectedDuration);
   return end.toTimeString().slice(0, 5);
@@ -235,12 +241,11 @@ const handleSubmit = () => {
     selectedType: formData.value.selectedType,
     selectedDuration: formData.value.selectedDuration,
     price: price.value,
-    day: props.day,
-    dateForDisplay: props.dateForDisplay,
-    slot: props.slot,
     endTime: endTime.value,
   };
   emits("continueStep2", formData_);
 };
-
+onMounted(() => {
+  
+});
 </script>

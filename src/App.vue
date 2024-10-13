@@ -28,7 +28,7 @@ watch(
 );
 
 onMounted(async () => {
-  await store.dispatch("fetchUserData");
+
 });
 </script>
 

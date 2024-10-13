@@ -6,7 +6,7 @@
         <div class="flex my-2">
           <div>
             <img
-            :src="`/assets/images/${attorneyData.id}.webp`"
+            :src="`/assets/images/${appointmentProcessData.attorneyData.id}.webp`"
             alt="Profile Image"
               class="md:w-44 object-cover" />
             <button
@@ -18,7 +18,7 @@
             <div class="flex justify-between ml-2 items-start">
               <div>
                 <h2 class="text-lg text-nowrap md:text-xl font-semibold">
-                  {{ attorneyData.name }}<span> / </span
+                  {{ appointmentProcessData.attorneyData.name }}<span> / </span
                   ><span class="text-gray-600 font-normal text-base md:text-lg"
                     >Avukat</span
                   >
@@ -29,11 +29,11 @@
             <div class="mt-2 space-y-1 text-sm md:text-base text-gray-600">
               <div class="flex items-center space-x-2">
                 <i class="fas fa-globe"></i>
-                <span>{{ attorneyData.experience }} + Yıllık Tecrübe</span>
+                <span>{{ appointmentProcessData.attorneyData.experience }} + Yıllık Tecrübe</span>
               </div>
               <div class="flex items-center space-x-2">
                 <i class="fas fa-university"></i>
-                <span>{{ attorneyData.university }}</span>
+                <span>{{ appointmentProcessData.attorneyData.university }}</span>
               </div>
             </div>
           </div>
@@ -44,17 +44,17 @@
         </div>
         <div class="flex items-center">
           <i class="ri-price-tag-3-line mr-2 text-2xl"></i>
-          <span>{{ formData.price }} TL</span>
+          <span>{{ appointmentProcessData.formData.price }} TL</span>
         </div>
         <div class="flex items-center mb-2">
           <i class="ri-calendar-line mr-2 text-2xl"></i>
           <div class="px-1 flex text-wrap md:text-nowrap items-center">
-            {{ formData.dateForDisplay }}
-            <span class="ml-1"> {{ formData.day }}</span>
+            {{ appointmentProcessData.selectedDateForDisplay }}
+            <span class="ml-1"> {{ appointmentProcessData.selectedDay }}</span>
             <span
               class="flex ml-2 items-center text-nowrap bg-yellow-100 rounded-xl px-2 text-sm">
-              <i class="ri-time-fill mr-1 text-lg"></i>{{ formData.slot }} -
-              {{ formData.endTime }}</span
+              <i class="ri-time-fill mr-1 text-lg"></i>{{ appointmentProcessData.selectedSlot }} -
+              {{ appointmentProcessData.formData.endTime }}</span
             >
           </div>
         </div>
@@ -173,16 +173,21 @@
 
 <script setup>
 import { onMounted, ref, computed, onUpdated } from "vue";
+import { useStore } from "vuex";
 
-const props = defineProps(["formData", "attorneyData"]);
-const emits = defineEmits(["continueStep4"]);
+const props = defineProps(["appointmentProcessData"]);
+const emits = defineEmits(["continueStep4", "notAuthenticated"]);
 
-const notes = ref("");
-const uploadedFiles = ref([]);
+const store = useStore();
+const isAuthenticated = computed(() => store.getters.isAuthenticated);
+
+
+const notes = ref(store.getters.getAppointmentProcessData.notes || "");
+const uploadedFiles = ref(store.getters.getAppointmentProcessData.uploadedFiles || []);
 
 
 const iconClass = computed(() => {
-  switch (props.formData.selectedType) {
+  switch (props.appointmentProcessData.formData.selectedType) {
     case "video":
       return "ri-video-on-line";
     case "phone":
@@ -196,7 +201,7 @@ const iconClass = computed(() => {
 });
 
 const displayText = computed(() => {
-  switch (props.formData.selectedType) {
+  switch (props.appointmentProcessData.formData.selectedType) {
     case "video":
       return "Online Video Görüşme";
     case "phone":
@@ -238,6 +243,7 @@ const handleFiles = (files) => {
 const handleSubmit = () => {
   console.log("handleSubmit step 3");
   // emit event to parent component with uploaded files data
+  console.log("uploadedFiles.value = ", uploadedFiles.value);
   emits("continueStep4", uploadedFiles.value, notes.value); // Correctly call the emit function
 };
 const formatSize = (size) => {
@@ -252,6 +258,9 @@ const formatSize = (size) => {
   }
 };
 
+const handleAuth = () => {
+  emits("notAuthenticated");
+};
 const formatName = (name) => {
   return name.length > 20
     ? name.substring(0, 10) + "..." + name.substring(name.length - 10)
@@ -259,7 +268,15 @@ const formatName = (name) => {
 };
 
 onMounted(() => {
-  console.log("AppointmentStep3 mounted");
+  if (isAuthenticated.value) {
+    console.log("Authenticated");
+    console.log("isAuthenticated.value = ", isAuthenticated.value);
+  }
+  else {
+    console.log("Not Authenticated");
+    handleAuth();
+    console.log("isAuthenticated.value = ", isAuthenticated.value);
+  }
 
 });
 

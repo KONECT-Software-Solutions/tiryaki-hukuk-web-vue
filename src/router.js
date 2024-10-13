@@ -38,14 +38,10 @@ const routes = [
     component: ServiceDetailPage 
   },
   {
-    path: '/randevu-olustur/:adim', // Dynamic step route
+    path: '/randevu-olustur', // Dynamic step route
     name: 'Appointment',
     component: AppointmentPage,
     props: true, // Allow route params to be passed as props to the component
-  },
-  {
-    path: '/randevu-olustur',
-    redirect: '/randevu-olustur/1', // Default to step 1
   },
   {
     path: "/hesabim",

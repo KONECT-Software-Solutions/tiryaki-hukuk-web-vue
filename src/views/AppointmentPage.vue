@@ -154,24 +154,23 @@
       <AppointmentStep1
         v-if="currentStep === 1 && !loading"
         @continueStep2="handleContinueStep2"
-        :attorneyData="attorneyData"
-        :dateForDisplay="dateForDisplay"
-        :day="day"
-        :slot="slot" />
+        :appointmentProcessData="appointmentProcessData" />
       <AppointmentStep2
         v-if="currentStep === 2"
         @continueStep3="handleContinueStep3" />
       <AppointmentStep3
         v-if="currentStep === 3"
-        :formData="formData"
-        :attorneyData="attorneyData"
-        @continueStep4="handleContinueStep4" />
-      <AppointmentStep4 v-if="currentStep === 4" @continueStep5="handleContinueStep5" :in24Hours="handleIn24Hours"/>
+        :appointmentProcessData="appointmentProcessData"
+        @continueStep4="handleContinueStep4"
+        @notAuthenticated="handleNotAuthenticated" />
+      <AppointmentStep4
+        v-if="currentStep === 4"
+        :appointmentProcessData="appointmentProcessData"
+        @continueStep5="handleContinueStep5"
+        @notAuthenticated="handleNotAuthenticated" />
       <AppointmentStep5
         v-if="currentStep === 5"
-        :formData="formData"
-        :attorneyData="attorneyData"
-        :uploadedFiles="uploadedFiles" />
+        :appointmentProcessData="appointmentProcessData"/>
     </div>
     <!-- MAIN CONTENT END -->
   </div>
@@ -186,73 +185,48 @@ import AppointmentStep3 from "../components/AppointmentStep3.vue";
 import AppointmentStep4 from "../components/AppointmentStep4.vue";
 import AppointmentStep5 from "../components/AppointmentStep5.vue";
 import SkeletonLoader from "../components/SkeletonLoader.vue";
-import { useRoute, useRouter } from 'vue-router'; // Import Vue Router utilities
-import { v4 as uuidv4 } from 'uuid'; // Use a UUID library for generating the token
-
+import { useRoute, useRouter } from "vue-router"; // Import Vue Router utilities
 
 const route = useRoute();
 const router = useRouter();
 const store = useStore();
 
-const currentStep = ref(parseInt(route.params.adim)); // Default to step 1 if not provided
 const loading = ref(true);
 
-// On appointment start (Step 1), check if a token exists, otherwise generate one
-const appointmentToken = ref(localStorage.getItem('appointmentToken') || uuidv4());
-localStorage.setItem('appointmentToken', appointmentToken.value);
+const currentStep = computed(
+  () => store.getters.getAppointmentProcessData.currentStep
+);
+const steps = [
+  { number: 1 },
+  { number: 2 },
+  { number: 3 },
+  { number: 4 },
+  { number: 5 },
+];
 
-const steps = [{ number: 1 }, { number: 2 }, { number: 3 }, { number: 4 }, { number: 5 }];
-// enson burada kaldım. adımların routedan takibi yapılabiliyor ancak refresh edildiğinde sayfanın açılmasını etkileyen tek şey adım değil.
-// aynı zamanda bu adımlar için gerekli olan verilerinde yüklenmesi gerekiyor. bunu state içerisinde tutarak sağlamalıyım galiba.
-// şuan formdatayı state e kaydedip çekiyorum o yüzden step3 te formdatadan değilde attorneydatadan alıyorum hatayı 
-// bunun için attorney appointment card a bakmalıyım çünkü o veri oradan çekiliyor.
-
-const attorneyData = computed(() => store.state.attorney); 
-const dateTimePickerData = computed(() => store.getters.getDateTimePickerData);
-const formData = ref(localStorage.getItem('formData') ? JSON.parse(localStorage.getItem('formData')) : {});
-const uploadedFiles = ref({});
-
-const date = computed(() => dateTimePickerData.value.selectedDate);
-const day = computed(() => dateTimePickerData.value.selectedDay);
-const slot = computed(() => dateTimePickerData.value.selectedSlot);
-const dateForDisplay = computed(
-  () => dateTimePickerData.value.selectedDateForDisplay
+const appointmentProcessData = computed(
+  () => store.getters.getAppointmentProcessData
 );
 
-// check whether appointment date is in the next 24 hours or not
-const handleIn24Hours = computed(() => {
-  return true
-  const selectedDate = new Date(dateTimePickerData.value.selectedDate);
-  const currentDate = new Date();
-  const diff = selectedDate - currentDate;
-  return diff < 86400000;
-});
-
-// Function to change the current step (for example, on button click)
-const saveFormData = () => {
-  localStorage.setItem('formData', JSON.stringify(formData.value));
-};
-
 const handleContinueStep2 = (formData_) => {
-  formData.value = formData_;
-  formData.value.date = date.value;
-  formData.value.day = day.value;
-  formData.value.slot = slot.value;
-  formData.value.dateForDisplay = dateForDisplay.value;
-  saveFormData();
-  saveAttorneyData();
+  console.log("handleContinueStep2 updating formdata of the process data");
+  store.commit("setAppointmentProcessData", { formData: formData_ });
+  console.log("appointmentProcessData", appointmentProcessData.value);
   nextStep();
 };
 
-const handleContinueStep3 = () => {
+const handleContinueStep3 = (userData) => {
   console.log("handleContinueStep3");
+  store.commit("setAppointmentProcessData", { userData: userData });
   nextStep();
 };
 
-const handleContinueStep4 = (uploadedFiles_, notes_) => {
+const handleContinueStep4 = (uploadedFiles, notes) => {
   console.log("handleContinueStep4");
-  uploadedFiles.value = uploadedFiles_;
-  formData.value.notes = notes_;
+  store.commit("setAppointmentProcessData", {
+    uploadedFiles: uploadedFiles,
+    notes: notes,
+  });
   nextStep();
 };
 
@@ -262,66 +236,29 @@ const handleContinueStep5 = () => {
   console.log("currentStep", currentStep.value);
 };
 
+const handleNotAuthenticated = () => {
+  console.log("handleNotAuthenticated");
+  store.commit("setAppointmentProcessData", { currentStep: 2, userData: null });
+};
+
 const nextStep = () => {
   if (currentStep.value < steps.length) {
-    currentStep.value++;
-    router.push(`/randevu-olustur/${currentStep.value}?token=${appointmentToken.value}`); // Add token to the URL
+    store.commit("setAppointmentProcessData", {
+      currentStep: currentStep.value + 1,
+    });
   }
 };
-
-
-const prevStep = () => {
-  if (currentStep.value > 1) {
-    currentStep.value--;
-  }
-};
-
-// React to changes in the route (if user refreshes the page, for example)
-watch(
-  () => route.params.adim,
-  (newStep) => {
-    currentStep.value = parseInt(newStep) || 1; // Update currentStep when route param changes
-  }
-);
-
 
 onMounted(async () => {
   console.log("AppointmentPage mounted");
 
-  // as a first step of the appointment, fetch datetimepicker data from vuex store that has attorney id inside
-  console.log("fetching dateTimePickerData");
-  const storedData = localStorage.getItem("dateTimePickerData");
-  console.log("storedData", storedData);
-  if (storedData) {
-    const parsedData = JSON.parse(storedData);
-    store.dispatch("updateDateTimePickerData", parsedData);
-  }else {
-    console.log("dateTimePickerData is missing. Redirecting or to main page.");
-    router.push("/");
-  }
-
-  if (dateTimePickerData.value && dateTimePickerData.value.attorneyId) {
-    console.log("fetching attorney");
-    await store.dispatch(
-      "fetchAttorneyById",
-      dateTimePickerData.value.attorneyId
-    );
-  } else {
-    // Handle the case when data is not present, e.g., redirect to a previous page or show an error
-    console.error(
-      "dateTimePickerData is missing. Redirecting or showing an error message."
-    );
-    // Example: router.push('/previous-page');
-  }
-  if (attorneyData.value) {
+  setTimeout(() => {
     loading.value = false;
-  }
- 
+  }, 1000);
 
-  
+  console.log("current step", currentStep.value);
+  console.log("appointmentProcessData", appointmentProcessData.value);
 });
-
-
 </script>
 
 <style scoped>

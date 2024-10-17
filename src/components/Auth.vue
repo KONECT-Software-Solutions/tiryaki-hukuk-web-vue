@@ -15,7 +15,7 @@
         Giriş Yap
       </button>
       <form v-if="showSignIn" @submit.prevent="handleSignIn">
-        <MessageWrapper type="error" v-if="loginErrorMessage">
+        <MessageWrapper class="mb-4" type="error" v-if="loginErrorMessage">
           {{ loginErrorMessage }}
         </MessageWrapper>
         <div class="mb-4">

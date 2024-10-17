@@ -135,7 +135,7 @@
                 v-if="meeting.payment_status === '0' && meeting.status === '1'"
                 class="text-quaternary"
                 >Son Ödeme Tarihi:
-                {{ getPaymentDeadlineTR(meeting.date_time) }}</span
+                {{ getPaymentDeadlineTR(meeting.date_time, meeting.deadline) }}</span
               >
             </p>
           </div>
@@ -166,19 +166,21 @@
             class="px-4 py-1 border bg-quaternary text-white hover:bg-slate-700 hover:text-slate-100 transition duration-30000">
             Öde
           </router-link>
-
-          <!-- Show Join button if payment is completed -->
           <button
+            v-if="meeting.payment_status === '0' && meeting.status === '1'"
+            @click="pay(meeting)"
+            class="px-4 py-1 border bg-quaternary text-white hover:bg-slate-700 hover:text-slate-100 transition duration-30000">
+            Öde
+        </button>
+            <!-- go to meeting.meeting_url button-->
+            <a
             v-if="meeting.status !== '6' && meeting.payment_status === '1'"
-            @click="
-              showCancelModal = true;
-              meetingId = meeting.id;
-              attorneyId = meeting.attorney_id;
-              console.log(meetingId, attorneyId);
-            "
+            :href="meeting.meeting_url"
+            target="_blank"
             class="px-4 py-1 border bg-lime-300 text-slate-700 hover:bg-slate-700 hover:text-slate-100 transition duration-300">
             Google Meet ile katılın
-          </button>
+            </a>
+
         </div>
       </div>
       <div v-if="noMeeting">
@@ -241,11 +243,10 @@ watch(
 );
 
 
-const getPaymentDeadlineTR = (date_time) => {
-  const meetingTime = new Date(date_time.seconds * 1000);
-  const paymentDeadline = new Date(meetingTime.getTime() - 24 * 60 * 60 * 1000); // 24 hours before the meeting
+const getPaymentDeadlineTR = (date_time, deadline) => {
+  const paymentDeadline = new Date(deadline.seconds * 1000); // 24 hours before the meeting
   const now = new Date();
-
+  
   if (now > paymentDeadline) {
     console.log("Payment deadline has passed");
     return "Ödeme süresi geçmiştir.";
@@ -321,12 +322,11 @@ const cancel = (meetingId, attorneyId) => {
   }, 2000);
 };
 
-const pay = (id) => {
-  console.log("Pay appointment", id);
+const pay = (meeting) => {
+  console.log("Pay appointment", meeting);
   // go to payment page with router
-  router.push(`/odeme/${id}`);
+  //router.push(`/odeme/${id}`);
 };
-
 onMounted(() => {
   console.log("MyMeetings component mounted");
   console.log("Meetings Data test test", props.meetingsData);

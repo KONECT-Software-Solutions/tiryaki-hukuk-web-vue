@@ -170,7 +170,7 @@
         @notAuthenticated="handleNotAuthenticated" />
       <AppointmentStep5
         v-if="currentStep === 5"
-        :appointmentProcessData="appointmentProcessData"/>
+        :appointmentProcessData="appointmentProcessData" />
     </div>
     <!-- MAIN CONTENT END -->
   </div>
@@ -185,10 +185,9 @@ import AppointmentStep3 from "../components/AppointmentStep3.vue";
 import AppointmentStep4 from "../components/AppointmentStep4.vue";
 import AppointmentStep5 from "../components/AppointmentStep5.vue";
 import SkeletonLoader from "../components/SkeletonLoader.vue";
-import { useRoute, useRouter } from "vue-router"; // Import Vue Router utilities
+import router from "../router";
+import { ro } from "date-fns/locale";
 
-const route = useRoute();
-const router = useRouter();
 const store = useStore();
 
 const loading = ref(true);
@@ -196,44 +195,63 @@ const loading = ref(true);
 const currentStep = computed(
   () => store.getters.getAppointmentProcessData.currentStep
 );
-const steps = [
-  { number: 1 },
-  { number: 2 },
-  { number: 3 },
-  { number: 4 },
-  { number: 5 },
-];
 
 const appointmentProcessData = computed(
   () => store.getters.getAppointmentProcessData
 );
 
 const handleContinueStep2 = (formData_) => {
-  console.log("handleContinueStep2 updating formdata of the process data");
-  store.commit("setAppointmentProcessData", { formData: formData_ });
-  console.log("appointmentProcessData", appointmentProcessData.value);
-  nextStep();
+  if (formData_) {
+    try {
+      store.commit("setAppointmentProcessData", { formData: formData_ });
+      nextStep();
+    } catch (error) {
+      console.error("Error updating form data:", error);
+    }
+  } else {
+    console.error("Form data is invalid or missing. Continue step2");
+  }
+  window.scrollTo(0, 0);
 };
 
 const handleContinueStep3 = (userData) => {
-  console.log("handleContinueStep3");
-  store.commit("setAppointmentProcessData", { userData: userData });
-  nextStep();
+  if (userData) {
+    try {
+      store.commit("setAppointmentProcessData", { userData: userData });
+      nextStep();
+    } catch (error) {
+      console.error("Error updating user data:", error);
+    }
+  } else {
+    console.error("Form data is invalid or missing. Continue step3");
+  }
+  window.scrollTo(0, 0);
 };
 
 const handleContinueStep4 = (uploadedFiles, notes) => {
-  console.log("handleContinueStep4");
-  store.commit("setAppointmentProcessData", {
-    uploadedFiles: uploadedFiles,
-    notes: notes,
-  });
-  nextStep();
+  if (uploadedFiles && notes) {
+    try {
+      store.commit("setAppointmentProcessData", {
+        uploadedFiles: uploadedFiles,
+        notes: notes,
+      });
+      nextStep();
+    } catch (error) {
+      console.error("Error updating user data:", error);
+    }
+  } else {
+    console.error("Form data is invalid or missing. Continue step3");
+  }
+  window.scrollTo(0, 0);
 };
 
 const handleContinueStep5 = () => {
-  console.log("handleContinueStep5");
-  nextStep();
-  console.log("currentStep", currentStep.value);
+  try {
+    nextStep();
+    console.log("currentStep", currentStep.value);
+  } catch (error) {
+    console.error("Error updating user data:", error);
+  }
 };
 
 const handleNotAuthenticated = () => {
@@ -242,19 +260,51 @@ const handleNotAuthenticated = () => {
 };
 
 const nextStep = () => {
-  if (currentStep.value < steps.length) {
-    store.commit("setAppointmentProcessData", {
-      currentStep: currentStep.value + 1,
-    });
+  const totalSteps = 5; // There are 5 steps
+  if (currentStep.value < totalSteps) {
+    try {
+      store.commit("setAppointmentProcessData", {
+        currentStep: currentStep.value + 1,
+      });
+    } catch (error) {
+      console.error("Error advancing to the next step:", error);
+    }
   }
+};
+
+const isAppointmentProcessDataReady = () => {
+  const data = appointmentProcessData.value;
+
+  return (
+    data.appointmentToken &&
+    data.attorneyData.id &&
+    data.selectedDate &&
+    data.selectedDay &&
+    data.selectedSlot
+  );
+  // Check required fields for the readiness of appointmentProcessData
 };
 
 onMounted(async () => {
   console.log("AppointmentPage mounted");
 
-  setTimeout(() => {
-    loading.value = false;
-  }, 1000);
+  // Simulate or fetch any necessary data before loading completes
+  try {
+    if (!isAppointmentProcessDataReady()) {
+      // If data is not ready, handle accordingly, e.g., redirect to an earlier step
+      console.error("Appointment process data is not ready.");
+      router.push("/");
+    } else {
+      console.log("Appointment data is ready. Proceeding with loading...");
+    }
+  } catch (error) {
+    console.error("Error during appointment process validation:", error);
+  } finally {
+    setTimeout(() => {
+      console.log("1s timeout");
+      loading.value = false;
+    }, 1000);
+  }
 
   console.log("current step", currentStep.value);
   console.log("appointmentProcessData", appointmentProcessData.value);

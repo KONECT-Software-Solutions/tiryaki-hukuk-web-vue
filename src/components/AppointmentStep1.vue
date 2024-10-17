@@ -8,7 +8,9 @@
         v-model="formData.selectedArea"
         required
         class="w-full p-2 border text-sm border-gray-300 rounded focus:ring-black focus:ring-0">
-        <option v-for="area in appointmentProcessData.attorneyData.practiceAreas" :key="area">
+        <option
+          v-for="area in appointmentProcessData.attorneyData.practiceAreas"
+          :key="area">
           {{ area }}
         </option>
       </select>
@@ -94,10 +96,12 @@
         <div class="flex items-center">
           <i class="ri-calendar-line mr-2 text-2xl"></i>
           <div class="px-1 flex text-sm md:text-base items-center">
-            {{ appointmentProcessData.selectedDateForDisplay }} <span class="ml-2">{{ appointmentProcessData.selectedDay }}</span>
+            {{ appointmentProcessData.selectedDateForDisplay }}
+            <span class="ml-2">{{ appointmentProcessData.selectedDay }}</span>
             <span
               class="flex ml-2 items-center text-nowrap bg-yellow-100 rounded-xl px-2 text-sm">
-              <i class="ri-time-fill mr-1 text-lg"></i>{{ appointmentProcessData.selectedSlot }} -
+              <i class="ri-time-fill mr-1 text-lg"></i
+              >{{ appointmentProcessData.selectedSlot }} -
               {{ endTime || "..." }}</span
             >
           </div>
@@ -118,11 +122,11 @@
         </div>
         <div>
           <input
-            id="kvkk"
+            id="mss"
             type="checkbox"
             class="p-2 border mr-1 border-gray-300 rounded"
             required />
-          <label for="kvkk" class="text-sm text-slate-500">
+          <label for="mss" class="text-sm text-slate-500">
             Tiryaki Hukuk ve Arabuluculuk'un
             <router-link :to="'/mss'" target="_blank" class="text-blue-500">
               Mesafeli Satış Sözleşmesi'ni </router-link
@@ -131,11 +135,11 @@
         </div>
         <div>
           <input
-            id="kvkk"
+            id="iptal-iade"
             type="checkbox"
             class="p-2 border mr-1 border-gray-300 rounded"
             required />
-          <label for="kvkk" class="text-sm text-slate-500">
+          <label for="iptal-iade" class="text-sm text-slate-500">
             Tiryaki Hukuk ve Arabuluculuk'un
             <router-link
               :to="'/iptal-iade'"
@@ -156,7 +160,7 @@
 </template>
 
 <script setup>
-import { onUpdated, ref, computed, watch, onMounted } from "vue";
+import {ref, computed, onMounted } from "vue";
 
 const props = defineProps(["appointmentProcessData"]);
 const emits = defineEmits(["continueStep2"]);
@@ -227,8 +231,14 @@ const price = computed(() => {
 });
 
 const endTime = computed(() => {
-  if (!props.appointmentProcessData.selectedSlot || !formData.value.selectedDuration) return "";
-  const [hours, minutes] = props.appointmentProcessData.selectedSlot.split(":").map(Number);
+  if (
+    !props.appointmentProcessData.selectedSlot ||
+    !formData.value.selectedDuration
+  )
+    return "";
+  const [hours, minutes] = props.appointmentProcessData.selectedSlot
+    .split(":")
+    .map(Number);
   const end = new Date();
   end.setHours(hours, minutes + formData.value.selectedDuration);
   return end.toTimeString().slice(0, 5);
@@ -245,7 +255,5 @@ const handleSubmit = () => {
   };
   emits("continueStep2", formData_);
 };
-onMounted(() => {
-  
-});
+onMounted(() => {});
 </script>

@@ -108,7 +108,7 @@ onMounted(async () => {
   console.log("meetingsData", meetingsData.value);
   if (userData.value.meetings && meetingsData.value.length === 0) {
     console.log("fetching meetings data");
-    console.log("userData", userData.value.meetings);
+    console.log("userData", userData.value);
     await store.dispatch("fetchMeetingsData", {
       meetingIds: userData.value.meetings,
     });

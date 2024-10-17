@@ -45,16 +45,21 @@ const handleSignIn = async () => {
 
 onMounted(() => {
   console.log("AppointmentStep2 mounted");
-  if (isAuthenticated.value) {
-    setTimeout(() => {
-      isCheckingAuth.value = false;
-      emits("continueStep3", userData.value);
-    }, 1000);
-  } else {
-    setTimeout(() => {
-      isCheckingAuth.value = false;
-    }, 1000);
-  }
+  try {
+    if (isAuthenticated.value) {
+      setTimeout(() => {
+        isCheckingAuth.value = false;
+        emits("continueStep3", userData.value);
+      }, 2000);
+    } else {
+      setTimeout(() => {
+        isCheckingAuth.value = false;
+        console.log("User not authenticated");
+      }, 2000);
+    }
+  } catch (error) {
+    console.error("Error checking authentication status:", error);
+  } 
   // wait 1 second to check auth status
 });
 </script>

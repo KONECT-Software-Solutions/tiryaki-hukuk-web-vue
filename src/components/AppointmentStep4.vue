@@ -30,26 +30,18 @@
         </div>
       </div>
       <div
-        v-if="
-          props.appointmentProcessData.in24Hours &&
-          props.appointmentProcessData.paymentStatus === null
-        "
-        class="flex flex-col space-y-3 mt-2 items-center">
+        v-if="isPaymentRequired && paymentStatus === null"
+        class="flex flex-col space-y-3 mt-2 items-strech">
         <!-- Payment Instructions -->
-        <div class="space-y-4 text-center">
+        <div class="space-y-4 text-center w-full">
           <MessageWrapper type="normal">
-            Randevunuz 24 saat içinde olduğu için ödemenizi şuan yapmanız
-            gerekmektedir.
+            Randevunuz 24 saat içinde olduğu için ödemeyi şimdi yapmanız gerekmektedir.
           </MessageWrapper>
           <MessageWrapper type="normal">
             Ödemenizi aşağıdaki butona tıklayarak
-            <span class="italic font-semibold">iyzico</span> güvencesi ile
-            tamamlayabilirsiniz. Ödeme yapıldıktan sonra ödeme ve randevunuz ile
-            alakalı size e-posta ile bilgilendirme maili gelecektir. test
+            <span class="italic font-semibold">iyzico</span> üzerinden yapabilirsiniz.
           </MessageWrapper>
-        </div>
-
-        <!-- Payment Action Button -->
+              <!-- Payment Action Button -->
         <button
           @click="handlePayment"
           type="submit"
@@ -59,15 +51,15 @@
             class="w-36"
             alt="iyzico-ile-ode" />
         </button>
+        </div>
+
+    
       </div>
       <div
-        v-else-if="
-          !props.appointmentProcessData.in24Hours &&
-          props.appointmentProcessData.paymentStatus !== 'success'
-        "
-        class="flex flex-col space-y-3 mt-2 items-center">
+        v-else-if="!isPaymentRequired && paymentStatus !== 'success'"
+        class="flex flex-col space-y-3 mt-2 items-strech">
         <!-- Payment Instructions -->
-        <div class="space-y-4 mb-2 text-center">
+        <div class="space-y-4 mb-2 text-center w-full">
           <MessageWrapper type="normal">
             Şuan ödeme yapmak zorunda değilsiniz. Lütfen randevu tarihinden 24
             saat önce ödemenizi tamamlayınız.
@@ -76,56 +68,49 @@
             Ödemenizi sağ üst taraftaki Hesabım sekmesinden tamamlayabilirsiniz.
             Randevudan 24 saat önce ödeme yapılmaz ise randevu iptal olacaktır.
           </MessageWrapper>
-        </div>
 
         <!-- Payment Action Button -->
         <button
           @click="handleContinue"
-          class="bg-primary w-full text-white py-[1rem] px-4 flex justify-center">
+          class="bg-tertiary w-full mt-4 text-white py-[0.7rem] px-4">
           Devam Et
         </button>
+        </div>
+
       </div>
       <div
-        v-if="
-          props.appointmentProcessData.in24Hours &&
-          props.appointmentProcessData.paymentStatus === 'success'
-        "
-        class="flex flex-col space-y-3 mt-2 items-center">
+        v-if="isPaymentRequired && paymentStatus === 'success'"
+        class="flex flex-col space-y-3 mt-2 items-strech">
         <!-- Payment Instructions -->
-        <div class="space-y-4 mb-2 text-center">
+        <div class="space-y-4 mb-2 text-center w-full">
           <MessageWrapper type="success">
             Ödemeniniz başarı ile tamamlandı.
           </MessageWrapper>
           <MessageWrapper type="normal">
             Randevunuzu tamamlamak için lütfen devam ediniz.
           </MessageWrapper>
-        </div>
 
         <!-- Payment Action Button -->
         <button
           @click="handleContinue"
-          class="bg-primary w-full text-white py-[1rem] px-4 flex justify-center">
+          class="bg-tertiary w-full mt-4 text-white py-[0.7rem] px-4">
           Devam Et
         </button>
+        </div>
+
       </div>
       <div
-        v-if="
-          props.appointmentProcessData.in24Hours &&
-          props.appointmentProcessData.paymentStatus === 'failure'
-        "
-        class="flex flex-col space-y-3 mt-2 items-center">
+        v-if="isPaymentRequired && paymentStatus === 'failure'"
+        class="flex flex-col space-y-4 mt-2 items-strech">
         <!-- Payment Instructions -->
-        <div class="space-y-4 mb-2 text-center">
+        <div class="space-y-4 text-center w-full">
           <MessageWrapper type="error">
             Ödeme yapılırken bir hata oluştu.
           </MessageWrapper>
           <MessageWrapper type="normal">
             Tekrar denemek için lütfen aşağıdaki butona tıklayınız.
           </MessageWrapper>
-        </div>
-
-        <!-- Payment Action Button -->
-        <button
+          <button
           @click="handlePayment"
           type="submit"
           class="bg-[#6a994e] w-full text-white py-[1rem] px-4 flex justify-center">
@@ -134,6 +119,10 @@
             class="w-36"
             alt="iyzico-ile-ode" />
         </button>
+        </div>
+
+        <!-- Payment Action Button -->
+      
       </div>
     </div>
   </div>
@@ -156,6 +145,13 @@ const route = useRoute();
 const loaderOn = ref(true);
 const isAuthenticated = computed(() => store.getters.isAuthenticated);
 
+const isPaymentRequired = computed(
+  () => props.appointmentProcessData.in24Hours
+);
+const paymentStatus = computed(
+  () => props.appointmentProcessData.paymentStatus
+);
+
 const handleContinue = () => {
   emits("continueStep5");
 };
@@ -165,10 +161,9 @@ const handleAuth = () => {
 };
 
 const handlePayment = async () => {
-  const appointment = props.appointmentProcessData;
+  loaderOn.value = true; // Start loading
 
-  // convert appointment.userData.lastLoginAt timestamp to "2015-10-05 12:43:35" format
-  // convert appointment.userData.createdAt timestamp to "2013-04-21 15:12:09" format
+  const appointment = props.appointmentProcessData;
 
   const paymentData = {
     locale: "tr",
@@ -220,152 +215,49 @@ const handlePayment = async () => {
       },
     ],
   };
+
   try {
-    // Flask backend'ine istek gönderiyoruz
     const response_json = await axios.post(
       "http://localhost:5000/initialize-payment",
       paymentData
     );
-    // convert str json response data to js object data
     const response = JSON.parse(response_json.data.iyzico_response);
+
     const paymentToken = response.token;
-    console.log("get the payment token and setting it to vuex", paymentToken);
     store.commit("setAppointmentProcessData", { paymentToken });
-    // Gelen yanıt ile İyzico ödeme formuna yönlendirme
+
     const paymentPageUrl = response.paymentPageUrl;
     if (paymentPageUrl) {
-      window.location.href = `${paymentPageUrl}`;
+      setTimeout(() => {
+        window.location.href = `${paymentPageUrl}`;
+      }, 1000);
     } else {
-      console.log("response = ", response);
-      console.log("Ödeme başlatılamadı.");
+      console.log("Ödeme başlatılamadı.", response);
     }
   } catch (error) {
     console.error("Ödeme işlemi sırasında hata:", error);
+    loaderOn.value = false;
+    alert("Ödeme işlemi sırasında bir hata oluştu. Lütfen tekrar deneyiniz.");
   }
 };
 
 onMounted(() => {
   setTimeout(() => {
     loaderOn.value = false;
-  }, 1500);
+  }, 1000);
 
-  if (isAuthenticated.value) {
-    console.log("Authenticated");
-    console.log("isAuthenticated.value = ", isAuthenticated.value);
-
-    //check querry parameters for payment status and token
-    const paymentToken_state = props.appointmentProcessData.paymentToken;
-    const paymentStatus_state = props.appointmentProcessData.paymentStatus;
-
-    if (!paymentStatus_state) {
-      console.log("paymentStatus_state = ", paymentStatus_state);
-      console.log("paymentToken_state = ", paymentToken_state);
-      // check if payment status and token exists in the route query
-
-      const paymentStatus = route.query.status;
-      const paymentToken = route.query.token;
-      // if payment status and token exists
-      if (paymentStatus && paymentToken) {
-        console.log("paymentStatus = ", paymentStatus);
-        console.log("paymentToken = ", paymentToken);
-        // if token equals to props.appointmentProcessData.paymentToken
-        if (paymentToken === props.appointmentProcessData.paymentToken) {
-          // if payment status equals to "success"
-          if (paymentStatus === "success") {
-            // set appointmentProcessData.status to "success"
-            store.commit("setAppointmentProcessData", {
-              paymentStatus: "success",
-            });
-          } else if (paymentStatus === "failure") {
-            // if payment status equals to "failure"
-            // set appointmentProcessData.status to "failure"
-            store.commit("setAppointmentProcessData", {
-              paymentStatus: "failure",
-            });
-          }
-        }
-      }
-    }else{
-      console.log("payment status and token already exists in state")
-    }
-  } else {
-    console.log("Not Authenticated");
-    handleAuth();
-    console.log("isAuthenticated.value = ", isAuthenticated.value);
+  if (!isAuthenticated.value) {
+    handleAuth(); // Emit event if user is not authenticated
   }
 
-  console.log("AppointmentStep5 mounted");
+  const paymentStatusQuery = route.query.status;
+  const paymentTokenQuery = route.query.token;
+
+  if (paymentStatusQuery && paymentTokenQuery) {
+    store.commit("setAppointmentProcessData", {
+      paymentStatus: paymentStatusQuery,
+      paymentToken: paymentTokenQuery,
+    });
+  }
 });
 </script>
-
-<style scoped>
-/* Add any additional custom styling here */
-/*
-  const paymentData = {
-    locale: "tr",
-    conversationId: "123456789",
-    price: "1",
-    paidPrice: "1.2",
-    currency: "TRY",
-    basketId: "B67832",
-    paymentGroup: "PRODUCT",
-    callbackUrl: "http://127.0.0.1:5000/callback",
-    enabledInstallments: ["2", "3", "6", "9"],
-    buyer: {
-      id: "BY789",
-      name: "John",
-      surname: "Doe",
-      gsmNumber: "+905350000000",
-      email: "email@email.com",
-      identityNumber: "74300864791",
-      lastLoginDate: "2015-10-05 12:43:35",
-      registrationDate: "2013-04-21 15:12:09",
-      registrationAddress: "Nidakule Göztepe, Merdivenköy Mah. Bora Sok. No:1",
-      ip: "85.34.78.112",
-      city: "Istanbul",
-      country: "Turkey",
-      zipCode: "34732",
-    },
-    shippingAddress: {
-      contactName: "Jane Doe",
-      city: "Istanbul",
-      country: "Turkey",
-      address: "Nidakule Göztepe, Merdivenköy Mah. Bora Sok. No:1",
-      zipCode: "34732",
-    },
-    billingAddress: {
-      contactName: "Jane Doe",
-      city: "Istanbul",
-      country: "Turkey",
-      address: "Nidakule Göztepe, Merdivenköy Mah. Bora Sok. No:1",
-      zipCode: "34732",
-    },
-    basketItems: [
-      {
-        id: "BI101",
-        name: "Binocular",
-        category1: "Collectibles",
-        category2: "Accessories",
-        itemType: "PHYSICAL",
-        price: "0.3",
-      },
-      {
-        id: "BI102",
-        name: "Game code",
-        category1: "Game",
-        category2: "Online Game Items",
-        itemType: "VIRTUAL",
-        price: "0.5",
-      },
-      {
-        id: "BI103",
-        name: "Usb",
-        category1: "Electronics",
-        category2: "Usb / Cable",
-        itemType: "PHYSICAL",
-        price: "0.2",
-      },
-    ],
-  };
-*/
-</style>

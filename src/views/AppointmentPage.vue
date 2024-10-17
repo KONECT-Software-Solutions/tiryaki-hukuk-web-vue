@@ -154,31 +154,30 @@
       <AppointmentStep1
         v-if="currentStep === 1 && !loading"
         @continueStep2="handleContinueStep2"
-        :attorneyData="attorneyData"
-        :dateForDisplay="dateForDisplay"
-        :day="day"
-        :slot="slot" />
+        :appointmentProcessData="appointmentProcessData" />
       <AppointmentStep2
         v-if="currentStep === 2"
         @continueStep3="handleContinueStep3" />
       <AppointmentStep3
         v-if="currentStep === 3"
-        :formData="formData"
-        :attorneyData="attorneyData"
-        @continueStep4="handleContinueStep4" />
-      <AppointmentStep4 v-if="currentStep === 4" @continueStep5="handleContinueStep5" />
+        :appointmentProcessData="appointmentProcessData"
+        @continueStep4="handleContinueStep4"
+        @notAuthenticated="handleNotAuthenticated" />
+      <AppointmentStep4
+        v-if="currentStep === 4"
+        :appointmentProcessData="appointmentProcessData"
+        @continueStep5="handleContinueStep5"
+        @notAuthenticated="handleNotAuthenticated" />
       <AppointmentStep5
         v-if="currentStep === 5"
-        :formData="formData"
-        :attorneyData="attorneyData"
-        :uploadedFiles="uploadedFiles" />
+        :appointmentProcessData="appointmentProcessData" />
     </div>
     <!-- MAIN CONTENT END -->
   </div>
 </template>
 
 <script setup>
-import { onMounted, ref, computed, onUpdated } from "vue";
+import { onMounted, ref, computed, watch, onUpdated } from "vue";
 import { useStore } from "vuex";
 import AppointmentStep1 from "../components/AppointmentStep1.vue";
 import AppointmentStep2 from "../components/AppointmentStep2.vue";
@@ -186,93 +185,148 @@ import AppointmentStep3 from "../components/AppointmentStep3.vue";
 import AppointmentStep4 from "../components/AppointmentStep4.vue";
 import AppointmentStep5 from "../components/AppointmentStep5.vue";
 import SkeletonLoader from "../components/SkeletonLoader.vue";
+import router from "../router";
+import { ro } from "date-fns/locale";
+import { ref as storageRef, listAll, deleteObject } from "firebase/storage";
+import { storage } from "../firebase"; 
 
 const store = useStore();
 
-const currentStep = ref(1);
 const loading = ref(true);
+const uploadedFiles = ref([]);
 
-const steps = [{ number: 1 }, { number: 2 }, { number: 3 }, { number: 4 }, { number: 5 }];
-const attorneyData = computed(() => store.state.attorney);
-const dateTimePickerData = computed(() => store.getters.getDateTimePickerData);
-const formData = ref({});
-const uploadedFiles = ref({});
-
-const date = computed(() => dateTimePickerData.value.selectedDate);
-const day = computed(() => dateTimePickerData.value.selectedDay);
-const slot = computed(() => dateTimePickerData.value.selectedSlot);
-const dateForDisplay = computed(
-  () => dateTimePickerData.value.selectedDateForDisplay
+const currentStep = computed(
+  () => store.getters.getAppointmentProcessData.currentStep
 );
 
-// Function to change the current step (for example, on button click)
+const appointmentProcessData = computed(
+  () => store.getters.getAppointmentProcessData
+);
 
 const handleContinueStep2 = (formData_) => {
-  formData.value = formData_;
-  formData.value.date = date.value;
-  formData.value.day = day.value;
-  formData.value.slot = slot.value;
-  formData.value.dateForDisplay = dateForDisplay.value;
-  nextStep();
+  if (formData_) {
+    try {
+      store.commit("setAppointmentProcessData", { formData: formData_ });
+      nextStep();
+    } catch (error) {
+      console.error("Error updating form data:", error);
+    }
+  } else {
+    console.error("Form data is invalid or missing. Continue step2");
+  }
+  window.scrollTo(0, 0);
 };
 
-const handleContinueStep3 = () => {
-  console.log("handleContinueStep3");
-  nextStep();
+
+const deleteTempDocs = async (userId) => {
+  console.log("deleting temp docs")
+  try {
+    // Create a reference to the user's specific folder
+    const userDocsRef = storageRef(storage, `temporary_documents/${userId}/`);
+
+    // List all files in the folder
+    const res = await listAll(userDocsRef);
+
+    if (res.items.length === 0) {
+      console.log("No temp files to delete.");
+      return;
+    }
+
+    // Proceed with deletion if files exist
+    for (const itemRef of res.items) {
+      try {
+        await deleteObject(itemRef);
+        console.log(`Deleted file: ${itemRef.name}`);
+      } catch (error) {
+        console.error(`Error deleting file: ${itemRef.name}`, error);
+      }
+    }
+  } catch (error) {
+    console.error("Error listing or deleting files:", error);
+  }
 };
 
-const handleContinueStep4 = (uploadedFiles_, notes_) => {
-  console.log("handleContinueStep4");
-  uploadedFiles.value = uploadedFiles_;
-  formData.value.notes = notes_;
+
+const handleContinueStep3 = (userData) => {
+  if (userData) {
+    try {
+      store.commit("setAppointmentProcessData", { userData: userData });
+      deleteTempDocs(userData.uid);
+      nextStep();
+    } catch (error) {
+      console.error("Error updating user data:", error);
+    }
+  } else {
+    console.error("Form data is invalid or missing. Continue step3");
+  }
+  window.scrollTo(0, 0);
+};
+
+const handleContinueStep4 = () => {
   nextStep();
+  console.log("currentStep", currentStep.value);
+  window.scrollTo(0, 0);
 };
 
 const handleContinueStep5 = () => {
-  console.log("handleContinueStep5");
   nextStep();
   console.log("currentStep", currentStep.value);
 };
 
+const handleNotAuthenticated = () => {
+  console.log("handleNotAuthenticated");
+  store.commit("setAppointmentProcessData", { currentStep: 2, userData: null });
+};
+
 const nextStep = () => {
-  if (currentStep.value < steps.length) {
-    currentStep.value++;
-    window.scrollTo(0, 0); // Scroll to the top of the window
+  const totalSteps = 5; // There are 5 steps
+  if (currentStep.value < totalSteps) {
+    try {
+      store.commit("setAppointmentProcessData", {
+        currentStep: currentStep.value + 1,
+      });
+    } catch (error) {
+      console.error("Error advancing to the next step:", error);
+    }
   }
 };
 
-const prevStep = () => {
-  if (currentStep.value > 1) {
-    currentStep.value--;
-  }
+const isAppointmentProcessDataReady = () => {
+  const data = appointmentProcessData.value;
+
+  return (
+    data.appointmentToken &&
+    data.attorneyData.id &&
+    data.selectedDate &&
+    data.selectedDay &&
+    data.selectedSlot
+  );
+  // Check required fields for the readiness of appointmentProcessData
 };
 
 onMounted(async () => {
   console.log("AppointmentPage mounted");
-  console.log("fetching attorney");
 
-  const storedData = localStorage.getItem("dateTimePickerData");
-  if (storedData) {
-    const parsedData = JSON.parse(storedData);
-    store.dispatch("updateDateTimePickerData", parsedData);
+  // Simulate or fetch any necessary data before loading completes
+  try {
+    if (!isAppointmentProcessDataReady()) {
+      // If data is not ready, handle accordingly, e.g., redirect to an earlier step
+      console.error("Appointment process data is not ready.");
+      router.push("/");
+    } else {
+      console.log("Appointment data is ready. Proceeding with loading...");
+    }
+  } catch (error) {
+    console.error("Error during appointment process validation:", error);
+  } finally {
+    setTimeout(() => {
+      console.log("1s timeout");
+      loading.value = false;
+    }, 1000);
   }
 
-  if (dateTimePickerData.value && dateTimePickerData.value.attorneyId) {
-    console.log("fetching attorney");
-    await store.dispatch(
-      "fetchAttorneyById",
-      dateTimePickerData.value.attorneyId
-    );
-  } else {
-    // Handle the case when data is not present, e.g., redirect to a previous page or show an error
-    console.error(
-      "dateTimePickerData is missing. Redirecting or showing an error message."
-    );
-    // Example: router.push('/previous-page');
-  }
-  if (attorneyData.value) {
-    loading.value = false;
-  }
+  console.log("current step", currentStep.value);
+  console.log("appointmentProcessData", appointmentProcessData.value);
 });
 </script>
 

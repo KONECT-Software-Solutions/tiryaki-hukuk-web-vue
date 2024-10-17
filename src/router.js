@@ -38,9 +38,10 @@ const routes = [
     component: ServiceDetailPage 
   },
   {
-    path: "/randevu-olustur",
-    name: "AppointmentPage",
+    path: '/randevu-olustur', // Dynamic step route
+    name: 'Appointment',
     component: AppointmentPage,
+    props: true, // Allow route params to be passed as props to the component
   },
   {
     path: "/hesabim",
@@ -49,7 +50,7 @@ const routes = [
     meta: { requiresAuth: true },
   },
   {
-    path: "/odeme/:id",
+    path: "/randevu-ode/:id",
     name: "Payment",
     component: PaymentPage,
     meta: { requiresAuth: true },

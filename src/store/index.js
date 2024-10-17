@@ -1,7 +1,6 @@
 // src/store/index.js
 import { createStore } from "vuex";
 import {
-  getFirestore,
   collection,
   doc,
   getDoc,
@@ -15,7 +14,7 @@ import {
   setPersistence,
   browserLocalPersistence,
   browserSessionPersistence,
-  signOut
+  signOut,
 } from "firebase/auth";
 import { formatDate, convertMonthToTurkish } from "../utils";
 
@@ -23,13 +22,23 @@ export default createStore({
   state: {
     blogs: [],
     attorneys: [],
-    user: null,
-    dateTimePickerData: {
-      attorneyId: null,
+    user: JSON.parse(localStorage.getItem("user")) || null,
+    appointmentProcessData: JSON.parse(localStorage.getItem("appointmentProcessData")) || {
+      appointmentToken: null,
+      paymentToken: null,
+      currentStep: null,
+      userData: {},
+      in24Hours: true,
+      paymentStatus: null,
+      attorneyData: {},
+      formData: {},
       selectedDate: null,
       selectedDay: null,
       selectedDateForDisplay: null,
       selectedSlot: null,
+      uploadedFiles: [],
+      notes: null,
+      isFinished: false
     },
     meetings: [],
   },
@@ -49,12 +58,18 @@ export default createStore({
     getUser: (state) => {
       return state.user;
     },
+    getUserId: (state) => {
+      return state.user.uid;
+    },
     getMeetings: (state) => {
       return state.meetings;
     },
-    getDateTimePickerData: (state) => {
-      return state.dateTimePickerData;
+    getMeetingById: (state) => (id) => {
+      return state.meetings.find((meeting) => meeting.id === id);
     },
+    getAppointmentProcessData: (state) => {
+      return state.appointmentProcessData
+    }
   },
   mutations: {
     setBlogs(state, blogs) {
@@ -82,33 +97,49 @@ export default createStore({
       state.user = null;
       localStorage.removeItem("user"); // Remove user from localStorage
     },
-    setDateTimePickerData(state, data) {
-      state.dateTimePickerData = { ...state.dateTimePickerData, ...data };
+    updateUserDataMeetings(state, newMeetingId) {
+      state.user.meetings.push(newMeetingId);
+      localStorage.setItem("user", JSON.stringify(state.user));
+      console.log("new meeting id added to user.meetings", state.user.meetings);
     },
-    clearDateTimePickerData(state) {
-      state.dateTimePickerData = {
-        attorneyId: null,
-        selectedDate: null,
-        selectedDay: null,
-        selectedDateForDisplay: null,
-        selectedSlot: null,
-      };
+    updateMeetingStatus(state, { id, status }) {
+      const index = state.meetings.findIndex((b) => b.id === id);
+      if (index !== -1) {
+        state.meetings[index].status = status;
+      }
+      console.log("index", index);
+      console.log("state.meetings", state.meetings);
+
     },
     setMeetings(state, meetings) {
       state.meetings = meetings;
     },
-    updateMeetingStatus(state, { id, status }) {
-      const meeting = state.meetings.find((meeting) => meeting.id === id);
-      if (meeting) {
-        meeting.status = status;
-      }
+    setAppointmentProcessData(state, data) {
+      localStorage.removeItem("appointmentProcessData");
+      state.appointmentProcessData = { ...state.appointmentProcessData, ...data };
+      localStorage.setItem("appointmentProcessData", JSON.stringify(state.appointmentProcessData));
     },
-    updatePaymentStatus(state, { id, payment_status }) {
-      const meeting = state.meetings.find((meeting) => meeting.id === id);
-      if (meeting) {
-        meeting.payment_status = payment_status;
-      }
-    },
+    resetAppointmentProcessData(state) {
+      state.appointmentProcessData = {
+        appointmentToken: null,
+        paymentToken: null,
+        expireTime: null,
+        currentStep: null,
+        userData: {},
+        in24Hours: null,
+        paymentStatus: null,
+        attorneyData: {},
+        formData: {},
+        selectedDate: null,
+        selectedDay: null,
+        selectedDateForDisplay: null,
+        selectedSlot: null,
+        uploadedFiles: [],
+        notes: null,
+        isFinished: false
+      };
+      localStorage.removeItem("appointmentProcessData");
+    }
   },
   actions: {
     async fetchBlogs({ commit }) {
@@ -200,6 +231,7 @@ export default createStore({
         attorneys.push(docData);
       });
       commit("setAttorneys", attorneys);
+      console.log("Attorneys data fetched successfully.");
     },
     async fetchAttorneyById({ commit }, id) {
       try {
@@ -216,76 +248,49 @@ export default createStore({
     },
     async signIn({ commit }, { email, password, rememberMe }) {
       console.log("Signing in...");
-
+    
       try {
         // Set Firebase auth persistence based on rememberMe
         const persistenceType = rememberMe
           ? browserLocalPersistence // Persist session across browser restarts
           : browserSessionPersistence; // Only for current session
-
+    
         // Set the persistence before signing in
         await setPersistence(auth, persistenceType);
-
+    
         // Sign in with email and password
-        const userCredential = await signInWithEmailAndPassword(
-          auth,
-          email,
-          password
-        );
-
-        // Commit the user to the store
-        commit("setUser", userCredential.user);
+        const userCredential = await signInWithEmailAndPassword(auth, email, password);
+        const user = userCredential.user; // Firebase Auth user data
+    
+        // Fetch additional user data from Firestore
+        const userDocRef = doc(db, "users", user.uid);
+        const userDoc = await getDoc(userDocRef);
+    
+        if (userDoc.exists()) {
+          // Merge Auth and Firestore user data
+          const userData = { ...user, ...userDoc.data() };
+    
+          // Commit the combined user data to Vuex
+          commit("setUser", userData);
+          localStorage.setItem("user", JSON.stringify(userData)); // Sync with localStorage
+        } else {
+          console.log("No user document found in Firestore");
+        }
       } catch (error) {
         console.error("Error signing in:", error);
         throw error;
       }
-    },
+    },    
     async signOut({ commit }) {
       console.log("Signing out...");
       try {
         await signOut(auth);
         commit("clearUser");
+        commit("resetAppointmentProcessData");
       } catch (error) {
         console.error("Error signing out:", error);
         throw error;
       }
-    },
-
-    async fetchUserData({ commit }) {
-      console.log("fetchUserData invoked.");
-
-      // Check if the user is already authenticated (even if there's data in local storage)
-      const localUser = localStorage.getItem("user");
-
-      if (localUser) {
-        console.log("User found in localStorage.");
-        const user = JSON.parse(localUser);
-        commit("setUser", user); // Use the local storage data for quick initialization
-      }
-
-      // Always attempt to fetch fresh data from Firestore
-      auth.onAuthStateChanged(async (user) => {
-        if (user) {
-          console.log("Fetching fresh user data from Firestore.");
-          try {
-            const userDocRef = doc(db, "users", user.uid);
-            const userDoc = await getDoc(userDocRef);
-
-            if (userDoc.exists()) {
-              const freshUser = { ...user, ...userDoc.data() };
-              commit("setUser", freshUser); // Update Vuex store with fresh data
-              localStorage.setItem("user", JSON.stringify(freshUser)); // Sync with localStorage
-            } else {
-              console.log("No such document found in Firestore!");
-            }
-          } catch (error) {
-            console.error("Error fetching user data from Firestore:", error);
-          }
-        } else {
-          console.log("No user is signed in.");
-          commit("clearUser");
-        }
-      });
     },
     async deleteException({ exceptionData }) {
       try {
@@ -345,10 +350,6 @@ export default createStore({
         console.error("Error fetching meetings data by ID:", error);
       }
     },
-    updateDateTimePickerData({ commit }, data) {
-      commit("clearDateTimePickerData");
-      commit("setDateTimePickerData", data);
-      localStorage.setItem("dateTimePickerData", JSON.stringify(data));
-    },
+
   },
 });

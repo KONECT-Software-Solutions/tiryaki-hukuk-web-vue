@@ -2,7 +2,7 @@
   <div
     class="mx-auto max-w-lg bg-white border border-gray-300 px-8 py-8 mb-4 space-y-3 relative">
     <div
-      v-if="loaderOn"
+      v-if="isLoading"
       class="absolute inset-0 flex items-center justify-center bg-white bg-opacity-95">
       <LoadingSpinner :text="''" />
     </div>
@@ -25,39 +25,41 @@
         <div class="py-[1rem] mx-auto flex justify-center w-full">
           <img
             src="../assets/icons/logo_band_colored.svg"
-            class="max-w-[300px] md:max-w-[200px] lg:max-w-[330px] h-auto"
+            class="max-w-[300px] min-w-[250px] h-auto"
             alt="iyzico" />
         </div>
       </div>
-      <div v-if="in24Hours" class="flex flex-col space-y-3 mt-2 items-center">
+      <div
+        v-if="isPaymentRequired && !isPaymentFinalized"
+        class="flex flex-col space-y-3 mt-2 items-strech">
         <!-- Payment Instructions -->
-        <div class="space-y-3 text-center">
+        <div class="space-y-4 text-center w-full">
           <MessageWrapper type="normal">
-            Randevunuz 24 saat içinde olduğu için ödemenizi şuan yapmanız
+            Randevunuz 24 saat içinde olduğu için ödemeyi şimdi yapmanız
             gerekmektedir.
           </MessageWrapper>
           <MessageWrapper type="normal">
             Ödemenizi aşağıdaki butona tıklayarak
-            <span class="italic font-semibold">iyzico</span> güvencesi ile
-            tamamlayabilirsiniz. Ödeme yapıldıktan sonra ödeme ve randevunuz ile
-            alakalı size e-posta ile bilgilendirme maili gelecektir. test
+            <span class="italic font-semibold">iyzico</span> üzerinden
+            yapabilirsiniz.
           </MessageWrapper>
+          <!-- Payment Action Button -->
+          <button
+            @click="initializePayment"
+            type="submit"
+            class="flex items-center justify-center w-full space-x-3 px-6 py-4 bg-gradient-to-r from-green-400 to-lime-400 text-white shadow-md hover:shadow-lg hover:from-green-500 hover:to-lime-500 transition-all duration-300 ease-in-out transform hover:scale-105">
+            <img
+              src="../assets/icons/iyzico_ile_ode_horizontal_white.svg"
+              class="w-36"
+              alt="iyzico-ile-ode" />
+          </button>
         </div>
-
-        <!-- Payment Action Button -->
-        <button
-          @click="handlePayment"
-          type="submit"
-          class="bg-[#6a994e] w-full text-white py-[1rem] px-4 flex justify-center">
-          <img
-            src="../assets/icons/iyzico_ile_ode_horizontal_white.svg"
-            class="w-36"
-            alt="iyzico-ile-ode" />
-        </button>
       </div>
-      <div v-else class="flex flex-col space-y-3 mt-2 items-center">
+      <div
+        v-else-if="!isPaymentRequired"
+        class="flex flex-col space-y-3 mt-2 items-strech">
         <!-- Payment Instructions -->
-        <div class="space-y-4 text-center">
+        <div class="space-y-4 mb-2 text-center w-full">
           <MessageWrapper type="normal">
             Şuan ödeme yapmak zorunda değilsiniz. Lütfen randevu tarihinden 24
             saat önce ödemenizi tamamlayınız.
@@ -66,50 +68,123 @@
             Ödemenizi sağ üst taraftaki Hesabım sekmesinden tamamlayabilirsiniz.
             Randevudan 24 saat önce ödeme yapılmaz ise randevu iptal olacaktır.
           </MessageWrapper>
+
+          <!-- Payment Action Button -->
+          <button
+            @click="handleContinue"
+            class="bg-tertiary w-full mt-4 text-white py-[0.7rem] px-4">
+            Devam Et
+          </button>
+        </div>
+      </div>
+      <div
+        v-if="
+          isPaymentRequired && paymentStatus === 'success' && isPaymentFinalized
+        "
+        class="flex flex-col space-y-3 mt-2 items-strech">
+        <!-- Payment Instructions -->
+        <div class="space-y-4 mb-2 text-center w-full">
+          <MessageWrapper type="success">
+            Ödemeniniz başarı ile tamamlandı.
+          </MessageWrapper>
+          <MessageWrapper type="normal">
+            Randevunuzu tamamlamak için lütfen devam ediniz.
+          </MessageWrapper>
+
+          <!-- Payment Action Button -->
+          <button
+            @click="handleContinue"
+            class="bg-tertiary w-full mt-4 text-white py-[0.7rem] px-4">
+            Devam Et
+          </button>
+        </div>
+      </div>
+      <div
+        v-if="
+          isPaymentRequired && paymentStatus === 'failure' && isPaymentFinalized
+        "
+        class="flex flex-col space-y-4 mt-2 items-strech">
+        <!-- Payment Instructions -->
+        <div class="space-y-4 text-center w-full">
+          <MessageWrapper type="error">
+            Ödeme yapılırken bir hata oluştu.
+          </MessageWrapper>
+          <MessageWrapper type="normal">
+            Tekrar denemek için lütfen aşağıdaki butona tıklayınız.
+          </MessageWrapper>
+          <button
+            @click="initializePayment"
+            type="submit"
+            class="flex items-center justify-center w-full space-x-3 px-6 py-4 bg-gradient-to-r from-green-400 to-lime-400 text-white shadow-md hover:shadow-lg hover:from-green-500 hover:to-lime-500 transition-all duration-300 ease-in-out transform hover:scale-105">
+            <img
+              src="../assets/icons/iyzico_ile_ode_horizontal_white.svg"
+              class="w-36"
+              alt="iyzico-ile-ode" />
+          </button>
         </div>
 
         <!-- Payment Action Button -->
-        <button
-          @click="handleContinue"
-          class="bg-quaternary flex w-full justify-center items-center border border-quaternary text-white py-[0.7rem] px-5 hover:bg-white hover:text-primary hover:border-black hover:scale-105 transition duration-300">
-          Devam Et
-        </button>
       </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { defineProps, defineEmits, onMounted, ref } from "vue";
+import { defineProps, defineEmits, onMounted, ref, computed } from "vue";
 import LoadingSpinner from "./LoadingSpinner.vue";
 import MessageWrapper from "../wrappers/MessageWrapper.vue";
 import axios from "axios";
+import { useStore } from "vuex";
+import { useRoute, useRouter } from "vue-router";
 
-const emits = defineEmits(["continueStep5"]);
-const props = defineProps(["in24Hours"]);
-const loaderOn = ref(true);
+const emits = defineEmits(["continueStep5", "notAuthenticated"]);
+const props = defineProps(["appointmentProcessData"]);
+
+const store = useStore();
+const route = useRoute();
+const router = useRouter();
+
+const isLoading = ref(true);
+const isAuthenticated = computed(() => store.getters.isAuthenticated);
+
+const isPaymentRequired = computed(
+  () => props.appointmentProcessData.in24Hours
+);
+const paymentStatus = computed(
+  () => props.appointmentProcessData.paymentStatus
+);
+const paymentToken = computed(() => props.appointmentProcessData.paymentToken);
+const isPaymentFinalized = ref(false);
 
 const handleContinue = () => {
   emits("continueStep5");
 };
 
-const handlePayment = async () => {
+const handleAuth = () => {
+  emits("notAuthenticated");
+};
+
+const initializePayment = async () => {
+  isLoading.value = true; // Start loading
+
+  const appointment = props.appointmentProcessData;
+
   const paymentData = {
     locale: "tr",
-    conversationId: "123456789",
-    price: "1",
-    paidPrice: "1.2",
+    conversationId: appointment.appointmentToken || "123456789",
+    price: 1, // Use actual price
+    paidPrice: appointment.formData.price * 1.2, // Example, adjust as needed
     currency: "TRY",
     basketId: "B67832",
     paymentGroup: "PRODUCT",
-    callbackUrl: "https://tiryakihukuk.com/test",
+    callbackUrl: "http://127.0.0.1:5000/callback?source=randevu-olustur",
     enabledInstallments: ["2", "3", "6", "9"],
     buyer: {
-      id: "BY789",
+      id: appointment.userData.uid || "BY789", // Use actual user data
       name: "John",
       surname: "Doe",
       gsmNumber: "+905350000000",
-      email: "email@email.com",
+      email: appointment.userData.email || "email@email.com",
       identityNumber: "74300864791",
       lastLoginDate: "2015-10-05 12:43:35",
       registrationDate: "2013-04-21 15:12:09",
@@ -120,14 +195,14 @@ const handlePayment = async () => {
       zipCode: "34732",
     },
     shippingAddress: {
-      contactName: "Jane Doe",
+      contactName: "John Doe",
       city: "Istanbul",
       country: "Turkey",
       address: "Nidakule Göztepe, Merdivenköy Mah. Bora Sok. No:1",
       zipCode: "34732",
     },
     billingAddress: {
-      contactName: "Jane Doe",
+      contactName: "John Doe",
       city: "Istanbul",
       country: "Turkey",
       address: "Nidakule Göztepe, Merdivenköy Mah. Bora Sok. No:1",
@@ -135,99 +210,83 @@ const handlePayment = async () => {
     },
     basketItems: [
       {
-        id: "BI101",
-        name: "Binocular",
-        category1: "Collectibles",
-        category2: "Accessories",
-        itemType: "PHYSICAL",
-        price: "0.3",
-      },
-      {
-        id: "BI102",
-        name: "Game code",
-        category1: "Game",
-        category2: "Online Game Items",
+        id: appointment.attorneyData.id || "BI101",
+        name: "Legal Services",
+        category1: appointment.formData.selectedArea,
+        category2: appointment.formData.selectedType,
         itemType: "VIRTUAL",
-        price: "0.5",
-      },
-      {
-        id: "BI103",
-        name: "Usb",
-        category1: "Electronics",
-        category2: "Usb / Cable",
-        itemType: "PHYSICAL",
-        price: "0.2",
+        price: 1,
       },
     ],
   };
 
   try {
-    // Flask backend'ine istek gönderiyoruz
     const response_json = await axios.post(
       "http://localhost:5000/initialize-payment",
       paymentData
     );
-    // convert str json response data to js object data
     const response = JSON.parse(response_json.data.iyzico_response);
 
-    // const token = response.token;
-    // Gelen yanıt ile İyzico ödeme formuna yönlendirme
+    const paymentToken = response.token;
+    store.commit("setAppointmentProcessData", { paymentToken });
+
     const paymentPageUrl = response.paymentPageUrl;
     if (paymentPageUrl) {
-      window.location.href = `${paymentPageUrl}`;
+      setTimeout(() => {
+        window.location.href = `${paymentPageUrl}`;
+      }, 1000);
     } else {
-      console.log(data);
-      console.log("Ödeme başlatılamadı.");
+      console.log("Ödeme başlatılamadı.", response);
+      isLoading.value = false;
     }
   } catch (error) {
     console.error("Ödeme işlemi sırasında hata:", error);
-  }
-};
-
-const retrievePaymentResult = async (token) => {
-  const request_data = {
-    locale: "tr",
-    conversationId: "123456789",
-    token: token,  // Make sure you pass the token dynamically
-  };
-
-  try {
-    const response_json = await axios.post(
-      "http://127.0.0.1:5000/retrieve-payment-result",
-      request_data,  // Send the request data as a POST body
-      {
-        headers: {
-          'Content-Type': 'application/json',  // Ensure the Content-Type is set
-        },
-      }
-    );
-    const response = JSON.parse(response_json.data.payment_result);
-    console.log("retrieve payment result", response);
-  } catch (error) {
-    console.error("Ödeme sonucu alınamadı:", error);
+    isLoading.value = false;
+    alert("Ödeme sayfasına yönlendirilirken bir hata oluştu.");
   }
 };
 
 onMounted(() => {
-
-  console.log("in24Hours", props.in24Hours);
-  setTimeout(() => {
-    loaderOn.value = false;
-  }, 1500);
-
-  // When the user is redirected back to the callback URL, get the token from the query parameters
-  const urlParams = new URLSearchParams(window.location.search);
-  const token = urlParams.get("token");
-
-  if (token) {
-    // Call the function to retrieve the payment result
-    retrievePaymentResult(token);
-  } else {
-    console.error("Token not found in the URL");
+  if (!isAuthenticated.value) {
+    handleAuth(); // Emit event if user is not authenticated
   }
+
+  const paymentStatusQuery = route.query.status;
+  const paymentTokenQuery = route.query.token;
+
+  if (paymentToken.value === null && paymentStatus.value === null) {
+    // First time visiting the payment page; no queries expected.
+    console.log("First time payment initiation.");
+  } else {
+    // Payment was already initiated, we expect query params.
+    if (paymentStatusQuery && paymentTokenQuery) {
+      console.log("Returning from payment gateway.");
+      // Validate token match
+      if (paymentTokenQuery === paymentToken.value) {
+        console.log("Tokens match. Payment finalized.");
+        isPaymentFinalized.value = true;
+        // Update the payment status in Vuex
+        store.commit("setAppointmentProcessData", {
+          paymentStatus: paymentStatusQuery,
+        });
+      } else {
+        console.log("Tokens don't match. Possible tampered URL.");
+        alert("Yanlış URL ile geldiniz. Lütfen tekrar deneyiniz.");
+        // Optionally, redirect the user to the beginning of the process
+        router.push("/error-page");
+      }
+    } else {
+      // If no query params are found but we expect them, handle the error.
+      console.log("Expected query parameters not found.");
+      alert(
+        "Bu sayfayı yalnızca ödeme sisteminden gelen URL ile görüntüleyebilirsiniz. "
+      );
+      // Optionally, log this error and take further action (e.g., restart payment process)
+      router.push("/"); // Example action: redirect to retry payment
+    }
+  }
+  setTimeout(() => {
+    isLoading.value = false;
+  }, 1000);
 });
 </script>
-
-<style scoped>
-/* Add any additional custom styling here */
-</style>

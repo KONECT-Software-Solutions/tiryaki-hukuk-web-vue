@@ -186,17 +186,13 @@
 
       <!-- Working Hours Column -->
       <div class="w-full md:w-1/4">
-        <GetAppointmentButton />
+        <GetAppointmentButton/>
         <div class="py-[1rem] mx-auto flex w-full">
           <img
             src="../assets/icons/logo_band_white.svg"
             class="max-w-[300px] md:max-w-[200px] lg:max-w-[330px] h-auto"
             alt="iyzico" />
         </div>
-        <p class="text-slate-300 mb-4">
-          İstediğiniz avukatımızdan, dilediğiniz saatleri seçin ve online
-          görüşme randevunuzu oluşturun.
-        </p>
         <ul class="space-y-2 text-sm text-slate-200">
           <li>
             <router-link :to="'/kvkk'" target="_blank">

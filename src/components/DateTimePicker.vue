@@ -70,6 +70,7 @@ import { useRouter } from "vue-router";
 import dayjs from "dayjs";
 import isoWeek from "dayjs/plugin/isoWeek";
 import "dayjs/locale/tr"; // Import Turkish locale
+
 dayjs.extend(isoWeek);
 dayjs.locale("tr"); // Set locale to Turkish
 
@@ -214,22 +215,46 @@ function removeExceptions(timeSlotsData, exceptions) {
   });
   return timeSlotsData;
 }
+// a function to create random 4 number token str
+function createAppointmentProcessToken() {
+  return Math.random().toString(36).substr(2, 4);
+}
+// a function to return true if the appointmentdate is in 24 hours, false if not
+function isIn24Hours(appointmentDate) {
+  const appointmentDateTime = dayjs(appointmentDate);
+  const now = dayjs();
+  const diff = appointmentDateTime.diff(now, "hours");
+  return diff <= 24;
+}
 
-
+// after selecting the date and slot, update the store and navigate to the randevu-olustur page
 const handleSelectDate = (slot) => {
-  store.dispatch("updateDateTimePickerData", {
-    attorneyId: props.attorneyData.id,
+  const in24Hours_ = isIn24Hours(`${selectedDate.value} ${slot}`);
+  store.commit("resetAppointmentProcessData");
+  store.commit("setAppointmentProcessData", {
+    attorneyData: {
+      id: props.attorneyData.id,
+      name: props.attorneyData.name,
+      experience: props.attorneyData.experience,
+      university: props.attorneyData.university,
+      appointment_settings: props.attorneyData.appointment_settings,
+      practiceAreas: props.attorneyData.practiceAreas,
+      email: props.attorneyData.email,
+    },
+    currentStep: 1,
     selectedDate: selectedDate.value,
     selectedDay: selectedDay.value,
     selectedDateForDisplay: selectedDateForDisplay.value,
     selectedSlot: slot,
+    appointmentToken: createAppointmentProcessToken(),
+    in24Hours: in24Hours_
   });
+
   // print store dateTimePickerData
   router.push("/randevu-olustur");
 };
 
 onMounted(() => {
   selectDate(selectedIndex.value);
-
 });
 </script>

@@ -37,7 +37,7 @@
           </div>
           <div class="flex items-center py-4 pr-12 justify-end space-x-3">
             <button
-              @click="cancel(meetingId, attorneyId)"
+              @click="cancel()"
               class="px-4 py-1 border bg-slate-100 text-slate-700 hover:bg-slate-700 hover:text-slate-100 transition duration-300">
               <LoadingSpinner
                 v-if="showLoadingSpinner"
@@ -76,19 +76,54 @@
         class="p-4 border bg-gray-50 hover:shadow-lg hover:border-gray-300">
         <div class="flex flex-col md:flex-row justify-between">
           <div class="space-y-1">
-            <h2 class="text-lg font-medium">{{ meeting.attorney_name }}</h2>
-            <div class="flex text-nowrap items-center">
-              {{ meeting.date_for_display }}
-              <span class="ml-2">{{ meeting.day }}</span>
-              <span
-                class="flex items-center text-nowrap bg-yellow-100 rounded-xl px-2 text-sm">
-                <i class="ri-time-fill mr-1 text-lg"></i>{{ meeting.slot }} -
-                {{ meeting.end_time || "..." }}</span
-              >
+            <div class="flex items-center justify-center space-x-4">
+              <div
+                class="bg-gray-600 text-white rounded-lg w-20 h-24 flex flex-col items-center justify-center">
+                <div class="text-sm">
+                  {{ formatDate(meeting.date_time, "month") }}
+                </div>
+                <div class="text-4xl font-bold">
+                  {{ formatDate(meeting.date_time, "day-number") }}
+                </div>
+                <div class="text-sm">
+                  {{ formatDate(meeting.date_time, "day-name") }}
+                </div>
+              </div>
+              <div class="p-2">
+                <div class="flex items-center text-xl font-medium">
+                  <i class="mr-1" :class="iconClass(meeting.type)"></i>
+                  <p>{{ displayText(meeting.type) }}</p>
+                </div>
+                <div class="flex items-center text-slate-600">
+                  <i class="ri-time-line text-lg"></i>
+                  {{ meeting.slot }} -
+                  {{ meeting.end_time }}
+                </div>
+                <div class="flex space-x-2 mt-2">
+                  <span
+                    class="bg-gray-100 hover:bg-gray-200 ring-0 ring-gray-400 hover:ring-1 text-slate-700 text-sm px-3 py-1 rounded-full"
+                    >{{ meeting.customer_name }}
+                  </span>
+                  <span
+                    class="bg-gray-100 hover:bg-gray-200 ring-0 ring-gray-400 hover:ring-1 text-slate-700 text-sm px-3 py-1 rounded-full"
+                    >{{ meeting.attorney_name }}
+                  </span>
+                </div>
+              </div>
             </div>
-            <div class="flex items-center">
-              <i class="text-xl mr-1" :class="iconClass(meeting.type)"></i>
-              <p>{{ displayText(meeting.type) }}</p>
+            <div v-if="meeting.status !== '6'" class="flex items-center pb-4">
+              <p>Kalan süre:</p>
+              <vue-countdown
+                :time="calculateCountdownTime(meeting.date_time)"
+                v-slot="{ days, hours, minutes, seconds }">
+                <div
+                  class="space-x-1 flex mx-1 items-center text-nowrap bg-yellow-100 rounded-xl px-2 text-sm">
+                  <i class="ri-time-fill mr-1 text-lg"></i>
+                  <span v-if="days > 1">{{ days }} gün</span>
+                  <span v-if="hours > 1">{{ hours }} saat</span>
+                  <span> {{ minutes }} dk {{ seconds }}sn</span>
+                </div>
+              </vue-countdown>
             </div>
           </div>
           <div class="md:text-right text-slate-800 font-medium space-y-1">
@@ -125,7 +160,7 @@
               Randevu danışan tarafından iptal edildi.
             </p>
             <p v-else-if="meeting.status === '3'" class="text-quaternary">
-              Randevu avukat tarafından reddedildi edildi.
+              Randevu avukat tarafından reddedildi.
             </p>
             <p v-else class="text-quaternary">
               Ödeme yapılması için avukat onayı bekleniyor.
@@ -135,13 +170,15 @@
                 v-if="meeting.payment_status === '0' && meeting.status === '1'"
                 class="text-quaternary"
                 >Son Ödeme Tarihi:
-                {{ getPaymentDeadlineTR(meeting.date_time) }}</span
+                {{
+                  getPaymentDeadlineTR(meeting.date_time, meeting.deadline)
+                }}</span
               >
             </p>
           </div>
         </div>
         <!-- Button Rendering -->
-        <div class="mt-4 flex justify-end space-x-2">
+        <div class="mt-4 flex justify-end items-center space-x-2">
           <!-- Show Cancel button if the meeting isn't canceled or rejected -->
           <button
             v-if="
@@ -149,36 +186,31 @@
               meeting.payment_status === '0' &&
               meeting.status !== '3'
             "
-            @click="
-              showCancelModal = true;
-              meetingId = meeting.id;
-              attorneyId = meeting.attorney_id;
-              console.log(meetingId, attorneyId);
-            "
+            @click="handleCancelClicked(meeting.id, meeting.attorney_id)"
             class="px-4 py-1 border bg-slate-100 text-slate-700 hover:bg-slate-700 hover:text-slate-100 transition duration-300">
             İptal Et
           </button>
-
-          <!-- Show Pay button if payment is pending and appointment isn't canceled or rejected -->
-          <router-link
-            v-if="meeting.payment_status === '0' && meeting.status === '1'"
-            :to="'/odeme/' + meeting.id"
-            class="px-4 py-1 border bg-quaternary text-white hover:bg-slate-700 hover:text-slate-100 transition duration-30000">
-            Öde
-          </router-link>
-
-          <!-- Show Join button if payment is completed -->
           <button
-            v-if="meeting.status !== '6' && meeting.payment_status === '1'"
-            @click="
-              showCancelModal = true;
-              meetingId = meeting.id;
-              attorneyId = meeting.attorney_id;
-              console.log(meetingId, attorneyId);
-            "
-            class="px-4 py-1 border bg-lime-300 text-slate-700 hover:bg-slate-700 hover:text-slate-100 transition duration-300">
-            Google Meet ile katılın
+          v-if="meeting.payment_status === '0' && meeting.status === '1'"
+          @click="pay(meeting.id)"
+          class="flex items-center justify-center space-x-3 px-6 py-2 bg-gradient-to-r from-green-400 to-lime-400 text-white shadow-md hover:shadow-lg hover:from-green-500 hover:to-lime-500 transition-all duration-300 ease-in-out transform hover:scale-105">
+          <img
+              src="../assets/icons/iyzico_ile_ode_horizontal_white.svg"
+              class="h-5"
+              alt="iyzico-ile-ode" />
           </button>
+          <!-- go to meeting.meeting_url button-->
+          <a
+            v-if="meeting.status !== '6' && meeting.payment_status === '1'"
+            :href="meeting.meeting_url"
+            target="_blank"
+            class="flex items-center justify-center space-x-3 px-6 py-2 bg-gradient-to-r from-green-400 to-lime-400 text-white shadow-md hover:shadow-lg hover:from-green-500 hover:to-lime-500 transition-all duration-300 ease-in-out transform hover:scale-105">
+            <img
+              src="../assets/icons/google-meet-svgrepo-com.svg"
+              class="w-8 h-8"
+              alt="google-meet" />
+            <span class="text-lg font-semibold">Katıl</span>
+          </a>
         </div>
       </div>
       <div v-if="noMeeting">
@@ -189,36 +221,90 @@
 </template>
 
 <script setup>
-import { onMounted, ref, watch } from "vue";
+import { onMounted, ref, watch, computed } from "vue";
 import LoadingSpinner from "../components/LoadingSpinner.vue";
 import { useRouter } from "vue-router";
+import VueCountdown from "@chenfengyuan/vue-countdown";
 
 const props = defineProps({
   meetingsData: Array,
   loading: Boolean,
   noMeeting: Boolean,
 });
-
 const emits = defineEmits(["cancel", "pay"]);
 
 const router = useRouter();
 
 const showCancelModal = ref(false);
 const showLoadingSpinner = ref(false);
-const meetingId = ref(null);
+const meetingId = ref("");
+const attorneyId = ref("");
 
 const sortedMeetings = ref([]);
+
+function formatDate(timestamp, format = "all") {
+  if (!timestamp) return "";
+  if (timestamp.seconds) {
+    // Firestore timestamp
+    const date = new Date(timestamp.seconds * 1000);
+
+    // Get date in "DD/MM/YYYY" format
+    const formattedDate = date.toLocaleDateString("tr-TR");
+
+    // Get time in "HH:mm" format
+    const hours = date.getHours().toString().padStart(2, "0");
+    const minutes = date.getMinutes().toString().padStart(2, "0");
+    const formattedTime = `${hours}:${minutes}`;
+
+    // Get month abbreviation and day name in Turkish
+    const monthAbbr = date
+      .toLocaleDateString("tr-TR", { month: "short" })
+      .toUpperCase();
+    const dayNumber = date.getDate();
+    const dayName = date.toLocaleDateString("tr-TR", { weekday: "long" });
+
+    // Return based on the format choice
+    switch (format) {
+      case "date":
+        return formattedDate;
+      case "time":
+        return formattedTime;
+      case "month":
+        return monthAbbr;
+      case "day-number":
+        return dayNumber;
+      case "day-name":
+        return dayName;
+      case "all":
+      default:
+        return {
+          date: formattedDate,
+          time: formattedTime,
+          month: monthAbbr,
+          dayNumber: dayNumber,
+          dayName: dayName,
+        };
+    }
+  }
+}
+
+const calculateCountdownTime = (date_time) => {
+  const meetingTime = new Date(date_time.seconds * 1000); // assuming date_time is in Firebase timestamp format
+  const currentTime = new Date();
+  const duration = meetingTime - currentTime;
+  return duration > 0 ? duration : 0; // Ensure non-negative duration
+};
 
 const sortMeetings = (meetingsData) => {
   // Sort the meetings by string status
   const statusOrder = {
-    "1": 0,
-    "0": 1,
-    "4": 2,
-    "5": 3,
-    "3": 4,
-    "6": 5,
-    "2": 6,
+    1: 0,
+    0: 1,
+    4: 2,
+    5: 3,
+    3: 4,
+    6: 5,
+    2: 6,
   };
 
   // Sort the meetings based on the defined statusOrder
@@ -227,30 +313,14 @@ const sortMeetings = (meetingsData) => {
   });
 };
 
-// Watch for changes in the meetingsData prop
-watch(
-  () => props.meetingsData,
-  (newMeetingsData) => {
-    if (newMeetingsData && newMeetingsData.length > 0) {
-      console.log("Meetings data updated:", newMeetingsData);
-      sortedMeetings.value = sortMeetings(newMeetingsData);
-      console.log("Sorted Meetings:", sortedMeetings.value);
-    }
-  },
-  { immediate: true } // Run immediately if meetingsData is already available
-);
-
-
-const getPaymentDeadlineTR = (date_time) => {
-  const meetingTime = new Date(date_time.seconds * 1000);
-  const paymentDeadline = new Date(meetingTime.getTime() - 24 * 60 * 60 * 1000); // 24 hours before the meeting
+const getPaymentDeadlineTR = (date_time, deadline) => {
+  const paymentDeadline = new Date(deadline.seconds * 1000); // 24 hours before the meeting
   const now = new Date();
 
   if (now > paymentDeadline) {
     console.log("Payment deadline has passed");
     return "Ödeme süresi geçmiştir.";
   } else {
-    console.log("Payment deadline is", paymentDeadline);
     // format date to display DD/MM/YYYY
     return paymentDeadline.toLocaleDateString("tr-TR", {
       day: "2-digit",
@@ -310,11 +380,14 @@ const displayText = (type) => {
       return "Belirtilmemiş"; // Default text
   }
 };
-
-const cancel = (meetingId, attorneyId) => {
+const handleCancelClicked = (mId, aId) => {
+  meetingId.value = mId;
+  attorneyId.value = aId;
+  showCancelModal.value = true;
+};
+const cancel = () => {
   showLoadingSpinner.value = true;
-  console.log("emitting Cancel appointment");
-  emits("cancel", meetingId, attorneyId);
+  emits("cancel", meetingId.value, attorneyId.value);
   setTimeout(() => {
     showLoadingSpinner.value = false;
     showCancelModal.value = false;
@@ -322,17 +395,23 @@ const cancel = (meetingId, attorneyId) => {
 };
 
 const pay = (id) => {
-  console.log("Pay appointment", id);
+  console.log("Pay appointment meeting id ", id);
   // go to payment page with router
-  router.push(`/odeme/${id}`);
+  router.push(`/randevu-ode/${id}`);
 };
 
+// Watch for changes in the meetingsData prop
+watch(
+  () => props.meetingsData,
+  (newMeetingsData) => {
+    if (newMeetingsData && newMeetingsData.length > 0) {
+      sortedMeetings.value = sortMeetings(newMeetingsData);
+    }
+  },
+  { immediate: true } // Run immediately if meetingsData is already available
+);
 onMounted(() => {
   console.log("MyMeetings component mounted");
-  console.log("Meetings Data test test", props.meetingsData);
   const sortedMeetings = sortMeetings(props.meetingsData);
-  console.log("Sorted Meetings", sortedMeetings);
-
-
 });
 </script>

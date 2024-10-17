@@ -11,12 +11,12 @@
           <div class="flex flex-col space-y-4">
             <div class="flex justify-center">
               <div class="text-center">
-                <h2 class="text-lg md:text-xl font-semibold text-slate-800">
+                <h1 class="text-lg md:text-xl font-semibold text-slate-800">
                   {{ attorneyData.name }}
-                  <h3 class="text-gray-600 font-normal text-base">
+                  <p class="text-gray-600 font-normal text-base">
                     {{ attorneyData.title }}
-                  </h3>
-                </h2>
+                  </p>
+                </h1>
               </div>
             </div>
             <img

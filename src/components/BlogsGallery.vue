@@ -106,8 +106,6 @@ onMounted(async () => {
     console.log("BlogsData already fetched");
   }
 
-  console.log("blog data", blogsData.value);
-
   updateColumnCount();
   window.addEventListener("resize", updateColumnCount);
 });

@@ -1,8 +1,3 @@
-<!-- 
- 1- bu componentte aynı e mail ile üyelik açma ile ilgili bir problem
- 2- diğer problem ise e mail doğruladıktan sonra ve hesabı oluşturduktan sonra tekrar giriş yap ekranına atıyoruz ama oraya 
- atarken zaten signIn yapıyor.
--->
 <template>
   <div v-if="!showConfirm && !showAfterConfirm" class="flex flex-col space-y-3">
     <div class="flex-1 bg-white p-4 border border-gray-300">
@@ -15,7 +10,7 @@
         Giriş Yap
       </button>
       <form v-if="showSignIn" @submit.prevent="handleSignIn">
-        <MessageWrapper type="error" v-if="loginErrorMessage">
+        <MessageWrapper class="mb-4" type="error" v-if="loginErrorMessage">
           {{ loginErrorMessage }}
         </MessageWrapper>
         <div class="mb-4">
@@ -177,12 +172,15 @@
         class="absolute inset-0 flex items-center m-4 justify-center bg-white bg-opacity-65">
         <LoadingSpinner :text="''" />
       </div>
-      <MessageWrapper type="error" v-if="confirmationErrorMessage">
-        {{ confirmationErrorMessage }}
-      </MessageWrapper>
-      <MessageWrapper type="success" v-if="confirmationSuccessMessage">
-        {{ confirmationSuccessMessage }}
-      </MessageWrapper>
+      <div class="mb-4">
+        <MessageWrapper type="error" v-if="confirmationErrorMessage">
+          {{ confirmationErrorMessage }}
+        </MessageWrapper>
+        <MessageWrapper type="success" v-if="confirmationSuccessMessage">
+          {{ confirmationSuccessMessage }}
+        </MessageWrapper>
+      </div>
+
       <div class="mb-4">
         <label class="block text-lg font-medium mb-2"
           >E-posta doğrulaması*</label
@@ -230,7 +228,7 @@
   <div v-if="showAfterConfirm" class="flex flex-col space-y-3">
     <div class="flex-1 bg-white p-4 border border-gray-300 rounded-md">
       <MessageWrapper type="success">
-        Hesabınız başarıyla oluşturuldu ve giriş yapıldı.
+        Hesabınız başarıyla oluşturuldu. Giriş yapabilirsiniz.
       </MessageWrapper>
     </div>
   </div>
@@ -241,10 +239,7 @@ import LoadingSpinner from "./LoadingSpinner.vue";
 import MessageWrapper from "../wrappers/MessageWrapper.vue";
 import { onMounted, ref } from "vue";
 import { auth, db } from "../firebase"; // Adjust the path as necessary
-import {
-  createUserWithEmailAndPassword,
-  signInWithEmailAndPassword,
-} from "firebase/auth";
+import { createUserWithEmailAndPassword } from "firebase/auth";
 import { doc, setDoc } from "firebase/firestore";
 import axios from "axios";
 import { useStore } from "vuex";
@@ -346,6 +341,7 @@ const createUser = async () => {
       email: emailRegistiration.value,
       name: `${firstName.value} ${lastName.value}`,
       phone: phone.value,
+      meetings: [],
     });
     console.log("User created successfully");
 
@@ -353,7 +349,6 @@ const createUser = async () => {
       isCreatingUser.value = false;
       showConfirm.value = false;
       showAfterConfirm.value = true;
-      emits("signedIn");
     }, 2000);
   } catch (error) {
     if (error.code === "auth/email-already-in-use") {
@@ -461,8 +456,8 @@ const handleConfirmation = async () => {
   if (verificationCode.value === verificationCodetoSend.toString()) {
     console.log("Email verified successfully");
     confirmationErrorMessage.value = null;
-    confirmationSuccessMessage.value = "Email doğrulama başarılı.";
     createUser();
+    confirmationSuccessMessage.value = "Email doğrulama başarılı.";
   } else {
     confirmationSuccessMessage.value = null;
     confirmationErrorMessage.value =
@@ -484,6 +479,8 @@ const handleSignIn = async () => {
 
     const user = auth.currentUser;
     console.log("User signed in successfully:", user);
+    const userData = store.getters.getUser;
+    console.log("userdata", userData);
 
     emits("signedIn");
   } catch (error) {

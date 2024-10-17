@@ -83,7 +83,6 @@ const showDateTimePicker = ref(null);
 
 const toggleDateTimePicker = (index) => {
   showDateTimePicker.value = showDateTimePicker.value === index ? null : index;
-  console.log("toggleDateTimePicker", showDateTimePicker.value);
 };
 
 // Filter out the attorneys with role !== "admin"

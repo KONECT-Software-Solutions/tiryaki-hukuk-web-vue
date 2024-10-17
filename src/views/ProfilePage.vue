@@ -61,14 +61,15 @@ const selectCategory = (item) => {
 const menu = ["Randevular", "Hesap"];
 
 const handleCancelMeeting = async (meetingId, attorneyId) => {
-  console.log("Cancelling appointment");
+  console.log("Cancelling appointment", meetingId, attorneyId);
   try {
     // Update the meeting status to "6"
     await updateDoc(doc(db, "meetings", meetingId), {
       status: "6",
       cancel_reason: "Randevu danışan tarafından iptal edildi.",
+      payment_status: "2",
     });
-   
+
     console.log("Meeting cancelled successfully");
 
     console.log("delete exception from attorney");
@@ -106,9 +107,14 @@ const handleCancelMeeting = async (meetingId, attorneyId) => {
 onMounted(async () => {
   console.log("profile page mounted");
   console.log("meetingsData", meetingsData.value);
-  if (userData.value.meetings && meetingsData.value.length === 0) {
+  if (!userData.value.meetings){
+    loading.value = false;
+    noMeeting.value = true;
+    return;
+  }
+  if (userData.value.meetings.length > 0) {
     console.log("fetching meetings data");
-    console.log("userData", userData.value.meetings);
+    console.log("userData", userData.value);
     await store.dispatch("fetchMeetingsData", {
       meetingIds: userData.value.meetings,
     });
@@ -121,7 +127,7 @@ onMounted(async () => {
     }
   } else {
     loading.value = false;
+    noMeeting.value = true;
   }
-  console.log("meetingsData", meetingsData.value);
 });
 </script>

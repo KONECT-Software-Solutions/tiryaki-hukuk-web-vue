@@ -1,7 +1,7 @@
 <template>
     <div
       :class="computedClasses"
-      class="text-center text-sm md:text-base border rounded-md p-2"
+      class="w-full text-center text-sm md:text-base border rounded-md p-2"
     >
       <slot></slot> <!-- This is where the dynamic content will go -->
     </div>

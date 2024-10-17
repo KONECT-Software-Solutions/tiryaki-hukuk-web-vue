@@ -2,60 +2,59 @@
   <div
     class="mx-auto max-w-lg bg-white border border-gray-300 p-4 mb-4 space-y-3 relative">
     <div
-      v-if="isCreatingMeeting && userData"
+      v-if="isLoading && appointmentProcessData.userData"
       class="absolute inset-0 flex items-center justify-center bg-white bg-opacity-95">
       <LoadingSpinner :text="''" />
     </div>
 
     <div>
       <!-- Header Section -->
-      <div class="flex flex-col items-center text-center space-y-2">
-        <i class="ri-calendar-check-fill text-8xl text-tertiary"></i>
-        <p class="text-lg font-medium">
-          Sayın <span class="font-semibold">{{ userData.name }}</span
-          >, randevunuz başarı ile alınmıştır.
-        </p>
-        <div class="w-full border-b border-gray-300 p-2 text-lg">
-          Randevu Detayları
-        </div>
-        <div
-          class="px-1 text-lg flex flex-col text-wrap md:text-nowrap items-center">
-          <span>Randevu Tipi: {{ displayText }}</span>
-          <span>
-            Tarih: {{ formData.dateForDisplay }}
-            <span class="ml-1">{{ formData.day }}</span>
+      <div class="flex flex-col items-center text-center space-y-3">
+        <img
+          src="../assets/icons/check.png"
+          alt="Icon"
+          class="w-48 h-48 mb-5" />
+        <MessageWrapper v-if="appointmentProcessData.isFinished" type="success">
+          Randevunuz başarı ile alındı.
+        </MessageWrapper>
+        <MessageWrapper type="normal">
+          Sayın
+          <span class="font-semibold">{{
+            appointmentProcessData.userData.name
+          }}</span
+          >,
+          <span class="font-semibold">{{
+            appointmentProcessData.selectedDateForDisplay
+          }}</span>
+          <span
+            class="items-center text-nowrap bg-yellow-100 rounded-xl px-2 py-1.5 font-semibold text-sm">
+            <i class="ri-time-fill text-lg"></i
+            >{{ appointmentProcessData.selectedSlot }} -
+            {{ appointmentProcessData.formData.endTime }}
           </span>
-          <div class="flex">
-            Saat:
-            <span
-              class="flex ml-2 items-center text-nowrap bg-yellow-100 rounded-xl px-1 text-sm">
-              <i class="ri-time-fill text-lg"></i>{{ formData.slot }} -
-              {{ formData.endTime }}
-            </span>
-          </div>
-          <div class="text-lg">Avukat: {{ attorneyData.name }}</div>
-        </div>
-      </div>
-      <div class="flex flex-col space-y-3 mt-2 items-center">
-        <!-- Reminders Section -->
-        <div class="space-y-3 text-center">
-          <div
-            class="text-center text-sm md:text-base border bg-slate-50 text-slate-600 border-slate-300 rounded-md p-2">
-            <p>
-              Görüşmeden 24 saat önce randevunuzun ödemesini tamamlamanız
-              gerekmektedir. Aksi takdirde görüşmeniz iptal edilecektir.
-              Ödemenizi Randevularım sayfasından yapabilirsiniz.
-            </p>
-          </div>
-          <div
-            class="text-center text-sm md:text-base border bg-slate-50 text-slate-600 border-slate-300 rounded-md p-2">
-            <p>
-              Toplantı detayları ve hatırlatma maili e-postanıza
-              gönderilecektir. Ayrıca Randevularım sayfasından da görüşmeye
-              katılabilirsiniz.
-            </p>
-          </div>
-        </div>
+          tarihli
+          <span class="font-semibold">{{ selectedOption.text }}</span>
+          randevunuz başarı ile alınmıştır. Görüşme saatinde avukatımız
+          <span class="font-semibold">{{
+            appointmentProcessData.attorneyData.name
+          }}</span>
+          sizi bekliyor olacaktır.
+        </MessageWrapper>
+        <MessageWrapper v-if="!in24Hours" type="normal">
+          Görüşmeden 24 saat önce randevunuzun ödemesini tamamlamanız
+          gerekmektedir. Aksi takdirde görüşmeniz iptal edilecektir. Ödemenizi
+          Randevularım sayfasından yapabilirsiniz.
+        </MessageWrapper>
+        <MessageWrapper v-else type="normal">
+          Randevunuz ödenmiş olup, görüşme detayları ve hatırlatma maili
+          e-postanıza gönderilecektir. Ayrıca Randevularım sayfasından da
+          randevunuz hakkında detaylara ulaşabilirsiniz.
+        </MessageWrapper>
+        <MessageWrapper v-if="!in24Hours" type="normal">
+          Toplantı detayları ve hatırlatma maili e-postanıza gönderilecektir.
+          Ayrıca Randevularım sayfasından da randevunuz hakkında detaylara
+          ulaşabilirsiniz.
+        </MessageWrapper>
 
         <!-- Action Buttons Section -->
         <router-link
@@ -72,215 +71,273 @@
 import { onMounted, ref, computed } from "vue";
 import { useStore } from "vuex";
 import LoadingSpinner from "./LoadingSpinner.vue";
+import MessageWrapper from "../wrappers/MessageWrapper.vue";
 import { doc, getDoc, addDoc, collection, updateDoc } from "firebase/firestore";
 import {
   ref as storageRef,
   uploadBytes,
   getDownloadURL,
+  deleteObject,
 } from "firebase/storage";
-import { db, storage } from "../firebase"; // Adjust the path as necessary
+import { db, storage } from "../firebase";
 import axios from "axios";
 import { sub } from "date-fns";
 
 const store = useStore();
-const userData = computed(() => store.getters.getUser);
 
-const isCreatingMeeting = ref(true);
+const props = defineProps(["appointmentProcessData"]);
 
-const props = defineProps({
-  formData: Object,
-  attorneyData: Object,
-  uploadedFiles: Object,
+const isLoading = ref(true);
+
+const in24Hours = computed(() => props.appointmentProcessData.in24Hours);
+
+// Display options
+const displayOptions = {
+  video: { text: "Online Video Görüşme", icon: "ri-video-on-line" },
+  phone: { text: "Telefonla Görüşme", icon: "ri-phone-line" },
+  inPerson: { text: "Yüz Yüze Görüşme", icon: "ri-user-line" },
+};
+
+const selectedOption = computed(() => {
+  const type = props.appointmentProcessData.formData.selectedType || "default";
+  return (
+    displayOptions[type] || { text: "Belirtilmemiş", icon: "ri-question-line" }
+  );
 });
 
-const iconClass = computed(() => {
-  switch (props.formData.selectedType) {
-    case "video":
-      return "ri-video-on-line";
-    case "phone":
-      return "ri-phone-line";
-    case "inPerson":
-      return "ri-user-line";
-    // Add more cases as needed
-    default:
-      return "ri-question-line"; // Default icon
-  }
-});
-
-const displayText = computed(() => {
-  switch (props.formData.selectedType) {
-    case "video":
-      return "Online Video Görüşme";
-    case "phone":
-      return "Telefonla Görüşme";
-    case "inPerson":
-      return "Yüz Yüze Görüşme";
-    // Add more cases as needed
-    default:
-      return "Belirtilmemiş"; // Default text
-  }
-});
-
-const fetchUserData = async (uid) => {
-  console.log("fetching user data...");
+// Helper function to send emails
+const sendEmail = async (url, data) => {
   try {
-    const userDocRef = doc(db, "users", uid);
-    const userDoc = await getDoc(userDocRef);
-    if (userDoc.exists()) {
-      userData.value = userDoc.data();
+    const response = await axios.post(url, data, {
+      headers: { "Content-Type": "application/json" },
+    });
+    console.log(`Email sent successfully to ${data.email}`, response.data);
+  } catch (error) {
+    console.error("Error sending email:", error);
+  }
+};
+
+// Helper function to handle Firestore updates (exceptions, meeting save)
+const saveDataToFirestore = async (docRef, fieldName, newData) => {
+  console.log("saving exception data", newData);
+  try {
+    const docSnapshot = await getDoc(docRef);
+    if (docSnapshot.exists()) {
+      const docData = docSnapshot.data();
+      const fieldData = docData[fieldName] || [];
+      fieldData.push(newData);
+      await updateDoc(docRef, { [fieldName]: fieldData });
     }
   } catch (error) {
-    console.error("Error fetching user data by ID:", error);
+    console.error(`Error updating Firestore for ${fieldName}:`, error);
   }
 };
 
-const uploadFilesToFireStore = async (uploadedFiles) => {
-  const fileUrls = [];
-
-  for (const fileObj of uploadedFiles) {
-    try {
-      const file = fileObj.file; // Get the actual File object
-      // Create a storage reference using meetingId + file name
-      const fileRef = storageRef(storage, `customer_documents/${file.name}`);
-
-      // Use uploadBytes to handle the file binary data safely
-      const snapshot = await uploadBytes(fileRef, file);
-
-      // Get the download URL after upload
-      const downloadUrl = await getDownloadURL(snapshot.ref);
-
-      // Push the download URL to the array
-      fileUrls.push(downloadUrl);
-    } catch (error) {
-      console.error(`Error uploading file ${file.name}:`, error);
-      throw new Error("File upload failed.");
-    }
-  }
-
-  return fileUrls; // Return an array of file URLs
-};
-
-const sendAppointmentRecievedMail = async (meetingData) => {
+// Helper function to handle meeting data
+const saveMeeting = async (meetingData, addException = false) => {
   try {
-    const response = await axios.post(
-      "https://ykt7hblm31.execute-api.eu-north-1.amazonaws.com/prod/send-appointment-recieved-email",
-      {
-        customer_name: meetingData.customer_name,
-        attorney_name: meetingData.attorney_name,
-        date_for_display: meetingData.date_for_display,
-        day: meetingData.day,
-        slot: meetingData.slot,
-        end_time: meetingData.end_time,
-        email: meetingData.customer_email,
-      },
-      {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }
-    );
-    console.log(meetingData);
-    console.log(response.data);
-  } catch (error) {
-    console.error("Error sending meeting accepted email:", error);
-  }
-};
-// api key for google meet AIzaSyCl6q_iRFcgsH2CosKjx9MjVmExK6jNXeU
-
-const saveMeeting = async (meetingData) => {
-  try {
-    console.log("saving meeting data...");
-    // Save the meeting data to the firebase database
+    console.log("Saving meeting data...", meetingData);
     const meetingDocRef = await addDoc(collection(db, "meetings"), meetingData);
-    console.log("meeting data saved");
-    // id of the saved document
+    const meetingId = meetingDocRef.id;
+    if (addException) {
+      // normally it is if (addException)
+      await saveDataToFirestore(
+        doc(db, "attorneys", meetingData.attorney_id),
+        "exceptions",
+        {
+          date: meetingData.date,
+          startTime: meetingData.slot,
+          endTime: meetingData.end_time,
+          repeat: false,
+          isMeeting: true,
+          meeting_id: meetingId,
+        }
+      );
+    }
 
-    // Take meetingData, take user uid, go to user's document and add meetings array with meetingData as first element
-    const userDocRef = doc(db, "users", userData.value.uid);
+    // Update user with meeting reference
+    const userDocRef = doc(
+      db,
+      "users",
+      props.appointmentProcessData.userData.uid
+    );
     const userDoc = await getDoc(userDocRef);
-
     if (userDoc.exists()) {
       const userData_ = userDoc.data();
       const meetings = userData_.meetings || [];
-      meetings.push(meetingDocRef.id);
+      meetings.push(meetingId);
       await updateDoc(userDocRef, { meetings });
-      await store.dispatch("fetchMeetingsData", {
-        meetingIds: meetings,
-      });
-      // update meetings state in Vuex
+      console.log("Adding meetingId to userData");
+      store.commit("updateUserDataMeetings", meetingId);
     }
   } catch (error) {
-    console.error("Error saving meeting data:", error);
-    alert("Error saving meeting data: " + error.message);
+    console.error("Error saving meeting:", error);
   }
 };
 
-const createMeeting = async () => {
-  console.log("creating meeting...");
+const getCustomerDocs = async (uploadedFiles) => {
+  const userId = props.appointmentProcessData.userData.uid;
+  const customerDocuments = [];
+  console.log("uploadedFiles", uploadedFiles);
+  for (const fileObj of uploadedFiles) {
+    const { url, metadata } = fileObj;
+    const fileName = `${userId}_${metadata.name}`; // Name as userId_fileName
+    const tempFileRef = storageRef(storage, url); // Reference to the temporary file
+    console.log("tempFileRef", tempFileRef);
+    const newFileRef = storageRef(
+      storage,
+      `customer_documents/${userId}/${fileName}`
+    ); // New location
 
-  //create date_time using date and slot
-  const date_time = new Date(props.formData.date);
-  const deadline = sub(date_time, { days: 1 });
+    // Fetch the file from the temporary location
+    const response = await fetch(url);
+    const fileBlob = await response.blob();
 
-  const [hours, minutes] = props.formData.slot.split(":").map(Number);
-  date_time.setHours(hours, minutes);
+    // Upload the file to the new location
+    await uploadBytes(newFileRef, fileBlob, {
+      contentType: metadata.type, // Ensure correct content type
+    });
 
-  console.log("meeting created");
+    // Get the new download URL
+    const newUrl = await getDownloadURL(newFileRef);
 
-  const fileUrls = await uploadFilesToFireStore(props.uploadedFiles); // Wait for files to upload
+    // Add the file details to customer_documents
+    customerDocuments.push({
+      file_url: newUrl,
+      name: metadata.name,
+      size: metadata.size,
+      kind: metadata.type,
+    });
+    console.log("new customerdocs array", customerDocuments);
+    console.log("deleting temp files");
 
-  // Create the customer_documents array with URLs
-  const customerDocuments = props.uploadedFiles.map((file, index) => ({
-    file_url: fileUrls[index], // Use file URL after upload
-    name: file.name,
-    size: file.size,
-    kind: file.type,
-  }));
-
-  const meetingData = {
-    attorney_id: props.attorneyData.id,
-    customer_id: userData.value.uid,
-    attorney_name: props.attorneyData.name,
-    attorney_email: props.attorneyData.email,
-    category: props.formData.selectedArea,
-    customer_documents: customerDocuments,
-    customer_email: userData.value.email,
-    customer_phone: userData.value.phone,
-    customer_name: userData.value.name,
-    date: props.formData.date,
-    date_time: date_time,
-    deadline: deadline,
-    day: props.formData.day,
-    slot: props.formData.slot,
-    date_for_display: props.formData.dateForDisplay,
-    end_time: props.formData.endTime,
-    duration: props.formData.selectedDuration,
-    type: props.formData.selectedType,
-    price: props.formData.price,
-    payment_status: "0",
-    meeting_url: "mock-meeting-url",
-    notes: props.formData.notes,
-    topic: props.formData.topic,
-    status: "0",
-  };
-  saveMeeting(meetingData);
-  console.log(props.formData);
-
-  // Send an email to the customer
-  // uncomment
-  sendAppointmentRecievedMail(meetingData);
+    await deleteObject(tempFileRef);
+    return customerDocuments;
+  }
 };
 
+// Combine appointment creation logic
+const handleAppointmentCreation = async (
+  meetingData,
+  createMeeting = false
+) => {
+  try {
+    const uploadedFiles = props.appointmentProcessData.uploadedFiles;
+    const customerDocuments = await getCustomerDocs(uploadedFiles);
+    meetingData.customer_documents = customerDocuments || [];
+
+    const date_time = new Date(meetingData.date);
+    const [hours, minutes] = meetingData.slot.split(":").map(Number);
+    date_time.setHours(hours, minutes);
+    const deadline = sub(date_time, { days: 1 });
+    // If it's a meeting creation, generate a real meeting URL
+    if (createMeeting && meetingData.type === "video") {
+      meetingData.meeting_url = await createMeetingUrl(
+        date_time,
+        meetingData.attorney_email,
+        meetingData.customer_email
+      );
+      meetingData.payment_status = "1"; // For meeting creation, payment is complete
+      meetingData.status = "1"; // Meeting has been successfully created
+    } else {
+      // For appointment creation, use a mock URL and set payment_status and status to 0
+      meetingData.meeting_url = "mock-meeting-url";
+      meetingData.payment_status = "0";
+      meetingData.status = "0";
+    }
+    meetingData.date_time = date_time;
+    meetingData.deadline = deadline;
+    // Show status message for saving meeting
+    console.log("meeting data to save", meetingData);
+    await saveMeeting(meetingData, createMeeting);
+
+    const emailData = {
+      customer_name: meetingData.customer_name,
+      attorney_name: meetingData.attorney_name,
+      date_for_display: meetingData.date_for_display,
+      day: meetingData.day,
+      slot: meetingData.slot,
+      end_time: meetingData.end_time,
+      email: meetingData.customer_email,
+      meeting_url: meetingData.meeting_url,
+      type: meetingData.type,
+    };
+    // Send the appropriate email
+    const emailType = createMeeting
+      ? "send-meeting-accepted-email"
+      : "send-appointment-recieved-email";
+    await sendEmail(
+      `https://ykt7hblm31.execute-api.eu-north-1.amazonaws.com/prod/${emailType}`,
+      emailData
+    );
+
+    console.log("Appointment successfully created.");
+    store.commit("setAppointmentProcessData", { isFinished: true });
+    console.log("Appointment process set to finished.");
+  } catch (error) {
+    console.error("Error creating appointment:", error);
+  }
+};
+
+// API to create a meeting link (conditionally used for meetings)
+const createMeetingUrl = async (start_time, attorney_email, customer_email) => {
+  const start_time_iso = start_time.toISOString().split(".")[0] + "Z";
+  try {
+    const response = await axios.post(
+      "https://ykt7hblm31.execute-api.eu-north-1.amazonaws.com/prod/create-meeting",
+      { start_time: start_time_iso, attorney_email, customer_email }
+    );
+    return JSON.parse(response.data.body)["meet_link"];
+  } catch (error) {
+    console.error("Error creating meeting URL:", error);
+  }
+};
+
+// Appointment creation flow
 onMounted(async () => {
   console.log("AppointmentStep5 component mounted");
 
-  if (props) {
-    // wait 1 second before creating the meeting
+  const { in24Hours, paymentStatus, isFinished } = props.appointmentProcessData;
+
+  const meetingData = {
+    attorney_id: props.appointmentProcessData.attorneyData.id,
+    customer_id: props.appointmentProcessData.userData.uid,
+    attorney_name: props.appointmentProcessData.attorneyData.name,
+    attorney_email: props.appointmentProcessData.attorneyData.email,
+    category: props.appointmentProcessData.formData.selectedArea,
+    customer_email: props.appointmentProcessData.userData.email,
+    customer_phone: props.appointmentProcessData.userData.phone,
+    customer_name: props.appointmentProcessData.userData.name,
+    date: props.appointmentProcessData.selectedDate,
+    date_for_display: props.appointmentProcessData.selectedDateForDisplay,
+    end_time: props.appointmentProcessData.formData.endTime,
+    duration: props.appointmentProcessData.formData.selectedDuration,
+    type: props.appointmentProcessData.formData.selectedType,
+    price: props.appointmentProcessData.formData.price,
+    slot: props.appointmentProcessData.selectedSlot,
+    day: props.appointmentProcessData.selectedDay,
+    topic: props.appointmentProcessData.formData.topic,
+    notes: props.appointmentProcessData.notes,
+    payment_token: props.appointmentProcessData.paymentToken,
+    appointment_token: props.appointmentProcessData.appointmentToken,
+  };
+  if (isFinished) {
+    console.log("Appointment process already finished");
     setTimeout(() => {
-      createMeeting();
-      isCreatingMeeting.value = false;
-    }, 1000);
+      isLoading.value = false;
+    }, 2000);
+    return;
   }
+  if (!in24Hours) {
+    console.log("Creating appointment (not in 24 hours)");
+    await handleAppointmentCreation(meetingData);
+    isLoading.value = false;
+  } else if (in24Hours && paymentStatus === "success") {
+    console.log("Creating meeting (in 24 hours with payment success)");
+    await handleAppointmentCreation(meetingData, true);
+    isLoading.value = false;
+  }
+
 });
 </script>
 

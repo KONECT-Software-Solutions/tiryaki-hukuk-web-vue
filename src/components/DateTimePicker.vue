@@ -70,8 +70,7 @@ import { useRouter } from "vue-router";
 import dayjs from "dayjs";
 import isoWeek from "dayjs/plugin/isoWeek";
 import "dayjs/locale/tr"; // Import Turkish locale
-import { name } from "dayjs/locale/tr";
-import { app } from "../firebase";
+
 dayjs.extend(isoWeek);
 dayjs.locale("tr"); // Set locale to Turkish
 
@@ -257,6 +256,5 @@ const handleSelectDate = (slot) => {
 
 onMounted(() => {
   selectDate(selectedIndex.value);
-
 });
 </script>

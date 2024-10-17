@@ -187,10 +187,13 @@ import AppointmentStep5 from "../components/AppointmentStep5.vue";
 import SkeletonLoader from "../components/SkeletonLoader.vue";
 import router from "../router";
 import { ro } from "date-fns/locale";
+import { ref as storageRef, listAll, deleteObject } from "firebase/storage";
+import { storage } from "../firebase"; 
 
 const store = useStore();
 
 const loading = ref(true);
+const uploadedFiles = ref([]);
 
 const currentStep = computed(
   () => store.getters.getAppointmentProcessData.currentStep
@@ -214,10 +217,41 @@ const handleContinueStep2 = (formData_) => {
   window.scrollTo(0, 0);
 };
 
+
+const deleteTempDocs = async (userId) => {
+  console.log("deleting temp docs")
+  try {
+    // Create a reference to the user's specific folder
+    const userDocsRef = storageRef(storage, `temporary_documents/${userId}/`);
+
+    // List all files in the folder
+    const res = await listAll(userDocsRef);
+
+    if (res.items.length === 0) {
+      console.log("No temp files to delete.");
+      return;
+    }
+
+    // Proceed with deletion if files exist
+    for (const itemRef of res.items) {
+      try {
+        await deleteObject(itemRef);
+        console.log(`Deleted file: ${itemRef.name}`);
+      } catch (error) {
+        console.error(`Error deleting file: ${itemRef.name}`, error);
+      }
+    }
+  } catch (error) {
+    console.error("Error listing or deleting files:", error);
+  }
+};
+
+
 const handleContinueStep3 = (userData) => {
   if (userData) {
     try {
       store.commit("setAppointmentProcessData", { userData: userData });
+      deleteTempDocs(userData.uid);
       nextStep();
     } catch (error) {
       console.error("Error updating user data:", error);
@@ -228,30 +262,15 @@ const handleContinueStep3 = (userData) => {
   window.scrollTo(0, 0);
 };
 
-const handleContinueStep4 = (uploadedFiles, notes) => {
-  if (uploadedFiles && notes) {
-    try {
-      store.commit("setAppointmentProcessData", {
-        uploadedFiles: uploadedFiles,
-        notes: notes,
-      });
-      nextStep();
-    } catch (error) {
-      console.error("Error updating user data:", error);
-    }
-  } else {
-    console.error("Form data is invalid or missing. Continue step3");
-  }
+const handleContinueStep4 = () => {
+  nextStep();
+  console.log("currentStep", currentStep.value);
   window.scrollTo(0, 0);
 };
 
 const handleContinueStep5 = () => {
-  try {
-    nextStep();
-    console.log("currentStep", currentStep.value);
-  } catch (error) {
-    console.error("Error updating user data:", error);
-  }
+  nextStep();
+  console.log("currentStep", currentStep.value);
 };
 
 const handleNotAuthenticated = () => {

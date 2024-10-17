@@ -9,6 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@chenfengyuan/vue-countdown": "^2.1.2",
     "@tailwindcss/forms": "^0.5.7",
     "axios": "^1.7.2",
     "date-fns": "^4.1.0",
@@ -16,7 +17,7 @@
     "fast-deep-equal": "^3.1.1",
     "firebase": "^10.12.3",
     "uuid": "^10.0.0",
-    "vue": "^3.4.29",
+    "vue": "^3.5.12",
     "vue-router": "^4.0.13",
     "vue-typed-js": "^0.1.2",
     "vuex": "^4.0.2"

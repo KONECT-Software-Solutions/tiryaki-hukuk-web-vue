@@ -11,7 +11,7 @@
 <script setup>
 import NavBar from "./components/NavBar.vue";
 import Footer from "./components/Footer.vue";
-import { onMounted, computed, watch } from "vue";
+import { computed, watch } from "vue";
 import { useStore } from "vuex";
 
 const store = useStore();
@@ -27,9 +27,6 @@ watch(
   { immediate: true }
 );
 
-onMounted(async () => {
-
-});
 </script>
 
 <style>

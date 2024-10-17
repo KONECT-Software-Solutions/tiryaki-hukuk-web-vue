@@ -5,7 +5,7 @@
 
     <!-- Image Section -->
     <div class="relative flex-grow-0">
-      <img :src="blog.image" alt="Meeting Image" class="w-full" />
+      <img :src="blog.image" alt="Meeting Image" loading="lazy" class="w-full" />
       <!-- Date Badge -->
       <div
         class="absolute flex items-center bottom-0 left-4 bg-tertiary text-white px-4 py-2 text-center h-12 lg:h-10">

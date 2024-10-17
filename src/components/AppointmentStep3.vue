@@ -8,7 +8,7 @@
             <img
               :src="`/assets/images/${appointmentProcessData.attorneyData.id}.webp`"
               alt="Profile Image"
-              class="md:w-44  object-cover" />
+              class="md:w-44 object-cover" />
             <button
               class="px-4 py-1 border my-2 w-full text-sm text-gray-800 rounded-md hover:bg-gray-200">
               Hakkında
@@ -85,11 +85,13 @@
                   </p>
                 </div>
                 <div>
-                  <p class="break-word">{{ file.name }}</p>
+                  <p class="break-word">{{ formatName(file.name) }}</p>
                 </div>
               </div>
 
-              <button @click="removeFile(index)" class="p-1.5 text-gray-500 hover:text-gray-800 hover:bg-gray-200 rounded-lg focus:outline-none ">
+              <button
+                @click="removeFile(index)"
+                class="p-1.5 text-gray-500 hover:text-gray-800 hover:bg-gray-200 rounded-lg focus:outline-none">
                 <svg
                   class="w-5 h-5"
                   aria-hidden="true"
@@ -115,7 +117,6 @@
         <MessageWrapper v-else type="normal">
           Herhangi bir evrak eklenmedi.
         </MessageWrapper>
-        
       </div>
     </div>
     <div
@@ -128,7 +129,7 @@
         </MessageWrapper>
         <MessageWrapper type="normal">
           Paylaştığınız bilgilerin gizliliği ve güvenliği bizim için önemlidir.
-          Dosyalarınız <span class="font-semibold">asla</span> kaydedilmez ve
+          Dosyalarınız <span class="font-semibold">asla</span> 3. bir kişi ile
           paylaşılmaz.
         </MessageWrapper>
         <label for="message" class="block mb-3 text-sm text-gray-900">
@@ -167,9 +168,7 @@
                   >
                   yada sürükleyip bırakın
                 </p>
-                <p class="text-xs text-gray-500">
-                  PNG, JPG, PDF (MAX. 100MB)
-                </p>
+                <p class="text-xs text-gray-500">PNG, JPG, PDF (MAX. 100MB)</p>
               </div>
             </div>
             <input
@@ -181,12 +180,16 @@
           </label>
         </div>
         <button
+          v-if="!isLoading"
           @click="handleSubmit"
           type="submit"
           class="bg-tertiary w-full md:w-auto mt-4 text-white py-[0.5rem] px-4 disabled:bg-gray-400"
           :disabled="!isAuthenticated">
           Devam Et
         </button>
+        <div v-else class="bg-tertiary w-full md:w-auto mt-4 text-white py-[0.5rem] px-4 disabled:bg-gray-400">
+          <LoadingSpinner :text="''" />
+        </div>
       </div>
     </div>
   </div>
@@ -196,28 +199,28 @@
 import { onMounted, ref, computed, watch } from "vue";
 import { useStore } from "vuex";
 import MessageWrapper from "../wrappers/MessageWrapper.vue";
+import LoadingSpinner from "./LoadingSpinner.vue";
+import {
+  ref as storageRef,
+  uploadBytes,
+  getDownloadURL,
+} from "firebase/storage";
+import { db, storage } from "../firebase";
+import { is } from "date-fns/locale";
+import { set } from "date-fns";
 
 const props = defineProps(["appointmentProcessData"]);
 const emits = defineEmits(["continueStep4", "notAuthenticated"]);
 
 const store = useStore();
 const isAuthenticated = computed(() => store.getters.isAuthenticated);
-
+const isLoading = ref(false);
 // Load initial data from Vuex
-const notes = ref(store.getters.getAppointmentProcessData.notes || "");
+const notes = ref(props.appointmentProcessData.notes || "");
 const uploadedFiles = ref(
-  store.getters.getAppointmentProcessData.uploadedFiles || []
+  props.appointmentProcessData.uploadedFiles || []
 );
-
-// Watch appointmentProcessData for changes
-watch(
-  () => store.getters.getAppointmentProcessData,
-  (newData) => {
-    notes.value = newData.notes || "";
-    uploadedFiles.value = newData.uploadedFiles || [];
-  },
-  { immediate: true }
-);
+const userId = store.getters.getUserId;
 
 // Display options
 const displayOptions = {
@@ -233,37 +236,9 @@ const selectedOption = computed(() => {
   );
 });
 
-// File Handling Functions
-const handleFileUpload = (event) => {
-  const files = event.target.files;
-  handleFiles(files);
-};
-
 const handleDrop = (event) => {
   const files = event.dataTransfer.files;
   handleFiles(files);
-};
-
-const handleFiles = (files) => {
-  const MAX_FILE_SIZE = 100 * 1024 * 1024; // 100MB
-  const allowedTypes = ["image/png", "image/jpeg", "image/jpg", "application/pdf"]; // also add docs here
-
-  Array.from(files).forEach((file) => {
-    if (file.size > MAX_FILE_SIZE) {
-      alert(`${file.name} dosyası çok büyük. Yükleyeceğiniz dosyalar maximum 100MB olmalıdır.`);
-      return;
-    }
-    if (!allowedTypes.includes(file.type)) {
-      alert(`${file.name} dosya türü desteklenmiyor. Lütfen PNG, JPG, JPEG veya PDF dosyaları yükleyin.`);
-      return;
-    }
-    uploadedFiles.value.push({
-      file: file,
-      name: formatName(file.name),
-      size: file.size,
-      type: file.type,
-    });
-  });
 };
 
 const removeFile = (index) => {
@@ -277,18 +252,85 @@ const formatSize = (size) => {
 };
 
 const formatName = (name) => {
-  return name.length > 20
-    ? `${name.substring(0, 10)}...${name.substring(name.length - 10)}`
+  return name.length > 30
+    ? `${name.substring(0, 15)}...${name.substring(name.length - 15)}`
     : name;
 };
 
+// File Handling Functions
+const handleFileUpload = (event) => {
+  const files = event.target.files;
+  handleFiles(files);
+};
+
+const handleFiles = (files) => {
+  const MAX_FILE_SIZE = 100 * 1024 * 1024; // 100MB
+  const allowedTypes = [
+    "image/png",
+    "image/jpeg",
+    "image/jpg",
+    "application/pdf",
+  ]; // also add docs here
+
+  Array.from(files).forEach((file) => {
+    if (file.size > MAX_FILE_SIZE) {
+      alert(
+        `${file.name} dosyası çok büyük. Yükleyeceğiniz dosyalar maximum 100MB olmalıdır.`
+      );
+      return;
+    }
+    if (!allowedTypes.includes(file.type)) {
+      alert(
+        `${file.name} dosya türü desteklenmiyor. Lütfen PNG, JPG, JPEG veya PDF dosyaları yükleyin.`
+      );
+      return;
+    }
+    uploadedFiles.value.push(file);
+  });
+};
+
+// Helper function to upload files
+const uploadFilesToFireStore = async () => {
+  console.log("uploading files");
+  const uploadedFiles_ = [];
+  for (const file of uploadedFiles.value) {
+    console.log("uploading file", file);
+    const metadata = {
+      type: file.type,
+      size: file.size,
+      name: file.name,
+    };
+    try {
+      const fileRef = storageRef(storage, `temporary_documents/${userId}/${file.name}`);
+      const snapshot = await uploadBytes(fileRef, file);
+      console.log("File uploaded successfully:", snapshot.ref);
+      const downloadUrl = await getDownloadURL(snapshot.ref);
+      console.log("metadata", metadata);
+      uploadedFiles_.push({ url: downloadUrl, metadata: metadata });
+    } catch (error) {
+      console.error(`Error uploading file ${fileObj.file}:`, error);
+      throw new Error("File upload failed.");
+    }
+  }
+  return uploadedFiles_;
+};
+
 // Submit and Authentication Handling
-const handleSubmit = () => {
+const handleSubmit = async () => {
   if (!notes.value) {
     alert("Lütfen bir not giriniz.");
     return;
   }
-  emits("continueStep4", uploadedFiles.value, notes.value);
+
+  isLoading.value = true;
+
+  const uploadedFiles_ = await uploadFilesToFireStore();
+  console.log("uploadedFiles_", uploadedFiles_);
+  store.commit("setAppointmentProcessData", { uploadedFiles: uploadedFiles_ , notes: notes.value });
+  setTimeout(() => {
+    isLoading.value = false;
+    emits("continueStep4");
+  }, 1000);
 };
 
 const handleAuth = () => {
@@ -296,6 +338,7 @@ const handleAuth = () => {
 };
 
 onMounted(() => {
+  console.log("uploadedFiles", uploadedFiles.value);
   if (!isAuthenticated.value) {
     handleAuth();
   }

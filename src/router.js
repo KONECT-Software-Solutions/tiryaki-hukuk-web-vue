@@ -50,7 +50,7 @@ const routes = [
     meta: { requiresAuth: true },
   },
   {
-    path: "/odeme/:id",
+    path: "/randevu-ode/:id",
     name: "Payment",
     component: PaymentPage,
     meta: { requiresAuth: true },

@@ -1,7 +1,6 @@
 // src/store/index.js
 import { createStore } from "vuex";
 import {
-  getFirestore,
   collection,
   doc,
   getDoc,
@@ -18,8 +17,6 @@ import {
   signOut,
 } from "firebase/auth";
 import { formatDate, convertMonthToTurkish } from "../utils";
-import { getApp } from "firebase/app";
-import { set } from "date-fns";
 
 export default createStore({
   state: {
@@ -61,8 +58,14 @@ export default createStore({
     getUser: (state) => {
       return state.user;
     },
+    getUserId: (state) => {
+      return state.user.uid;
+    },
     getMeetings: (state) => {
       return state.meetings;
+    },
+    getMeetingById: (state) => (id) => {
+      return state.meetings.find((meeting) => meeting.id === id);
     },
     getAppointmentProcessData: (state) => {
       return state.appointmentProcessData
@@ -97,21 +100,19 @@ export default createStore({
     updateUserDataMeetings(state, newMeetingId) {
       state.user.meetings.push(newMeetingId);
       localStorage.setItem("user", JSON.stringify(state.user));
+      console.log("new meeting id added to user.meetings", state.user.meetings);
+    },
+    updateMeetingStatus(state, { id, status }) {
+      const index = state.meetings.findIndex((b) => b.id === id);
+      if (index !== -1) {
+        state.meetings[index].status = status;
+      }
+      console.log("index", index);
+      console.log("state.meetings", state.meetings);
+
     },
     setMeetings(state, meetings) {
       state.meetings = meetings;
-    },
-    updateMeetingStatus(state, { id, status }) {
-      const meeting = state.meetings.find((meeting) => meeting.id === id);
-      if (meeting) {
-        meeting.status = status;
-      }
-    },
-    updatePaymentStatus(state, { id, payment_status }) {
-      const meeting = state.meetings.find((meeting) => meeting.id === id);
-      if (meeting) {
-        meeting.payment_status = payment_status;
-      }
     },
     setAppointmentProcessData(state, data) {
       localStorage.removeItem("appointmentProcessData");
@@ -352,41 +353,3 @@ export default createStore({
 
   },
 });
- /*
-    async fetchUserData({ commit }) {
-      console.log("fetchUserData invoked.");
-
-      // Check if the user is already authenticated (even if there's data in local storage)
-      const localUser = localStorage.getItem("user");
-
-      if (localUser) {
-        console.log("User found in localStorage.");
-        const user = JSON.parse(localUser);
-        commit("setUser", user); // Use the local storage data for quick initialization
-      }
-
-      // Always attempt to fetch fresh data from Firestore
-      auth.onAuthStateChanged(async (user) => {
-        if (user) {
-          console.log("Fetching fresh user data from Firestore.");
-          try {
-            const userDocRef = doc(db, "users", user.uid);
-            const userDoc = await getDoc(userDocRef);
-
-            if (userDoc.exists()) {
-              const freshUser = { ...user, ...userDoc.data() };
-              commit("setUser", freshUser); // Update Vuex store with fresh data
-              localStorage.setItem("user", JSON.stringify(freshUser)); // Sync with localStorage
-            } else {
-              console.log("No such document found in Firestore!");
-            }
-          } catch (error) {
-            console.error("Error fetching user data from Firestore:", error);
-          }
-        } else {
-          console.log("No user is signed in.");
-          commit("clearUser");
-        }
-      });
-    },
-    */

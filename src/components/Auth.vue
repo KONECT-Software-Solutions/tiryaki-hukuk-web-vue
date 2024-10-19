@@ -243,6 +243,7 @@ import { createUserWithEmailAndPassword } from "firebase/auth";
 import { doc, setDoc } from "firebase/firestore";
 import axios from "axios";
 import { useStore } from "vuex";
+import { addNotification } from "../utils";
 
 const emits = defineEmits(["emailVerified", "signedIn", "forgotPw"]);
 
@@ -337,13 +338,17 @@ const createUser = async () => {
     );
     const user = userCredential.user;
 
-    await setDoc(doc(db, "users", user.uid), {
+    const userData = {
       email: emailRegistiration.value,
       name: `${firstName.value} ${lastName.value}`,
       phone: phone.value,
       meetings: [],
-    });
+      registrationDate: new Date().toISOString(),
+    };
+
+    await setDoc(doc(db, "users", user.uid), userData);
     console.log("User created successfully");
+    addNotification(userData, "newUser");
 
     setTimeout(() => {
       isCreatingUser.value = false;

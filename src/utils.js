@@ -1,3 +1,20 @@
+import { collection, addDoc } from "firebase/firestore";
+import { db } from "./firebase";
+
+const addNotification = async (notificationData, type) => {
+    console.log("adding new notification")
+    notificationData.type = type;
+    notificationData.date_tr = new Date().toLocaleDateString("tr-TR");;
+    notificationData.date_tmsp = new Date()
+      try {
+        const notificationsRef = collection(db, "notifications");
+        const docRef = await addDoc(notificationsRef, notificationData); // Ensure addDoc is awaited
+        console.log("notification succesfully added")
+      } catch (error) {
+        console.error("Error adding notification data:", error);
+      }
+};
+
 function formatDate(timestamp) {
     if (!timestamp) return "";
     if (timestamp.seconds) {
@@ -31,4 +48,4 @@ function formatDate(timestamp) {
     return monthMap[month];
   }
 
-  export { formatDate, convertMonthToTurkish };
+  export { formatDate, convertMonthToTurkish, addNotification};

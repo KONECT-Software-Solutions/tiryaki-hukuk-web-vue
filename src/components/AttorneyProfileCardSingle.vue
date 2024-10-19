@@ -7,9 +7,9 @@
           <div class="text-center">
             <h2 class="text-lg md:text-xl font-semibold text-slate-800">
               {{ attorneyData.name }}
-              <h3 class="text-gray-600 font-normal text-base">
+              <p class="text-gray-600 font-normal text-base">
                 {{ attorneyData.title }}
-              </h3>
+              </p>
             </h2>
           </div>
         </div>

@@ -67,7 +67,53 @@
         </div>
       </div>
     </div>
-    <div v-else>fetching</div> <!-- BURAYA SKELETON LOADER GELECEK -->
+    <!-- Skeleton Loader -->
+    <div v-else class="flex flex-col items-center space-y-4 justify-center">
+      <div
+        v-for="n in 3"
+        :key="n"
+        class="pt-4 p-2 md:px-4 my-4 bg-white border w-full border-gray-200 flex items-center justify-center lg:justify-between space-x-6 animate-pulse">
+        <div class="flex flex-col space-y-4">
+          <div class="flex space-x-4">
+            <!-- Skeleton Image -->
+            <div>
+              <div class="h-56 w-36 bg-gray-300"></div>
+            </div>
+            <div class="flex flex-col justify-between max-w-md space-y-4">
+              <div>
+                <div class="flex justify-between ml-2 items-start">
+                  <div>
+                    <!-- Skeleton Name and Title -->
+                    <div class="h-6 bg-gray-300 rounded w-48 mb-2"></div>
+                    <div class="h-4 bg-gray-200 rounded w-32"></div>
+                  </div>
+                </div>
+
+                <div class="mt-2 space-y-2">
+                  <!-- Skeleton Experience -->
+                  <div class="h-4 bg-gray-200 rounded w-40"></div>
+                  <!-- Skeleton University -->
+                  <div class="h-4 bg-gray-200 rounded w-56"></div>
+                </div>
+                <!-- Skeleton Practice Areas -->
+                <div class="mt-2 flex text-sm flex-wrap max-w-72">
+                  <div
+                    v-for="i in 3"
+                    :key="i"
+                    class="px-3 py-1 my-1 mx-1 bg-gray-300 rounded-md w-20 h-6"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- Skeleton Button -->
+          <div class="lg:hidden bg-gray-300 w-full my-2 py-3"></div>
+        </div>
+        <!-- Skeleton DateTimePicker Placeholder -->
+        <div class="hidden lg:block w-1/3 h-56 bg-gray-300"></div>
+      </div>
+    </div>
+
+    <!-- BURAYA SKELETON LOADER GELECEK -->
   </div>
 </template>
 

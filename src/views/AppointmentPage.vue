@@ -186,14 +186,12 @@ import AppointmentStep4 from "../components/AppointmentStep4.vue";
 import AppointmentStep5 from "../components/AppointmentStep5.vue";
 import SkeletonLoader from "../components/SkeletonLoader.vue";
 import router from "../router";
-import { ro } from "date-fns/locale";
 import { ref as storageRef, listAll, deleteObject } from "firebase/storage";
-import { storage } from "../firebase"; 
+import { storage } from "../firebase";
 
 const store = useStore();
 
 const loading = ref(true);
-const uploadedFiles = ref([]);
 
 const currentStep = computed(
   () => store.getters.getAppointmentProcessData.currentStep
@@ -202,6 +200,12 @@ const currentStep = computed(
 const appointmentProcessData = computed(
   () => store.getters.getAppointmentProcessData
 );
+
+//const timeLeft = appointmentProcessData.value.expireTime - new Date().getTime();
+// time left in MM:SS
+//const timeLeft_minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+//const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
+
 
 const handleContinueStep2 = (formData_) => {
   if (formData_) {
@@ -217,9 +221,8 @@ const handleContinueStep2 = (formData_) => {
   window.scrollTo(0, 0);
 };
 
-
 const deleteTempDocs = async (userId) => {
-  console.log("deleting temp docs")
+  console.log("deleting temp docs");
   try {
     // Create a reference to the user's specific folder
     const userDocsRef = storageRef(storage, `temporary_documents/${userId}/`);
@@ -245,7 +248,6 @@ const deleteTempDocs = async (userId) => {
     console.error("Error listing or deleting files:", error);
   }
 };
-
 
 const handleContinueStep3 = (userData) => {
   if (userData) {

@@ -5,6 +5,7 @@ import {
   doc,
   getDoc,
   getDocs,
+  addDoc,
   updateDoc,
   increment,
 } from "firebase/firestore";
@@ -23,9 +24,12 @@ export default createStore({
     blogs: [],
     attorneys: [],
     user: JSON.parse(localStorage.getItem("user")) || null,
-    appointmentProcessData: JSON.parse(localStorage.getItem("appointmentProcessData")) || {
+    appointmentProcessData: JSON.parse(
+      localStorage.getItem("appointmentProcessData")
+    ) || {
       appointmentToken: null,
       paymentToken: null,
+      expireTime: null,
       currentStep: null,
       userData: {},
       in24Hours: true,
@@ -38,7 +42,7 @@ export default createStore({
       selectedSlot: null,
       uploadedFiles: [],
       notes: null,
-      isFinished: false
+      isFinished: false,
     },
     meetings: [],
   },
@@ -68,8 +72,8 @@ export default createStore({
       return state.meetings.find((meeting) => meeting.id === id);
     },
     getAppointmentProcessData: (state) => {
-      return state.appointmentProcessData
-    }
+      return state.appointmentProcessData;
+    },
   },
   mutations: {
     setBlogs(state, blogs) {
@@ -109,15 +113,20 @@ export default createStore({
       }
       console.log("index", index);
       console.log("state.meetings", state.meetings);
-
     },
     setMeetings(state, meetings) {
       state.meetings = meetings;
     },
     setAppointmentProcessData(state, data) {
       localStorage.removeItem("appointmentProcessData");
-      state.appointmentProcessData = { ...state.appointmentProcessData, ...data };
-      localStorage.setItem("appointmentProcessData", JSON.stringify(state.appointmentProcessData));
+      state.appointmentProcessData = {
+        ...state.appointmentProcessData,
+        ...data,
+      };
+      localStorage.setItem(
+        "appointmentProcessData",
+        JSON.stringify(state.appointmentProcessData)
+      );
     },
     resetAppointmentProcessData(state) {
       state.appointmentProcessData = {
@@ -136,10 +145,10 @@ export default createStore({
         selectedSlot: null,
         uploadedFiles: [],
         notes: null,
-        isFinished: false
+        isFinished: false,
       };
       localStorage.removeItem("appointmentProcessData");
-    }
+    },
   },
   actions: {
     async fetchBlogs({ commit }) {
@@ -248,28 +257,32 @@ export default createStore({
     },
     async signIn({ commit }, { email, password, rememberMe }) {
       console.log("Signing in...");
-    
+
       try {
         // Set Firebase auth persistence based on rememberMe
         const persistenceType = rememberMe
           ? browserLocalPersistence // Persist session across browser restarts
           : browserSessionPersistence; // Only for current session
-    
+
         // Set the persistence before signing in
         await setPersistence(auth, persistenceType);
-    
+
         // Sign in with email and password
-        const userCredential = await signInWithEmailAndPassword(auth, email, password);
+        const userCredential = await signInWithEmailAndPassword(
+          auth,
+          email,
+          password
+        );
         const user = userCredential.user; // Firebase Auth user data
-    
+
         // Fetch additional user data from Firestore
         const userDocRef = doc(db, "users", user.uid);
         const userDoc = await getDoc(userDocRef);
-    
+
         if (userDoc.exists()) {
           // Merge Auth and Firestore user data
           const userData = { ...user, ...userDoc.data() };
-    
+
           // Commit the combined user data to Vuex
           commit("setUser", userData);
           localStorage.setItem("user", JSON.stringify(userData)); // Sync with localStorage
@@ -280,7 +293,7 @@ export default createStore({
         console.error("Error signing in:", error);
         throw error;
       }
-    },    
+    },
     async signOut({ commit }) {
       console.log("Signing out...");
       try {
@@ -306,6 +319,16 @@ export default createStore({
         }
       } catch (error) {
         console.error("Error fetching attorney by ID:", error);
+      }
+    },
+    async addNotification({ formData }) {
+      console.log("Received new notification data:", formData);
+      return;
+      try {
+        const notificationsRef = collection(db, "notifications");
+        const docRef = await addDoc(notificationsRef, notificationData); // Ensure addDoc is awaited
+      } catch (error) {
+        console.error("Error adding notification data:", error);
       }
     },
     async fetchMeetingsData({ commit }, { meetingIds }) {
@@ -350,6 +373,5 @@ export default createStore({
         console.error("Error fetching meetings data by ID:", error);
       }
     },
-
   },
 });

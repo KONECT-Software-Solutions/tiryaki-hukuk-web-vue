@@ -17,10 +17,16 @@ const route = useRoute();
 const scrollToSection = (sectionId) => {
   const section = document.getElementById(sectionId);
   if (section) {
-    section.scrollIntoView({ behavior: "smooth" });
+    // Get the top position of the section relative to the document
+    const sectionPosition = section.getBoundingClientRect().top + window.pageYOffset;    
+
+    // Scroll to the adjusted position
+    window.scrollTo({
+      top: sectionPosition - 100,
+      behavior: 'smooth',
+    });
   }
 };
-
 const goToHomeAndScroll = (sectionId) => {
   if (route.path === "/") {
     // If already on the home page, directly scroll

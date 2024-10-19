@@ -19,7 +19,7 @@
               :class="[
                 'cursor-pointer flex-shrink-0 transition-colors duration-500 flex items-center ease-in-out px-2 md:px-8 hover:bg-neutral-100 hover:text-black',
                 currentView === item
-                  ? ' text-lg text-slate-800 border-b-2 border-quaternary'
+                  ? ' text-slate-800 border-b-2 border-quaternary'
                   : 'text-slate-500',
               ]">
               {{ item }}

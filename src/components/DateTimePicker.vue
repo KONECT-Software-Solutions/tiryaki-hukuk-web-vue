@@ -70,6 +70,7 @@ import { useRouter } from "vue-router";
 import dayjs from "dayjs";
 import isoWeek from "dayjs/plugin/isoWeek";
 import "dayjs/locale/tr"; // Import Turkish locale
+import { v4 as uuidv4 } from "uuid";
 
 dayjs.extend(isoWeek);
 dayjs.locale("tr"); // Set locale to Turkish
@@ -215,10 +216,6 @@ function removeExceptions(timeSlotsData, exceptions) {
   });
   return timeSlotsData;
 }
-// a function to create random 4 number token str
-function createAppointmentProcessToken() {
-  return Math.random().toString(36).substr(2, 4);
-}
 // a function to return true if the appointmentdate is in 24 hours, false if not
 function isIn24Hours(appointmentDate) {
   const appointmentDateTime = dayjs(appointmentDate);
@@ -230,6 +227,9 @@ function isIn24Hours(appointmentDate) {
 // after selecting the date and slot, update the store and navigate to the randevu-olustur page
 const handleSelectDate = (slot) => {
   const in24Hours_ = isIn24Hours(`${selectedDate.value} ${slot}`);
+  const expireDurationInMinutes = 30; // Set the expiration duration (e.g., 30 minutes)
+  const expireTime = new Date().getTime() + expireDurationInMinutes * 60000; // Calculate expiration time in milliseconds
+
   store.commit("resetAppointmentProcessData");
   store.commit("setAppointmentProcessData", {
     attorneyData: {
@@ -246,7 +246,8 @@ const handleSelectDate = (slot) => {
     selectedDay: selectedDay.value,
     selectedDateForDisplay: selectedDateForDisplay.value,
     selectedSlot: slot,
-    appointmentToken: createAppointmentProcessToken(),
+    expireTime: expireTime,
+    appointmentToken: uuidv4(),
     in24Hours: in24Hours_
   });
 
@@ -256,5 +257,6 @@ const handleSelectDate = (slot) => {
 
 onMounted(() => {
   selectDate(selectedIndex.value);
+
 });
 </script>

@@ -13,7 +13,7 @@
           class="mx-auto max-w-lg bg-white border border-gray-300 px-8 py-8 mb-4 space-y-3 relative">
           <div
             v-if="isLoading"
-            class="absolute inset-0 flex items-center justify-center bg-white bg-opacity-95">
+            class="absolute inset-0 z-10 flex items-center justify-center bg-white bg-opacity-95">
             <LoadingSpinner :text="''" />
           </div>
 
@@ -57,7 +57,7 @@
                 <button
                   @click="initializePayment"
                   type="submit"
-                  class="flex items-center justify-center w-full space-x-3 px-6 py-4 bg-gradient-to-r from-green-400 to-lime-400 text-white shadow-md hover:shadow-lg hover:from-green-500 hover:to-lime-500 transition-all duration-300 ease-in-out transform hover:scale-105">
+                  class="flex items-center justify-center w-full space-x-3 px-6 py-4 bg-gradient-to-r from-green-400 to-lime-400 text-white shadow-md hover:shadow-lg hover:from-green-500 hover:to-lime-500 transition-all duration-300 ease-in-out transform">
                   <img
                     src="../assets/icons/iyzico_ile_ode_horizontal_white.svg"
                     class="w-36"
@@ -103,7 +103,7 @@
                 <button
                   @click="initializePayment"
                   type="submit"
-                  class="flex items-center justify-center w-full space-x-3 px-6 py-4 bg-gradient-to-r from-green-400 to-lime-400 text-white shadow-md hover:shadow-lg hover:from-green-500 hover:to-lime-500 transition-all duration-300 ease-in-out transform hover:scale-105">
+                  class="flex items-center justify-center w-full space-x-3 px-6 py-4 bg-gradient-to-r from-green-400 to-lime-400 text-white shadow-md hover:shadow-lg hover:from-green-500 hover:to-lime-500 transition-all duration-300 ease-in-out transform">
                   <img
                     src="../assets/icons/iyzico_ile_ode_horizontal_white.svg"
                     class="w-36"

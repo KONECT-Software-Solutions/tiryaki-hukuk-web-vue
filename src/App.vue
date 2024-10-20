@@ -34,6 +34,9 @@ const user = computed(() => store.getters.getUser);
 const isFinished = computed(
   () => store.getters.getAppointmentProcessData.isFinished
 );
+const appointment_token = computed(
+  () => store.getters.getAppointmentProcessData.appointmentToken
+);
 
 watch(
   user,
@@ -46,10 +49,14 @@ watch(
 );
 
 const showResumeButton = computed(() => {
-  // Hide the button if the current route is 'randevu-olustur'
-  console.log("is finished ? ", isFinished.value);
-  console.log("route name", route.name);
-  return route.name !== "Appointment" && !isFinished.value;
+if (appointment_token && appointment_token.value) {
+    console.log("appointmentToken exists", appointment_token.value)
+    return route.name !== "Appointment" && !isFinished.value
+  }
+  else{
+    console.log("no token")
+    return false
+  }
 });
 
 const resumeAppointmentProcess = () => {

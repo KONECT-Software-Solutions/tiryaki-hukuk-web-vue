@@ -185,9 +185,9 @@ const handleSubmit = async (event) => {
   addNotification(formData, "newContactForm");
   try {
     // Send the form data to the Lambda endpoint
-   // const response = await axios.post("https://ykt7hblm31.execute-api.eu-north-1.amazonaws.com/prod/send-contact-form-email",formData);
+    const response = await axios.post("https://ykt7hblm31.execute-api.eu-north-1.amazonaws.com/prod/send-contact-form-email",formData);
 
-    //console.log("Email sent successfully:", response.data);
+    console.log("Email sent successfully:", response.data);
     isSuccess.value = true;
   } catch (error) {
     console.error("Error sending email:", error);

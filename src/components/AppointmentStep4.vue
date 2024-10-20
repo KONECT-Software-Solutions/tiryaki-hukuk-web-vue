@@ -71,7 +71,7 @@
 
           <!-- Payment Action Button -->
           <button
-            @click="handleContinue"
+            @click="initializePayment"
             class="bg-tertiary w-full mt-4 text-white py-[0.7rem] px-4">
             Devam Et
           </button>
@@ -136,6 +136,7 @@ import MessageWrapper from "../wrappers/MessageWrapper.vue";
 import axios from "axios";
 import { useStore } from "vuex";
 import { useRoute, useRouter } from "vue-router";
+import { convertTimestampToDate } from "../utils";
 
 const emits = defineEmits(["continueStep5", "notAuthenticated"]);
 const props = defineProps(["appointmentProcessData"]);
@@ -171,60 +172,60 @@ const initializePayment = async () => {
 
   const paymentData = {
     locale: "tr",
-    conversationId: appointment.appointmentToken || "123456789",
-    price: 1, // Use actual price
-    paidPrice: appointment.formData.price * 1.2, // Example, adjust as needed
+    conversationId: appointment.appointmentToken || "000000000",
+    price: appointment.formData.price, // Use actual price
+    paidPrice: appointment.formData.price * 1, // Example, adjust as needed
     currency: "TRY",
-    basketId: "B67832",
-    paymentGroup: "PRODUCT",
-    callbackUrl: "http://127.0.0.1:5000/callback?source=randevu-olustur",
+    basketId: "B00000",
+    paymentGroup: "DANISMANLIK",
+    callbackUrl: `https://ykt7hblm31.execute-api.eu-north-1.amazonaws.com/prod/iyzico-callback?source=randevu-olustur&conversationId=${appointment.appointmentToken}`,
     enabledInstallments: ["2", "3", "6", "9"],
     buyer: {
-      id: appointment.userData.uid || "BY789", // Use actual user data
-      name: "John",
-      surname: "Doe",
-      gsmNumber: "+905350000000",
+      id: appointment.userData.uid || "000000", // Use actual user data
+      name: appointment.userData.name || "NoName",
+      surname: "soyisim",
+      gsmNumber: "+90" + appointment.userData.phone || "+905555555555",
       email: appointment.userData.email || "email@email.com",
-      identityNumber: "74300864791",
-      lastLoginDate: "2015-10-05 12:43:35",
-      registrationDate: "2013-04-21 15:12:09",
-      registrationAddress: "Nidakule Göztepe, Merdivenköy Mah. Bora Sok. No:1",
+      identityNumber: "11111111111",
+      lastLoginDate: convertTimestampToDate(
+        appointment.userData.metadata.lastLoginAt
+      ),
+      registrationDate: convertTimestampToDate(
+        appointment.userData.metadata.createdAt
+      ),
+      registrationAddress: "Musteri Adresi",
       ip: "85.34.78.112",
-      city: "Istanbul",
+      city: "Sehir",
       country: "Turkey",
       zipCode: "34732",
     },
     shippingAddress: {
-      contactName: "John Doe",
-      city: "Istanbul",
+      contactName: appointment.userData.name || "NoName",
+      city: "Sehir",
       country: "Turkey",
-      address: "Nidakule Göztepe, Merdivenköy Mah. Bora Sok. No:1",
+      address: "Musteri Adresi",
       zipCode: "34732",
     },
     billingAddress: {
-      contactName: "John Doe",
-      city: "Istanbul",
+      contactName: appointment.userData.name || "NoName",
+      city: "Sehir",
       country: "Turkey",
-      address: "Nidakule Göztepe, Merdivenköy Mah. Bora Sok. No:1",
+      address: "Musteri Adresi",
       zipCode: "34732",
     },
     basketItems: [
       {
         id: appointment.attorneyData.id || "BI101",
-        name: "Legal Services",
+        name: "Hukuki Danismanlik",
         category1: appointment.formData.selectedArea,
         category2: appointment.formData.selectedType,
         itemType: "VIRTUAL",
-        price: 1,
+        price: appointment.formData.price,
       },
     ],
   };
-
   try {
-    const response_json = await axios.post(
-      "http://localhost:5000/initialize-payment",
-      paymentData
-    );
+    const response_json = await axios.post("https://ykt7hblm31.execute-api.eu-north-1.amazonaws.com/prod/iyzico-initialize-checkout-form",paymentData);
     const response = JSON.parse(response_json.data.iyzico_response);
 
     const paymentToken = response.token;
@@ -278,9 +279,7 @@ onMounted(() => {
     } else {
       // If no query params are found but we expect them, handle the error.
       console.log("Expected query parameters not found.");
-      alert(
-        "Bu sayfayı yalnızca ödeme sisteminden gelen URL ile görüntüleyebilirsiniz. "
-      );
+      alert("Bu sayfayı yalnızca ödeme sisteminden gelen URL ile görüntüleyebilirsiniz.");
       // Optionally, log this error and take further action (e.g., restart payment process)
       router.push("/"); // Example action: redirect to retry payment
     }
@@ -288,5 +287,6 @@ onMounted(() => {
   setTimeout(() => {
     isLoading.value = false;
   }, 1000);
+
 });
 </script>

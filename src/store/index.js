@@ -321,16 +321,6 @@ export default createStore({
         console.error("Error fetching attorney by ID:", error);
       }
     },
-    async addNotification({ formData }) {
-      console.log("Received new notification data:", formData);
-      return;
-      try {
-        const notificationsRef = collection(db, "notifications");
-        const docRef = await addDoc(notificationsRef, notificationData); // Ensure addDoc is awaited
-      } catch (error) {
-        console.error("Error adding notification data:", error);
-      }
-    },
     async fetchMeetingsData({ commit }, { meetingIds }) {
       console.log("fetching meetings...");
       try {

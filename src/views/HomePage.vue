@@ -26,7 +26,7 @@
             @click="scrollToSection('services-section')"
             class="bg-white flex items-center text-primary border-2 border-white py-[0.5rem] px-4 hover:bg-quaternary hover:text-white hover:border-quaternary hover:-translate-y-1 hover:translate-x-0.5 transition duration-300">
             <i class="ri-global-line pr-2 text-xl"></i>
-            <span>Çalışma Alanlarımız</span>
+            <span>Hizmetlerimiz</span>
           </button>
           <button
             @click="scrollToSection('attorneys-section')"
@@ -97,11 +97,18 @@ const route = useRoute();
 const scrollToSection = (sectionId) => {
   const section = document.getElementById(sectionId);
   if (section) {
-    section.scrollIntoView({ behavior: "smooth" });
-  } else {
-    console.log("section not found", sectionId);
+    // Get the top position of the section relative to the document
+    const sectionPosition = section.getBoundingClientRect().top + window.pageYOffset;
+    
+
+    // Scroll to the adjusted position
+    window.scrollTo({
+      top: sectionPosition - 100,
+      behavior: 'smooth',
+    });
   }
 };
+
 
 const texts = [
   "Haklarınız.",

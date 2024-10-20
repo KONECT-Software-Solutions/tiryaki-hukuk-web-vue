@@ -13,7 +13,7 @@
           class="mx-auto max-w-lg bg-white border border-gray-300 px-8 py-8 mb-4 space-y-3 relative">
           <div
             v-if="isLoading"
-            class="absolute inset-0 flex items-center justify-center bg-white bg-opacity-95">
+            class="absolute inset-0 z-10 flex items-center justify-center bg-white bg-opacity-95">
             <LoadingSpinner :text="''" />
           </div>
 
@@ -57,7 +57,7 @@
                 <button
                   @click="initializePayment"
                   type="submit"
-                  class="flex items-center justify-center w-full space-x-3 px-6 py-4 bg-gradient-to-r from-green-400 to-lime-400 text-white shadow-md hover:shadow-lg hover:from-green-500 hover:to-lime-500 transition-all duration-300 ease-in-out transform hover:scale-105">
+                  class="flex items-center justify-center w-full space-x-3 px-6 py-4 bg-gradient-to-r from-green-400 to-lime-400 text-white shadow-md hover:shadow-lg hover:from-green-500 hover:to-lime-500 transition-all duration-300 ease-in-out transform">
                   <img
                     src="../assets/icons/iyzico_ile_ode_horizontal_white.svg"
                     class="w-36"
@@ -103,7 +103,7 @@
                 <button
                   @click="initializePayment"
                   type="submit"
-                  class="flex items-center justify-center w-full space-x-3 px-6 py-4 bg-gradient-to-r from-green-400 to-lime-400 text-white shadow-md hover:shadow-lg hover:from-green-500 hover:to-lime-500 transition-all duration-300 ease-in-out transform hover:scale-105">
+                  class="flex items-center justify-center w-full space-x-3 px-6 py-4 bg-gradient-to-r from-green-400 to-lime-400 text-white shadow-md hover:shadow-lg hover:from-green-500 hover:to-lime-500 transition-all duration-300 ease-in-out transform">
                   <img
                     src="../assets/icons/iyzico_ile_ode_horizontal_white.svg"
                     class="w-36"
@@ -121,7 +121,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, computed } from "vue";
 import { useRouter } from "vue-router";
 import { useRoute } from "vue-router";
 import { useStore } from "vuex";
@@ -130,6 +130,8 @@ import { db } from "../firebase";
 import axios from "axios";
 import MessageWrapper from "../wrappers/MessageWrapper.vue";
 import LoadingSpinner from "../components/LoadingSpinner.vue";
+import { convertTimestampToDate } from "../utils";
+
 
 const router = useRouter();
 const route = useRoute();
@@ -138,6 +140,7 @@ const store = useStore();
 const isLoading = ref(true);
 const paymentStatus = ref(null);
 const meetingData = ref(null);
+const userData = computed(() => store.getters.getUser);
 
 // get id from router
 const meetingId = route.params.id;
@@ -180,49 +183,54 @@ const updateMeetingPaymentStatus = async (id, paymentStatus, status) => {
 const initializePayment = async () => {
   isLoading.value = true;
   console.log(meetingData.value);
+  const appointment_token = meetingData.value.appointment_token
   const paymentData = {
     locale: "tr",
-    conversationId: meetingData.value.appointment_token || "123456789",
+    conversationId: appointment_token || "000000000",
     price: meetingData.value.price,
-    paidPrice: meetingData.value.price * 1.2, // Adjust logic as needed
+    paidPrice: meetingData.value.price * 1, // Adjust logic as needed
     currency: "TRY",
-    basketId: "B67832",
-    paymentGroup: "PRODUCT",
-    callbackUrl: `http://127.0.0.1:5000/callback?source=randevu-ode&id=${meetingId}`,
+    basketId: "B00000",
+    paymentGroup: "DANISMANLIK",
+    callbackUrl: `https://ykt7hblm31.execute-api.eu-north-1.amazonaws.com/prod/iyzico-callback?source=randevu-ode&id=${meetingId}&conversationId=${appointment_token}`,
     enabledInstallments: ["2", "3", "6", "9"],
     buyer: {
-      id: meetingData.value.customer_id || "BY789",
-      name: meetingData.value.customer_name || "John Doe",
-      surname: "Doe",
-      gsmNumber: meetingData.value.customer_phone || "+905350000000",
+      id: meetingData.value.customer_id || "000000",
+      name: meetingData.value.customer_name || "NoName",
+      surname: "soyisim",
+      gsmNumber: "+90" + meetingData.value.customer_phone || "+905555555555",
       email: meetingData.value.customer_email || "email@email.com",
-      identityNumber: "74300864791",
-      lastLoginDate: "2015-10-05 12:43:35",
-      registrationDate: "2013-04-21 15:12:09",
-      registrationAddress: "Nidakule Göztepe, Merdivenköy Mah. Bora Sok. No:1",
+      identityNumber: "11111111111",
+      lastLoginDate: convertTimestampToDate(
+        userData.value.metadata.lastLoginAt
+      ),
+      registrationDate: convertTimestampToDate(
+        userData.value.metadata.createdAt
+      ),
+      registrationAddress: "Musteri Adresi",
       ip: "85.34.78.112",
-      city: "Istanbul",
+      city: "Sehir",
       country: "Turkey",
-      zipCode: "34732",
+      zipCode: "00000",
     },
     shippingAddress: {
-      contactName: meetingData.value.customer_name || "John Doe",
-      city: "Istanbul",
+      contactName: meetingData.value.customer_name || "NoName",
+      city: "Sehir",
       country: "Turkey",
-      address: "Nidakule Göztepe, Merdivenköy Mah. Bora Sok. No:1",
+      address: "Musteri Adresi",
       zipCode: "34732",
     },
     billingAddress: {
-      contactName: meetingData.value.customer_name || "John Doe",
-      city: "Istanbul",
+      contactName: meetingData.value.customer_name  || "NoName",
+      city: "Sehir",
       country: "Turkey",
-      address: "Nidakule Göztepe, Merdivenköy Mah. Bora Sok. No:1",
+      address: "Musteri Adresi",
       zipCode: "34732",
     },
     basketItems: [
       {
         id: meetingData.value.attorney_id || "BI101",
-        name: "Legal Services",
+        name: "Hukuki Danismanlik",
         category1: meetingData.value.category,
         category2: meetingData.value.type,
         itemType: "VIRTUAL",
@@ -233,7 +241,7 @@ const initializePayment = async () => {
 
   try {
     const response_json = await axios.post(
-      "http://localhost:5000/initialize-payment",
+      "https://ykt7hblm31.execute-api.eu-north-1.amazonaws.com/prod/iyzico-initialize-checkout-form",
       paymentData
     );
     const response = JSON.parse(response_json.data.iyzico_response);
@@ -296,5 +304,6 @@ onMounted(async () => {
   setTimeout(() => {
     isLoading.value = false;
   }, 1000);
+  console.log("user", userData.value.metadata);
 });
 </script>

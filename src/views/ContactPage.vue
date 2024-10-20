@@ -154,10 +154,48 @@
 
 <script setup>
 import { onMounted, ref } from "vue";
+import { useStore } from "vuex";
 import axios from "axios";
 import LoadingSpinner from "../components/LoadingSpinner.vue";
 import MessageWrapper from "../wrappers/MessageWrapper.vue";
+import { addNotification } from "../utils";
 
+const store = useStore();
+
+const isLoading = ref(false);
+const isSuccess = ref(false);
+const isError = ref(false);
+
+const handleSubmit = async (event) => {
+  event.preventDefault();
+
+  // Reset status before submission
+  isLoading.value = true;
+  isSuccess.value = false;
+  isError.value = false;
+
+  // Extract form data
+  const formData = {
+    name: event.target[0].value, // Get the name from the first input field
+    email: event.target[1].value, // Get the email from the second input field
+    subject: event.target[2].value, // Get the subject from the third input field
+    message: event.target[3].value, // Get the message from the textarea
+  };
+  console.log("Form data:", formData);
+  addNotification(formData, "newContactForm");
+  try {
+    // Send the form data to the Lambda endpoint
+   // const response = await axios.post("https://ykt7hblm31.execute-api.eu-north-1.amazonaws.com/prod/send-contact-form-email",formData);
+
+    //console.log("Email sent successfully:", response.data);
+    isSuccess.value = true;
+  } catch (error) {
+    console.error("Error sending email:", error);
+    isError.value = true;
+  } finally {
+    isLoading.value = false; // Stop loading once the request is completed
+  }
+};
 onMounted(() => {
   const mapOptions = {
     center: { lat: 40.22818, lng: 28.98144 }, // Center near the office
@@ -201,43 +239,6 @@ onMounted(() => {
     console.error("Error initializing Google Maps:", error);
   }
 });
-
-const isLoading = ref(false);
-const isSuccess = ref(false);
-const isError = ref(false);
-
-const handleSubmit = async (event) => {
-  event.preventDefault();
-
-  // Reset status before submission
-  isLoading.value = true;
-  isSuccess.value = false;
-  isError.value = false;
-
-  // Extract form data
-  const formData = {
-    name: event.target[0].value, // Get the name from the first input field
-    email: event.target[1].value, // Get the email from the second input field
-    subject: event.target[2].value, // Get the subject from the third input field
-    message: event.target[3].value, // Get the message from the textarea
-  };
-
-  try {
-    // Send the form data to the Lambda endpoint
-    const response = await axios.post(
-      "https://ykt7hblm31.execute-api.eu-north-1.amazonaws.com/prod/send-contact-form-email",
-      formData
-    );
-
-    console.log("Email sent successfully:", response.data);
-    isSuccess.value = true;
-  } catch (error) {
-    console.error("Error sending email:", error);
-    isError.value = true;
-  } finally {
-    isLoading.value = false; // Stop loading once the request is completed
-  }
-};
 </script>
 
 <style scoped>

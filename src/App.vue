@@ -5,17 +5,35 @@
       <router-view />
     </transition>
     <Footer />
+
+    <button
+      v-if="showResumeButton"
+      @click="resumeAppointmentProcess"
+      class="group fixed bottom-4 right-4 h-12 flex items-center justify-center bg-primary text-white rounded-full shadow-xl transition-all animate-bounce duration-300 ease-in-out z-50 w-12 hover:w-40">
+      <span
+        class="text-center opacity-0 w-0 group-hover:w-full group-hover:opacity-100 text-nowrap transition-opacity duration-0 group-hover:duration-700">
+        Randevuyu tamamla!
+      </span>
+      <i
+        class="ri-calendar-fill text-xl opacity-100 transition-opacity duration-700 group-hover:duration-0 group-hover:w-0 group-hover:opacity-0"></i>
+    </button>
   </div>
 </template>
 
 <script setup>
 import NavBar from "./components/NavBar.vue";
 import Footer from "./components/Footer.vue";
-import { computed, watch } from "vue";
+import { computed, onMounted, watch } from "vue";
 import { useStore } from "vuex";
+import { useRouter, useRoute } from "vue-router";
 
 const store = useStore();
+const router = useRouter();
+const route = useRoute();
 const user = computed(() => store.getters.getUser);
+const isFinished = computed(
+  () => store.getters.getAppointmentProcessData.isFinished
+);
 
 watch(
   user,
@@ -27,6 +45,19 @@ watch(
   { immediate: true }
 );
 
+const showResumeButton = computed(() => {
+  // Hide the button if the current route is 'randevu-olustur'
+  console.log("is finished ? ", isFinished.value);
+  console.log("route name", route.name);
+  return route.name !== "Appointment" && !isFinished.value;
+});
+
+const resumeAppointmentProcess = () => {
+  // Navigate to the appointment process route
+  router.push("/randevu-olustur");
+};
+
+onMounted(() => {});
 </script>
 
 <style>

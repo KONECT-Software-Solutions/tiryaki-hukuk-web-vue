@@ -82,6 +82,7 @@ import {
 import { db, storage } from "../firebase";
 import axios from "axios";
 import { sub } from "date-fns";
+import { addNotification } from "../utils";
 
 const store = useStore();
 
@@ -258,7 +259,9 @@ const handleAppointmentCreation = async (
       day: meetingData.day,
       slot: meetingData.slot,
       end_time: meetingData.end_time,
-      email: meetingData.customer_email,
+      customer_email: meetingData.customer_email,
+      attorney_email: meetingData.attorney_email,
+      customer_phone: meetingData.customer_phone,
       meeting_url: meetingData.meeting_url,
       type: meetingData.type,
     };
@@ -331,10 +334,29 @@ onMounted(async () => {
   if (!in24Hours) {
     console.log("Creating appointment (not in 24 hours)");
     await handleAppointmentCreation(meetingData);
+    const notificationData = {
+      customer_name: meetingData.customer_name,
+      attorney_name: meetingData.attorney_name,
+      date_for_display: meetingData.date_for_display,
+      day: meetingData.day,
+      start_time: meetingData.slot,
+      end_time: meetingData.end_time,
+    };
+    addNotification(notificationData, "newAppointmentRequest");
     isLoading.value = false;
   } else if (in24Hours && paymentStatus === "success") {
     console.log("Creating meeting (in 24 hours with payment success)");
     await handleAppointmentCreation(meetingData, true);
+    const notificationData = {
+      customer_name: meetingData.customer_name,
+      attorney_name: meetingData.attorney_name,
+      date_for_display: meetingData.date_for_display,
+      day: meetingData.day,
+      start_time: meetingData.slot,
+      end_time: meetingData.end_time,
+    };
+    addNotification(notificationData, "appointmentAccepted");
+
     isLoading.value = false;
   }
 

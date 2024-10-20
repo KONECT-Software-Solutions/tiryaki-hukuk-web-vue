@@ -187,13 +187,13 @@
               meeting.status !== '3'
             "
             @click="handleCancelClicked(meeting.id, meeting.attorney_id)"
-            class="px-4 py-1 border bg-slate-100 text-slate-700 hover:bg-slate-700 hover:text-slate-100 transition duration-300">
+            class="px-4 py-1 border bg-slate-100 text-slate-700 h-12 hover:bg-slate-700 hover:text-slate-100 transition duration-300">
             İptal Et
           </button>
           <button
           v-if="meeting.payment_status === '0' && meeting.status === '1'"
           @click="pay(meeting.id)"
-          class="flex items-center justify-center space-x-3 px-6 py-2 bg-gradient-to-r from-green-400 to-lime-400 text-white shadow-md hover:shadow-lg hover:from-green-500 hover:to-lime-500 transition-all duration-300 ease-in-out transform hover:scale-105">
+          class="flex items-center justify-center space-x-3 px-6 py-2 h-12 bg-gradient-to-r from-green-400 to-lime-400 text-white shadow-md hover:shadow-lg hover:from-green-500 hover:to-lime-500 transition-all duration-300 ease-in-out transform">
           <img
               src="../assets/icons/iyzico_ile_ode_horizontal_white.svg"
               class="h-5"
@@ -204,7 +204,7 @@
             v-if="meeting.status !== '6' && meeting.payment_status === '1'"
             :href="meeting.meeting_url"
             target="_blank"
-            class="flex items-center justify-center space-x-3 px-6 py-2 bg-gradient-to-r from-green-400 to-lime-400 text-white shadow-md hover:shadow-lg hover:from-green-500 hover:to-lime-500 transition-all duration-300 ease-in-out transform hover:scale-105">
+            class="flex items-center justify-center space-x-3 px-6 py-2 h-12 bg-gradient-to-r from-green-400 to-lime-400 text-white shadow-md hover:shadow-lg hover:from-green-500 hover:to-lime-500 transition-all duration-300 ease-in-out transform">
             <img
               src="../assets/icons/google-meet-svgrepo-com.svg"
               class="w-8 h-8"

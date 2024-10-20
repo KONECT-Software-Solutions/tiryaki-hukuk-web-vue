@@ -71,7 +71,7 @@
 
           <!-- Payment Action Button -->
           <button
-            @click="initializePayment"
+            @click="handleContinue"
             class="bg-tertiary w-full mt-4 text-white py-[0.7rem] px-4">
             Devam Et
           </button>

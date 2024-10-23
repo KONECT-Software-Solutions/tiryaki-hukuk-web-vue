@@ -17,7 +17,7 @@ import {
   browserSessionPersistence,
   signOut,
 } from "firebase/auth";
-import { formatDate, convertMonthToTurkish } from "../utils";
+import { formatDate, convertMonthToTurkish, deleteException } from "../utils";
 
 export default createStore({
   state: {
@@ -305,22 +305,6 @@ export default createStore({
         throw error;
       }
     },
-    async deleteException({ exceptionData }) {
-      try {
-        const attorneyDocRef = doc(db, "attorneys", exceptionData.attorney_id);
-        const attorneyDoc = await getDoc(attorneyDocRef);
-        if (attorneyDoc.exists()) {
-          const attorneyData = attorneyDoc.data();
-          const exceptions = attorneyData.exceptions || [];
-          const updatedExceptions = exceptions.filter(
-            (exception) => exception.meeting_id !== exceptionData.meeting_id
-          );
-          await updateDoc(attorneyDocRef, { exceptions: updatedExceptions });
-        }
-      } catch (error) {
-        console.error("Error fetching attorney by ID:", error);
-      }
-    },
     async fetchMeetingsData({ commit }, { meetingIds }) {
       console.log("fetching meetings...");
       try {
@@ -334,6 +318,7 @@ export default createStore({
         }
         meetingsData.forEach((meeting) => {
           const deadline = new Date(meeting.deadline.seconds * 1000);
+          const meetingDate = new Date(meeting.date_time.seconds * 1000);
           const currentDate = new Date();
           if (
             currentDate > deadline &&
@@ -343,7 +328,7 @@ export default createStore({
             // find this meeting in the firestore and update the status to 6
             const docRef = doc(db, "meetings", meeting.id);
             updateDoc(docRef, {
-              status: "6",
+              status: "7",
               cancel_reason: "Ödeme süresi geçti.",
               payment_status: "2",
             });
@@ -351,10 +336,28 @@ export default createStore({
               attorney_id: meeting.attorney_id,
               meeting_id: meeting.id,
             });
-            return true;
-          } else {
-            return false;
+            meeting.status = "7";
+            meeting.cancel_reason = "Ödeme süresi geçti.";
+            meeting.payment_status = "2";
+
           }
+          if (
+            currentDate > meetingDate &&
+            meeting.status === "1" &&
+            meeting.payment_status === "1"
+          ) {
+            // find this meeting in the firestore and update the status to 6
+            const docRef = doc(db, "meetings", meeting.id);
+            updateDoc(docRef, {
+              status: "2",
+            });
+            deleteException({
+              attorney_id: meeting.attorney_id,
+              meeting_id: meeting.id,
+            });
+            meeting.status = "2";
+          }
+
         });
         console.log("Meetings data", meetingsData);
         commit("setMeetings", meetingsData);

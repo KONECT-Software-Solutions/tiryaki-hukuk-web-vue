@@ -1,7 +1,7 @@
 <template>
-  <section class="py-12 bg-gray-50">
+  <section class="bg-gray-50">
     <div class="container mx-auto text-center">
-      <h1 class="text-3xl text-center text-slate-800 font-medium mb-8 md:mb-0 mt-4">
+      <h1 class="text-3xl text-center text-slate-800 font-medium mb-8 md:mb-0">
         Hizmet Alanlarımız
       </h1>
       <p

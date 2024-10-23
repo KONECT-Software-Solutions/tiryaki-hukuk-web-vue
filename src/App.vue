@@ -49,7 +49,7 @@ watch(
 );
 
 const showResumeButton = computed(() => {
-if (appointment_token && appointment_token.value) {
+if (appointment_token && appointment_token.value && user.value) {
     console.log("appointmentToken exists", appointment_token.value)
     return route.name !== "Appointment" && !isFinished.value
   }

@@ -1,5 +1,22 @@
-import { collection, addDoc } from "firebase/firestore";
+import { collection, addDoc, getDoc, updateDoc, doc} from "firebase/firestore";
 import { db } from "./firebase";
+
+const deleteException = async ( exceptionData ) => {
+  try {
+    const attorneyDocRef = doc(db, "attorneys", exceptionData.attorney_id);
+    const attorneyDoc = await getDoc(attorneyDocRef);
+    if (attorneyDoc.exists()) {
+      const attorneyData = attorneyDoc.data();
+      const exceptions = attorneyData.exceptions || [];
+      const updatedExceptions = exceptions.filter(
+        (exception) => exception.meeting_id !== exceptionData.meeting_id
+      );
+      await updateDoc(attorneyDocRef, { exceptions: updatedExceptions });
+    }
+  } catch (error) {
+    console.error("Error fetching attorney by ID:", error);
+  }
+};
 
 const addNotification = async (notificationData, type) => {
     console.log("adding new notification")
@@ -65,4 +82,4 @@ function formatDate(timestamp) {
     return monthMap[month];
   }
 
-  export { formatDate, convertMonthToTurkish, addNotification, convertTimestampToDate};
+  export { formatDate, convertMonthToTurkish, addNotification, convertTimestampToDate, deleteException};

@@ -4,13 +4,13 @@
       <div class="absolute inset-0 bg-[rgb(34,40,49)]"></div>
     </section>
 
-    <div class="flex min-h-screen px-0 md:px-20 lg:px-32 2xl:px-60 bg-gray-100">
+    <div class="flex py-8 md:px-20 lg:px-32 2xl:px-60 bg-gray-100">
       <!-- Side Menu -->
 
       <!-- Main Content -->
-      <main class="flex-1 px-4 my-auto">
+      <main class="flex-1">
         <div
-          class="mx-auto max-w-lg bg-white border border-gray-300 px-8 py-8 mb-4 space-y-3 relative">
+          class="mx-auto max-w-lg bg-white border-y md:border border-gray-300 px-8 py-8 mb-4 space-y-3 relative">
           <div
             v-if="isLoading"
             class="absolute inset-0 z-10 flex items-center justify-center bg-white bg-opacity-95">
@@ -67,7 +67,7 @@
             </div>
             <div
               v-if="paymentStatus === 'success'"
-              class="flex flex-col space-y-3 mt-2 items-strech">
+              class="flex flex-col space-y-3 mt-2">
               <!-- Payment Instructions -->
               <div class="space-y-4 mb-2 text-center w-full">
                 <MessageWrapper type="success">

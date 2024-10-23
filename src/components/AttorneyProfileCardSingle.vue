@@ -16,7 +16,7 @@
         <img
           :src="`/assets/images/${attorneyData.id}.webp`"
           alt="Profile Image"
-          class="h-96 object-cover" />
+          class="h-96  object-cover" />
         <div
           class="absolute bottom-0 w-full flex flex-col justify-between overflow-hidden transition-all duration-300 custom-height group-hover:h-full">
           <div

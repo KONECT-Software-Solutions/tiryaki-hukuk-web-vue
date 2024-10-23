@@ -216,16 +216,16 @@ const serviceDetails = [
 `,
     attorneyData: [
       {
-        name: "Av. Ezgi",
-        id: "UCjKRboUFzbXGOYC6BjrVxnx1cE2",
+        name: "Test Avukat",
+        id: "0O4TeFNnNnaMnazDlkc6QSwuj8z2",
         title: "Aile Hukuku Uzmanı",
-        bio: "Av. Ayşe Tiryaki, aile hukuku alanında uzmanlaşmış bir avukat olup, Tiryaki Hukuk & Arabuluculuk Bürosu'nda çalışmaktadır. Özellikle aile hukuku, iş hukuku, ticaret hukuku ve miras hukuku alanlarında uzmanlaşmıştır. Kariyeri boyunca birçok karmaşık davada başarılı sonuçlar elde etmiş ve müvekkillerine hukuki Arabuluculuk hizmetleri sunmuştur. Profesyonel yaşamında etik kurallara bağlı kalarak müvekkillerinin haklarını en iyi şekilde savunmayı ilke edinmiştir. Hukuk eğitimi ve geniş deneyimi sayesinde, müvekkillerine kapsamlı ve etkili çözümler sunmaktadır.",
+        bio: "Test Avukat, aile hukuku alanında uzmanlaşmış bir avukat olup, Tiryaki Hukuk & Arabuluculuk Bürosu'nda çalışmaktadır. Özellikle aile hukuku, iş hukuku, ticaret hukuku ve miras hukuku alanlarında uzmanlaşmıştır. Kariyeri boyunca birçok karmaşık davada başarılı sonuçlar elde etmiş ve müvekkillerine hukuki Arabuluculuk hizmetleri sunmuştur. Profesyonel yaşamında etik kurallara bağlı kalarak müvekkillerinin haklarını en iyi şekilde savunmayı ilke edinmiştir. Hukuk eğitimi ve geniş deneyimi sayesinde, müvekkillerine kapsamlı ve etkili çözümler sunmaktadır.",
       },
       {
-        name: "Av. Hande",
-        id: "LFG3jBdG4qYmtJay4ucqOFxxVKW2",
-        title: "Aile Hukuku Uzmanı",
-        bio: "Av. Ayşe Tiryaki, aile hukuku alanında uzmanlaşmış bir avukat olup, Tiryaki Hukuk & Arabuluculuk Bürosu'nda çalışmaktadır. Özellikle aile hukuku, iş hukuku, ticaret hukuku ve miras hukuku alanlarında uzmanlaşmıştır. Kariyeri boyunca birçok karmaşık davada başarılı sonuçlar elde etmiş ve müvekkillerine hukuki Arabuluculuk hizmetleri sunmuştur. Profesyonel yaşamında etik kurallara bağlı kalarak müvekkillerinin haklarını en iyi şekilde savunmayı ilke edinmiştir. Hukuk eğitimi ve geniş deneyimi sayesinde, müvekkillerine kapsamlı ve etkili çözümler sunmaktadır.",
+        name: "Test Avukat 2",
+        id: "XZfuh7iQXeg12fc2UVSx3p7QJyA2",
+        title: "Ceza Hukuku Uzmanı",
+        bio: "Test Avukat 2, aile hukuku alanında uzmanlaşmış bir avukat olup, Tiryaki Hukuk & Arabuluculuk Bürosu'nda çalışmaktadır. Özellikle aile hukuku, iş hukuku, ticaret hukuku ve miras hukuku alanlarında uzmanlaşmıştır. Kariyeri boyunca birçok karmaşık davada başarılı sonuçlar elde etmiş ve müvekkillerine hukuki Arabuluculuk hizmetleri sunmuştur. Profesyonel yaşamında etik kurallara bağlı kalarak müvekkillerinin haklarını en iyi şekilde savunmayı ilke edinmiştir. Hukuk eğitimi ve geniş deneyimi sayesinde, müvekkillerine kapsamlı ve etkili çözümler sunmaktadır.",
       },
     ],
   },

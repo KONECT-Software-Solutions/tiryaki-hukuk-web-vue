@@ -9,10 +9,6 @@
               :src="`/assets/images/${appointmentProcessData.attorneyData.id}.webp`"
               alt="Profile Image"
               class="md:w-44 object-cover" />
-            <button
-              class="px-4 py-1 border my-2 w-full text-sm text-gray-800 rounded-md hover:bg-gray-200">
-              Hakkında
-            </button>
           </div>
           <div class="flex flex-col justify-start max-w-xl">
             <div class="flex justify-between ml-2 items-start">

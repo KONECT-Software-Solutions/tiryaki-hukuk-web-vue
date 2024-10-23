@@ -30,16 +30,16 @@
           <a href="#" class="" aria-label="Twitter">
             <div
               class="bg-tertiary rounded-full w-12 h-12 flex items-center justify-center hover:scale-110 hover:bg-white hover:text-tertiary transition duration-300">
-              <i class="ri-twitter-fill text-3xl"></i>
+              <i class="ri-linkedin-fill text-3xl"></i>
             </div>
           </a>
-          <a href="#" class="" aria-label="Instagram">
+          <a href="" class="" aria-label="Instagram">
             <div
               class="bg-tertiary rounded-full w-12 h-12 flex items-center justify-center hover:scale-110 hover:bg-white hover:text-tertiary transition duration-300">
               <i class="ri-instagram-fill text-3xl"></i>
             </div>
           </a>
-          <a href="#" class="" aria-label="Facebook">
+          <a href="" class="" aria-label="Facebook">
             <div
               class="bg-tertiary rounded-full w-12 h-12 flex items-center justify-center hover:scale-110 hover:bg-white hover:text-tertiary transition duration-300">
               <i class="ri-facebook-fill text-3xl"></i>

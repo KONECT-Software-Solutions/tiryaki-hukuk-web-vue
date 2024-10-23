@@ -73,7 +73,7 @@
         v-if="sortedMeetings.length > 0"
         v-for="meeting in sortedMeetings"
         :key="meeting.id"
-        class="p-4 border bg-gray-50 hover:shadow-lg hover:border-gray-300">
+        class="p-4 border-y md:border bg-gray-50 hover:shadow-lg hover:border-gray-300">
         <div class="flex flex-col md:flex-row justify-between">
           <div class="space-y-1">
             <div class="flex items-center justify-center space-x-4">
@@ -111,8 +111,8 @@
                 </div>
               </div>
             </div>
-            <div v-if="meeting.status !== '6'" class="flex items-center pb-4">
-              <p>Kalan süre:</p>
+            <div v-if="meeting.status === '0' || meeting.status === '1'" class="flex items-center pb-4">
+              <p>Randevuya</p>
               <vue-countdown
                 :time="calculateCountdownTime(meeting.date_time)"
                 v-slot="{ days, hours, minutes, seconds }">
@@ -124,6 +124,8 @@
                   <span> {{ minutes }} dk {{ seconds }}sn</span>
                 </div>
               </vue-countdown>
+              <p>kaldı.</p>
+
             </div>
           </div>
           <div class="md:text-right text-slate-800 font-medium space-y-1">
@@ -133,6 +135,13 @@
             <p>{{ meeting.price }} TL</p>
             <p
               v-if="
+                meeting.payment_status === '2' && meeting.status === '7'
+              "
+              class="text-quaternary">
+              Son ödeme tarihi geçtiği için randevu iptal edildi.
+            </p>
+            <p
+              v-else-if="
                 meeting.status !== '0' &&
                 meeting.status !== '3' &&
                 meeting.status !== '6'
@@ -148,13 +157,6 @@
             <p
               v-else-if="
                 meeting.payment_status === '2' && meeting.status === '6'
-              "
-              class="text-quaternary">
-              Son ödeme tarihi geçtiği için randevu iptal edildi.
-            </p>
-            <p
-              v-else-if="
-                meeting.payment_status === '0' && meeting.status === '6'
               "
               class="text-quaternary">
               Randevu danışan tarafından iptal edildi.
@@ -201,7 +203,7 @@
           </button>
           <!-- go to meeting.meeting_url button-->
           <a
-            v-if="meeting.status !== '6' && meeting.payment_status === '1'"
+            v-if="meeting.payment_status === '1' && meeting.status === '1'"
             :href="meeting.meeting_url"
             target="_blank"
             class="flex items-center justify-center space-x-3 px-6 py-2 h-12 bg-gradient-to-r from-green-400 to-lime-400 text-white shadow-md hover:shadow-lg hover:from-green-500 hover:to-lime-500 transition-all duration-300 ease-in-out transform">
@@ -342,12 +344,10 @@ const getStatusText = (status) => {
       return "Görüşme Tamamlandı";
     case "3":
       return "Randevu Reddedildi";
-    case "4":
-      return "Müşteri Onayı Bekleniyor";
-    case "5":
-      return "Avukat Onayı Bekleniyor";
     case "6":
       return "Randevu İptal Edildi";
+      case "7":
+      return "Son Ödeme Tarihi Geçti";
     default:
       return "Unknown Status";
   }
@@ -391,7 +391,7 @@ const cancel = () => {
   setTimeout(() => {
     showLoadingSpinner.value = false;
     showCancelModal.value = false;
-  }, 2000);
+  }, 5000);
 };
 
 const pay = (id) => {

@@ -61,7 +61,7 @@
     <div
       v-if="isMenuOpen"
       class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm z-20"
-      @click="toggleMenu"></div>
+      @click="toggleMenu()"></div>
     <div
       :class="[
         'side-nav-bar fixed top-0 right-0 h-full w-52 bg-black bg-opacity-30 text-white transition-transform transform z-30',
@@ -73,7 +73,7 @@
         <h1 class="text-[23px]">TIRYAKI</h1>
         <p class="text-[13px]">HUKUK & ARABULUCULUK</p>
       </router-link>
-      <button @click="toggleMenu" class="text-white absolute top-4 right-4">
+      <button @click="toggleMenu()" class="text-white absolute top-4 right-4">
         <svg
           class="w-8 h-8"
           fill="none"
@@ -93,13 +93,13 @@
           <router-link
             :to="menu.link"
             class="block pl-[0.8rem] py-4 hover:text-white hover:bg-gray-500 hover:bg-opacity-50"
-            @click="toggleMenu">
+            @click="toggleMenu()">
             <span>{{ menu.title }}</span>
           </router-link>
         </li>
         <li v-if="!isAuthenticated">
           <button
-            @click="(showSignInModal = true), toggleMenu"
+            @click="(showSignInModal = true), toggleMenu()"
             class="bg-primary w-full text-start text-white py-4 px-4">
             <div class="flex items-center">
               <i class="ri-login-box-line text-xl pr-2"></i> <span>Giriş Yap</span>
@@ -109,7 +109,7 @@
         <li v-else>
           <router-link
             :to="'/hesabim'"
-            @click="toggleMenu"
+            @click="toggleMenu()"
             class="bg-primary flex items-start border-b border-gray-400 text-white py-4 px-4">
             <div class="flex justify-center items-center">
               <i class="ri-user-line text-xl pr-2"></i> <span>Hesabım</span>

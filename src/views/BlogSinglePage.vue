@@ -152,19 +152,28 @@
             <div class="mb-6">
               <h4 class="text-lg font-semibold mb-3">Blog Yazısını Paylaş</h4>
               <div class="flex space-x-4">
-                <a href="#" aria-label="Twitter">
+                <a
+                  href="#"
+                  @click.prevent="shareOnX"
+                  aria-label="Twitter">
                   <div
                     class="bg-tertiary rounded-full w-8 h-8 flex items-center text-white justify-center hover:scale-150 transition duration-300">
                     <i class="ri-twitter-fill text-xl"></i>
                   </div>
                 </a>
-                <a href="#" aria-label="Facebook">
+                <a
+                  href="#"
+                  @click.prevent="shareOnFacebook"
+                  aria-label="Facebook">
                   <div
                     class="bg-tertiary rounded-full w-8 h-8 flex items-center text-white justify-center hover:scale-150 transition duration-300">
                     <i class="ri-facebook-fill text-xl"></i>
                   </div>
                 </a>
-                <a href="#" aria-label="Linkedin">
+                <a
+                  href="#"
+                  @click.prevent="shareOnLinkedin"
+                  aria-label="LinkedIn">
                   <div
                     class="bg-tertiary rounded-full w-8 h-8 flex items-center text-white justify-center hover:scale-150 transition duration-300">
                     <i class="ri-linkedin-fill text-xl"></i>
@@ -199,18 +208,7 @@ import { useRoute } from "vue-router";
 import { useStore } from "vuex";
 import router from "../router";
 import { db } from "../firebase";
-import {
-  getDocs,
-  getDoc,
-  updateDoc,
-  collection,
-  query,
-  orderBy,
-  limit,
-  increment,
-  setDoc,
-  doc,
-} from "firebase/firestore";
+import { getDocs, collection, query, orderBy, limit } from "firebase/firestore";
 
 const route = useRoute();
 const store = useStore();
@@ -272,6 +270,23 @@ watch(
     await fetchBlog(newId); // Fetch new blog based on the new id
   }
 );
+const shareOnX = () => {
+  const url = encodeURIComponent(window.location.href);
+  const text = encodeURIComponent("Bu blog yazısını mutlaka okuyun!");
+  window.open(`https://x.com/intent/tweet?url=${url}&text=${text}`, "_blank");
+};
+const shareOnFacebook = () => {
+  const url = encodeURIComponent(window.location.href);
+  window.open(`https://www.facebook.com/sharer/sharer.php?u=${url}`, "_blank");
+};
+const shareOnLinkedin = () => {
+  const url = encodeURIComponent(window.location.href);
+  const title = encodeURIComponent("Bu blog yazısını mutlaka okuyun!");
+  const summary = encodeURIComponent("Özet olarak bu blog yazısını okumalısınız!");
+  const source = encodeURIComponent("tiryakihukuk.com"); // Replace with your actual website
+  
+  window.open(`https://www.linkedin.com/shareArticle?mini=true&url=${url}&title=${title}&summary=${summary}&source=${source}`, "_blank");
+};
 
 // Initial fetch
 onMounted(async () => {

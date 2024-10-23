@@ -22,7 +22,7 @@ const scrollToSection = (sectionId) => {
 
     // Scroll to the adjusted position
     window.scrollTo({
-      top: sectionPosition - 100,
+      top: sectionPosition - 120,
       behavior: 'smooth',
     });
   }
